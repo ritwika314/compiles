@@ -8,6 +8,10 @@ The interaction model of an agent executing a $\lgname$ program is shown in \ref
 
 The agent then interacts with the physical environments and behaves as dictated by the actuator ports on the controller for $\delta$ amount of time, where $\delta>0$ is a constant \emph{sampling period} parameter. \footnote{\TBD{The sampling parameter can be provided by the user, and each controller that $\lgname$ supports has a default sampling parameter which has been set based on the experiments using the controller. See \refsect{experiments} for more details.}} During this time, the program variables and the actuator port values remain constant, the state of the environment (controller and plant) and the values of the sensor ports change according to the dynamics of the environment.
 
+\sayan{Moved from later.
+The agent program specifies the controller which determines the dynamic behavior of each agent and its interaction with the environment. \reffig{arch} shows how  each controller has sensor ports and actuator ports which the agent programs use to interact with the controller and consequently, with the physical environment. The agent program can read from the sensor ports read and write to the actuator ports during the program transition. The sensor ports are updated during the environment transition according to the controller dynamics. 
+}
+
 Compared to $\delta$, the time taken by the agent to execute the computational step is negligible, and in our formalization we treat it as zero logical time. Because each program transition takes zero logical time, we can assume all the agents start and finish executing their program transitions at the same time, and their environment transitions at the same time respectively. Collectively, the (distributed) \emph{system} of all the agents executing this program itself can be captured by an alternating semantics of discrete computational and dynamic behavior.
 
  In the rest of this section, we present the formal semantics of the $\lgname$ programming language. The complete formalization of the semantics in \K is available from~\cite{} \sayan{webpage/github}. The syntax of the language is presented through examples. 
@@ -21,22 +25,23 @@ We first discuss the types of variables used by the $\lgname$ programs. Througho
 %$\lgname$ provides several types of access for program variables. 
 An agent's $\lgname$ program can access three typed of variables. 
 %
--{\em Local program variables\/} record the state of the program. For example, the local variable $p$ of type $\mathit{path}$ (Line~\ref{pathvar}) stores a path for the agent. \\
+\begin{itemize}
+	\item {\em Local program variables\/} record the state of the program. For example, the variable $p$ of type $\mathit{path}$ (Line~\ref{pathvar}) stores a path for the agent. 
+\item {\em Distributed shared variables\/} are used for communication across agents.  For example, {\bf allwrite} $\mathit{taskList}$ (Line~\ref{awvar}) is a multi-writer list of tasks which can be written and read by any participating agent. Shared variables can also be single-writer multi-reader ({\bf allread}). 
+\item {\em Port variables\/} are used to read from and write to sensor and actuator ports of the agent. For example, the $\mathit{Motion}$ controller for the $\mathit{Task}$ app  drives the agent  through a route, as directed by value set at the actuator port $\mathit{Motion.route}$. The sensor port $\mathit{Motion.psn}$ gives the position of the agent in a fixed coordinate system and $\mathit{Motion.done}$ indicates  whether the $\mathit{Motion}$ controller is active or inactive.
+\end{itemize}
+The agent program also has access to two system-level constant parameters (a) a unique integer identifier $\myuin$ for itself and (b) a list $\UINS$ of identifiers of all participating agents\footnote{Our current system implementation assumes that the set of possible participating agents is known. This assumption will be relaxed in the future.}. 
 
--{\em Distributed shared variables\/} are used for coordination across agents.  For example, {\bf allwrite} $\mathit{taskList}$ (Line~\ref{awvar}) is a multi-writer list of tasks which can be updated by any participating agent. Shared variables variables can also be single-writer ({\bf allread}). \\ 
-
--{\em Sensor and actuator variables\/} are used to read from sensor ports and to write to actuator ports. 
-
+\sayan{Move elsewhere. Implementation details and usage details. Mutex, controller, path planning.}
+Implementation of the sensor.. GPS indoor positioning, done variable. 
+%
 Mutual exclusion is always an essential feature when shared variables are involved. $\lgname$ provides a locking mechanism using the keyword $\mathit{atomic}$, which the $\mathit{Assign}$ event uses to update the shared list of tasks $\mathit{taskList}$ safely. $\lgname$ supports two types of shared variables, multiwriter-multireader (\emph{allwrite}), and singlewriter-multireader (\emph{allread}) shared variables, whose functionality is as their names suggest. 
- 
-\fTBD{Motion related vars}
-
-The agent program specifies the controller which determines the dynamic behavior of each agent and its interaction with the environment. \reffig{arch} shows how  each controller has sensor ports and actuator ports which the agent programs use to interact with the controller and consequently, with the physical environment. The agent program can read from the sensor ports read and write to the actuator ports during the program transition. The sensor ports are updated during the environment transition according to the controller dynamics. 
-
-The $\mathit{Task}$ app  uses a controller called $\mathit{Motion}$ which is expected to drive the robots through a route, as directed by the position value set at its actuator port $\mathit{Motion.route}$. The sensor ports that $\mathit{Motion}$ makes available to the $\mathit{Task}$ program are: - $\mathit{Motion.psn}$: the robot position in a fixed coordinate system (provided by either GPS or an indoor positioning system) - $\mathit{Motion.done}$: A flag indicating whether the $\mathit{Motion}$ controller is active, or finished reaching the previous $\mathit{route}$ target points.The implementation of $\mathit{Motion}$ controller involves, for example, path planners, and platform-specific steering and throttle controllers, and drivers for specific positioning systems. 
- Each agent program also has access to two simulation parameters (a) a unique integer identifier $\myuin$ for itself and (b)  a list $\UINS$ of identifiers of all participating agents. \footnote{This set of participating agents is known and constant.} We now describe the system state, or \emph{configurations} which we use to formalize $\lgname$ semantics. 
+ %
+The implementation of $\mathit{Motion}$ controller involves, for example, path planners, and platform-specific steering and throttle controllers, and drivers for specific positioning systems. 
  
 \subsection{System configurations}
+
+We now describe the system state, or \emph{configurations} which we use to formalize $\lgname$ semantics. 
 
 The semantics of a system of agents executing $\lgname$-programs is given in terms of a nondeterministic, timed automaton~\cite{TIOAmon}. The state of the automaton is defined in terms of {\em configurations\/} that include the state of the individual agents, as well as certain global information.
 
