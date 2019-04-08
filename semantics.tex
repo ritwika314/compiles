@@ -71,7 +71,6 @@ using the dot (``$.$'') notation, for example, $l.M\equiv
 We provide the semantics for some of the syntactic productions in $\lgname$, which will help us discuss the semantics of program and environment transitions. The statement semantics are given by update rules of the type
 $$\stmtrule\ \subseteq (\pws \times \pwl\times \pwstmt \cup \{\cdot\}) \times \mathscr{P}(\pws\times \pwl \times \pwstmt \cup \{\cdot\}),$$
 \fTBD{$\pwstmt$ is very clunky looking, need to change it perhaps?}where $\pwstmt$ refers to the set of all possible statements allowed by language syntax. We introduce the symbol `$\cdot$' to indicate an ``empty" statement, which does not affect the configurations. The update relation takes as input a tuple of (1) an agent configuration, (2) a global context, and (3) a statement, and maps it to a set of such tuples. 
-
 \subsubsection{Program variable/program statement updates}
 
 The following rules display the variable lookup and assignment semantics for $\lgname$. The variable lookup rule \textsc{Var-Lookup-rule} states that every agent has a local copy of every variable in the program, and if an agent is evaluating an expression involving variable $x$, it will replace $x$ with the current value $v$ from the local context $M$. $M[x\mapsto v]$ here refers to the fact that in the map $M$, the key $x$ maps to the value $v$. \textsc{Lvar-assign} describe the semantics of variable assignment. If the right side of the assignment is not a constant, then it is first evaluated, and then substituted.
@@ -167,7 +166,7 @@ Suppose the function $f:\mathit{Sens} \times Val \times \mathbb{R} \mapsto \Val$
 \begin{mdframed}
     	\scriptsize
     \begin{mathpar}
-    \inferrule*[envtrans]{ \forall i \in \UINS,\lconfig{i}^\prime.\mathit{sm} = \agnt.\mathit{f}(\lconfig{i}.\mathit{sm},\delta) \wedge\ \forall x \in \mathit{Keys}({S}),\lconfig{i}'.{M}[x \mapsto S[x]] \wedge \lconfig{i}.\turn = \mathtt{env}}
+    \inferrule*[Right =\sc{envtrans}]{ \forall i \in \UINS,\lconfig{i}^\prime.\mathit{sm} = \agnt.\mathit{f}(\lconfig{i}.\mathit{sm},\delta) \wedge\ \forall x \in \mathit{Keys}({S}),\lconfig{i}'.{M}[x \mapsto S[x]] \wedge \lconfig{i}.\turn = \mathtt{env}}
     { (L, {S}, \tau,\mathtt{prog})\rightarrow_G ({L}^\prime, {S}, \tau + \delta,\mathtt{env}) \label{env}     }
     
  \inferrule*[Right=\sc{agent-env-to-prog}]
