@@ -4,6 +4,7 @@
 The interaction model of an agent executing a $\lgname$ program is shown in \reffig{arch}. 
 \sayan{This has to be rewritten. Too much unstructured text.}
 
+\sayan{The notion of turn has to be introduced.}
  can be captured by an alternating semantics of discrete and dynamic behavior of the agent. The agents can be viewed as performing \emph{rounds} of execution, where each round consists of a - \emph{A program transition} which is A discrete computational step, and - \emph{An environment transition} which is the dynamic behavior of the agents specified by the controllers. During the program transition in a round, each agent first non-deterministically chooses an \emph{enabled} event, which are all the events whose preconditions evaluate to true. It then executes the statements in the effect of that event. This may involve reading sensor ports, performing computations using local and shared variables, and writing to actuator ports.
 
 The agent then interacts with the physical environments and behaves as dictated by the actuator ports on the controller for $\delta$ amount of time, where $\delta>0$ is a constant \emph{sampling period} parameter. \footnote{\TBD{The sampling parameter can be provided by the user, and each controller that $\lgname$ supports has a default sampling parameter which has been set based on the experiments using the controller. See \refsect{experiments} for more details.}} During this time, the program variables and the actuator port values remain constant, the state of the environment (controller and plant) and the values of the sensor ports change according to the dynamics of the environment.
@@ -30,6 +31,8 @@ An agent's $\lgname$ program can access three typed of variables.
 \item {\em Distributed shared variables\/} are used for communication across agents.  For example, {\bf allwrite} $\mathit{taskList}$ (Line~\ref{awvar}) is a multi-writer list of tasks which can be written and read by any participating agent. Shared variables can also be single-writer multi-reader ({\bf allread}). 
 \item {\em Port variables\/} are used to read from and write to sensor and actuator ports of the agent. For example, the $\mathit{Motion}$ controller for the $\mathit{Task}$ app  drives the agent  through a route, as directed by value set at the actuator port $\mathit{Motion.route}$. The sensor port $\mathit{Motion.psn}$ gives the position of the agent in a fixed coordinate system and $\mathit{Motion.done}$ indicates  whether the $\mathit{Motion}$ controller is active or inactive.
 \end{itemize}
+The valuation of these variables define the configuration for an agent. 
+
 The agent program also has access to two system-level constant parameters (a) a unique integer identifier $\myuin$ for itself and (b) a list $\UINS$ of identifiers of all participating agents\footnote{Our current system implementation assumes that the set of possible participating agents is known. This assumption will be relaxed in the future.}. 
 
 \sayan{Move elsewhere. Implementation details and usage details. Mutex, controller, path planning.}
@@ -41,24 +44,21 @@ The implementation of $\mathit{Motion}$ controller involves, for example, path p
  
 \subsection{System configurations}
 
-We now describe the system state, or \emph{configurations} which we use to formalize $\lgname$ semantics. 
+We define the semantics of the overall system in terms of a nondeterministic, hybrid automaton~\cite{TIOAmon}. The state of the automaton is defined in terms of {\em configurations\/} consisting of the state components of the individual agents and the physical environment. 
 
-The semantics of a system of agents executing $\lgname$-programs is given in terms of a nondeterministic, timed automaton~\cite{TIOAmon}. The state of the automaton is defined in terms of {\em configurations\/} that include the state of the individual agents, as well as certain global information.
-
-A {\em system configuration\/} with sampling parameter $\delta$ is a tuple 
+A {\em system configuration\/} with sampling parameter $\delta>0$ is a tuple 
 $\gconfig_\delta = (\lset,{S},\tau,\turn)$, where
-\flushleft
+\begin{itemize}
+	\item ${L} = \{\lconfig{i}\}_{i\in\UINS}$ is a list of {\em agent configurations\/}; $\lconfig{i}$ is the  configuration of the $i^{\mathit{th}}$ agent.
+	\item ${S} : Var \mapsto Val$ is the {\em global context\/}, mapping all shared variable names to their values.
+	\item  $\tau:\mathbb{R}^{\geq 0}$ is the {\em global time\/}.
+	\item $\turn\in\{\mathtt{prog,env}\}$ is a binary variable determining whether the agents or the environment gets do the next  move. 
+\end{itemize}
 
- ${L} = \{\lconfig{i}\}_{i\in\UINS}$ is a list of {\em agent configurations\/}--one for each participating agent, where $\UINS$ is the known set of participating agents. $\lconfig{i}$ refers to the configuration of the $i$th element in the list $L$, or the $i$th agent in the system.   \\
- ${S} : Var \mapsto Val$ is the {\em global context\/}, mapping all shared variable names to their values. \\
-%Why we need this becomes clear in the next section. 
- $\tau\in \mathbb{R}^{+}$ is the {\em global time\/}.
- $\turn\in\{\mathtt{prog,env}\}$ is a binary \emph{bookkeeping} variable determining whether  program or environment transitions are being processed. 
+%Bookkeeping variables are invisible in the language syntax, and only used in the semantics. We now define the \emph{agent configurations}, which are used to specify the semantics of each agent. \newline
 
-Bookkeeping variables are invisible in the language syntax, and only used in the semantics. We now define the \emph{agent configurations}, which are used to specify the semantics of each agent. \newline
-
-
-Given that $\mathbb{P}$ is the set of all the productions in the $\lgname$grammar, $\Var$ is the set of variables, $Val$ be is set of values that an expression in the $\lgname$ can evaluate to, $\Cfield$ is the set of sensor and actuator ports of the controller being used in $P$, the configuration of an agent is a tuple $ l = (P, {M},{w},\cp,\turn)$, where\newline
+\sayan{Stopping here. Several things undefined at this point. Koord grammar. Why is agent configuration $l$ and not $L_i$ as defined above?}
+Given that $\mathbb{P}$ is the set of all the productions in the $\lgname$ grammar, $\Var$ is the set of variables, $Val$ be is set of values that an expression in the $\lgname$ can evaluate to, $\Cfield$ is the set of sensor and actuator ports of the controller being used in $P$, the configuration of an agent is a tuple $ l = (P, {M},{w},\cp,\turn)$, where\newline
 
 
  $p \in \mathbb{P}$ is the current syntactic production,\newline
