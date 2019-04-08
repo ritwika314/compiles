@@ -1,0 +1,87 @@
+\section{Verification}
+\label{sec:verif}
+% page
+
+Statement about the gap between artifacts and models 
+
+\subsection{Assumptions}
+yber-physical systems involve aspects of concurrency, distributed systems, and dynamical systems, and therefore, a formal semantics for any such system depends on several assumptions. In the design of $\lgname$, we made several choices that were enforced by either the nature of the applications we wanted to be able to implement, or supported by the observable constraints during hardware deployment.  In this section, we take a moment to distinguish those choices from the more fundamental design embedded in $\lgname$.
+
+\paragraph*{Periodic event execution semantics}
+Our semantics assumes periodic execution of agent programs, with minimum period defined by the sampling parameter $\delta>0$. This is a standard programming style in embedded and control systems. Several other languages, such as Giotto~\cite{henzinger2003giotto,benveniste2003synchronous}, use  similar semantics. The Giotto paper, shows how  interrupts can be emulated in this execution model. There is substantial work supporting analysis of such time-triggered systems~\cite{WMLM:TECS2010}.
+
+%The periodic execution semantics does not allow time evolution to be interrupted.
+\paragraph*{Portability}
+$\lgname$ programs are portable in the sense that the same application code, can be executed with different controller and plant (environment) executables that provide the same ports. For example, for the automated intersection application, the results presented in the paper use a Java executable modeling the controller for a wheeled F1/10-scale racing car robot. We can execute the same application with an environment which is either a model of a different type of wheeled robot or a quadcopter, or even the actual hardware platforms. 
+
+\paragraph*{Shared variable implementation through message passing}
+For the shared memory abstraction to be faithfully implemented on a message-passing wireless network, the message delays between agents should be less than the the sampling parameter $\delta$. We validated the feasibility of this assumption through experiments.
+
+%Eventual visibility of shared memory writes. Precise implementation and semantics.
+\paragraph*{Known set of participants}
+Current design and implementation of $\lgname$ builds on the assumption that the number and identities of the participating agents $\UINS$ in known to each agent. In distributed systems with failures, computing the set of participants is a well-studied and foundational problem. problem~\cite{AlistarhAGG2011} and it is related to the active area of research on failure detectors~\cite{Chandra:1996,delporte2004weakest}. In the future, one could  relax this  assumption. For example, in our current hardware deployment, we are using the $\UINS$ as a sensor port that is informed of the identity of the live processes by periodic messages. 
+
+
+We built up on the capabilities of the \K semantic framework to provide a verification tool on top of the executable semantics of $\lgname$, which checks bounded invariants ($n$-invariants) for $\lgname$ applications using explicit-state reachability analysis. The input to the verification tool is 
+\begin{inparaenum}[(i)] 
+    \item $P$: the program, 
+    \item $\mathit{inv}$: a candidate invariant function, 
+    \item {\UINS}: set of agents, 
+    \item $\delta$: time step size and 
+    \item $n$: number of rounds of the execution to check.
+\end{inparaenum}
+
+The tool outputs `safe' if the $\mathit{inv}$ is indeed an $n$-invariant, `unsafe' if it finds a counter-example execution of length $n$. In some cases, it can return `unknown' as the reachable set computed by the verification algorithm are an overapproximation of the actual reachable set of configurations.  will be discussed in the following section.  
+%
+The verification algorithm uses the $\lgname$ executable semantics to produce all configurations that the system reaches during program transitions. For this purpose, our semantics allows values of variables to be stored as intervals and propagated through program execution and environment transitions on explicit system models. If the dynamics of the system is a black box model then sensitivity analysis tools can be used to complement the reachable state computation. \fTBD{The actual verification algorithms are beyond the scope of this paper, and will be discussed in future submissions.+} 
+
+ Although, this verification method currently only scales to small problem instances, in context, this is a promising tool connecting a high-level language to actual implementations. The \emph{Agents} column in the table refers to the number of agents in the system. 
+ 
+ The applications are 
+\begin{inparaenum}[(i)]
+\item a simple HVAC model that should ensure that the temperature of several rooms should remain above a  given temperature, 
+\item  the above $\mathit{Task}$ app, that should ensure that there are no collisions, 
+\item Fischer's mutual exclusion protocol, 
+\item and a Braking system, that should ensure that a platoon of cars maintains a separation between any consecutive cars. 
+\fTBD{More detailed benchmark descriptions?}
+
+\begin{table}[!t]		
+\footnotesize
+ \centering		
+  \caption{\textbf{Verification Summary} \label{tab:summary}}		
+   %\begin{tabular}{|l|l|l|l|l|l|c|}
+   \begin{tabular}{ l| r r r r r c }	
+ \hline		
+                             &                                                                   &\tb{Num. of}   & \tb{Time to} \\
+ \tb{Benchmark}       & \tb{Agents} &\tb{Rounds}  & \tb{Verify}    & \qquad\tb{Safe} \\ \hline		
+		
+HVAC   & 3             &   10     &  2m18s   &     Safe  \\ 		
+HVAC           & 4           &10    & 2m51s    &    Safe    \\ 	
+HVAC   & 3           &   10    &  38s   &     Unsafe  \\ 		
+HVAC           & 4           &10    & 43s    &    Unsafe    \\ 	
+
+ Task       & 2             &10        &  1m8s   &      Safe    \\  
+ Task &3  &10      &  3m6s   &      Safe    \\ 
+  Task       &3                &10      &  4m13s   &      Unsafe    \\ 
+
+  Task       & 4               &10     &  8m29s   &      Unsafe    \\ 
+  
+ Fischer's  & 2               & 10    &   3m4s   &  Safe   \\
+  Fischer's  & 2                & 10    &   1m19s   &  Unsafe   \\ 		
+ Braking  & 3               & 10      & 1m58s    &    Safe      \\ 		
+ Braking  & 4                  & 10      &  3m29s   &    Safe      \\
+ Braking  & 3              & 10      & 1m28s    &    Unsafe      \\ 		
+ Braking  & 4                 & 10      &  1m43s   & Unsafe      \\
+ 
+  \hline		
+ \end{tabular}		
+ \end{table}
+ 
+
+
+
+ 
+
+
+
+\subsection{Verification results}

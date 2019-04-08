@@ -1,0 +1,46 @@
+Task(pid)
+
+def task : $\label{taskdef}$
+    pos loc
+    int asgnid
+    int taskId
+
+using Motion $\label{moddef}$
+    sensors:`
+       pos psn,bool done
+    actuators:
+       pos[] route
+
+allwrite:$\label{awvar}$
+   list<task> taskList
+ 
+allread:$\label{arvar}$
+   pos[] routes[pid] = Motion.psn
+
+local:
+   int i = 0 
+   path p $\label{pathvar}$
+   task temp, new
+   enum Stage {ASGN,RCHD,CMPT} stage = ASGN
+   
+Assign:$\label{asgnevent}$
+  pre stage == ASGN
+  eff atomic:
+    for (i = 0,i < length(taskList),i = i+1):
+        temp = get(taskList,i)
+        p = getPath(temp.loc)
+        if temp.asgnid == 0 and notNull(p,routes):
+           new = new Task(temp.loc,pid,temp.taskId)
+           put(taskList,i,new)
+           routes[pid] = p
+           Motion.route = p 
+           stage = RCHD          
+   
+Reached: $\label{rchevent}$
+  pre stage = RCHD and Motion.done
+  eff routes[pid] = temp.loc
+      stage = CMPLT
+
+Complete:$\label{cmpltevent}$
+  pre stage == CMPLT
+  eff stage = ASGN
