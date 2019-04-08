@@ -52,23 +52,23 @@ $\gconfig_\delta = (\lset,{S},\tau,\turn)$, where
 	\item ${L} = \{\lconfig{i}\}_{i\in\UINS}$ is a list of {\em agent configurations\/}; $\lconfig{i}$ is the  configuration of the $i^{\mathit{th}}$ agent.
 	\item ${S} : Var \mapsto Val$ is the {\em global context\/}, mapping all shared variable names to their values.
 	\item  $\tau:\mathbb{R}^{\geq 0}$ is the {\em global time\/}.
-	\item $\turn\in\{\mathtt{prog,env}\}$ is a binary variable determining whether the agents or the environment gets do the next  move. 
+	\item $\turn\in\{\mathtt{prog,env}\}$ is a binary variable determining whether the system is performing a program or environment transition. 
 \end{itemize}
 
 %Bookkeeping variables are invisible in the language syntax, and only used in the semantics. We now define the \emph{agent configurations}, which are used to specify the semantics of each agent. \newline
 
 \sayan{Stopping here. Several things undefined at this point. Koord grammar. Why is agent configuration $l$ and not $L_i$ as defined above?}
-Given that $\mathbb{P}$ is the set of all the productions in the $\lgname$ grammar, $\Var$ is the set of variables, $Val$ be is set of values that an expression in the $\lgname$ can evaluate to, $\Cfield$ is the set of sensor and actuator ports of the controller being used in $P$, the configuration of an agent is a tuple $ l = (P, {M},{w},\cp,\turn)$, where\newline
+Given that $\mathbb{P}$ is the set of all the productions in the $\lgname$ grammar, $\Var$ is the set of variables, $Val$ be is set of values that an expression in the $\lgname$ can evaluate to, $\Cfield$ is the set of sensor and actuator ports of the controller being used in $P$, the configuration of an agent with $\mathit{i}$ is a tuple $ L_i = (P, {M},\cp,\turn)$, where\newline
 
+\begin{itemize}
+ \item $p \in \mathbb{P}$ is the current syntactic production,\newline
 
- $p \in \mathbb{P}$ is the current syntactic production,\newline
-
- ${M} : \Var \mapsto \Val$ is its {\em local context\/} mapping all variables in $P$ to agent local values.
+\item ${M} : \Var \mapsto \Val$ is its {\em local context\/} mapping all variables in $P$ to agent local values.
 \newline
- $\mathit{sm} : \mathit{Sens} \mapsto \Val$ is the mapping of sensor variables to values.
+ \item $\mathit{sm} : \mathit{Sens} \mapsto \Val$ is the mapping of sensor variables to values.
 \newline
- $\turn \in \{\mathtt{prog,env}\}$ is a bookkeeping variable indicating whether the agent should be executing a program or environment transition. 
-
+ \item $\turn \in \{\mathtt{prog,env}\}$ is a bookkeeping variable indicating whether the specific agent should be executing a program or environment transition. 
+\end{itemize}
 The components of an agent configuration in the tuple $l$ are accessed
 using the dot (``$.$'') notation, for example, $l.M\equiv
 \pi_2(l)$ and $l.w \equiv \pi_3(l)$.
