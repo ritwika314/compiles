@@ -73,8 +73,8 @@ is a tuple $\gconfig = (\lset,{S},\tau,\turn)$, where
 We use the notation $\pws$ to represent all possible valuations of the global context $S$.
 
 
-\paragraph{Transition rules}
-The global configuration changes according to state transition rules or {\em update rules\/}. The  update rules are rewriting rules that model the changes in the agent configurations due to execution of agent programs as well as the changes in the environment. Agent programs consist of events and events consist of sequence of $\lgname$ statements. Thus, in describing the transition rules, we start with statement level transitions. 
+\paragraph{Update rules rules}
+The agent (and consequently, the global) configurations change according {\em update rules\/}. The  update rules are rewriting rules that model the changes in the agent configurations due to execution of agent programs as well as environment transitions. Agent programs consist of events and events consist of sequence of $\lgname$ statements. Thus, in describing the transition rules, we start with statement level transitions. 
 
 %Bookkeeping variables are invisible in the language syntax, and only used in the semantics. We now define the \emph{agent configurations}, which are used to specify the semantics of each agent. \newline
 
@@ -119,7 +119,7 @@ Rule \textsc{Lvar-assign} describes the semantics of a local variable assignment
     x \in \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\agnt .{M}) 
     \wedge\ \agnt = (\mathit{pc}, {M},\mathit{sm},\mathtt{prog}) \cr
     \wedge {S}^\prime = {S}[x \mapsto v]
-    \wedge\ \agnt^\prime = (\mathit{pc^\prime},{M}[x\mapsto v],\mathit{sm}, \mathtt{prog}\wedge \mathit{pc} = (x = c) \rightsquigarrow \mathit{pc}^\prime)
+    \wedge\ \agnt^\prime = (\mathit{pc^\prime},{M}[x\mapsto v],\mathit{sm}, \mathtt{prog})\wedge \mathit{pc} = (x = c) \rightsquigarrow \mathit{pc}^\prime
     \end{array}
     }
     {\langle{S},\agnt, x = v \rangle {\rightarrow_{S}}  \langle{S}^\prime,\agnt^\prime,\cdot\rangle}\label{va1} \\
