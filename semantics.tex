@@ -48,9 +48,9 @@ A {\em configuration\/} of agent $\mathit{i}$, $i \in \UINS$, running $\lgname$ 
  \item $\mathit{sm} : \mathit{Sens} \mapsto \Val$ is a mapping of each sensor port to a valuation.
  \item $\turn:\{\mathtt{prog,env}\}$ is a bookkeeping variable; $\turn = \mathtt{env}$ indicates that agent $i$ has finished executing its program for the current round.  
 \end{itemize}
-The components of an agent configuration in the tuple $L_i$ are accessed using the usual dot ($\cdot$) notation. That is, $L_i.M$ refers to the local context $M$ in agent configuration $L_i$, for the agent with pid $i$ in the system. We use the notation $\pwl$ to represent the set of all possible values that the configuration of a single agent can have. 
-
-
+$\pwl$ denotes  the set of all possible agent configurations. The components of an agent configuration $L_i$ are accessed using the usual dot ($\cdot$) notation. That is, $L_i.M$ refers to the local context $M$ in agent configuration $L_i \in \pwl$, for the agent with pid $i$ in the system.  
+%
+%
 Consider the Task application in \reffig{taskapp}. The local value of the variable $p$ in line\ref{vl1} for agent with $\myuin$ 0 is represented as $L_0.M(p)$. 
 
 \sayan{May be use the Task application here. Does $L_i.M(p)$ make sense? Maybe there are better examples. It would be good to explain ``syntax production'' with the example.}
@@ -58,41 +58,37 @@ Consider the Task application in \reffig{taskapp}. The local value of the variab
 
 \subsection{System configurations}
 
-We define the semantics of the overall system in terms of a nondeterministic, discrete-time transition system or a system automaton. The state of the automaton is defined in terms of {\em system configurations\/} consisting of the agent configurations and the state of the physical environment. 
+We define the semantics of the overall system in terms of a nondeterministic, discrete-time transition system or a system automaton. The state of the automaton is defined in terms of {\em system configurations\/} consisting of the agent configurations and the valuation of the shared variables. 
 
 A {\em system configuration\/} 
 %with sampling parameter $\delta>0$ 
 is a tuple $\gconfig = (\lset,{S},\tau,\turn)$, where
 \begin{itemize}
-	\item ${L} = \{\lconfig{i}\}_{i\in\UINS}$ is a list of {\em agent configurations\/}; $\lconfig{i}$ is the  configuration of the $i^{\mathit{th}}$ agent. $\pwl$ is the set of all possible configurations of all the agents in the system.
-	\item ${S} : \mathit{Var} \mapsto \mathit{Val}$ is a {\em global context\/} mapping each shared variable to a corresponding valuation. $\pws$ is the set of all possible global contexts
+	\item ${L} = \{\lconfig{i}\}_{i\in\UINS}$ is a list of {\em agent configurations\/}; $\lconfig{i}$ is the  configuration of the $i^{\mathit{th}}$ agent. 
+	%$\pwl$ is the set of all possible configurations of all the agents in the system.
+	\item ${S} : \mathit{Var} \mapsto \mathit{Val}$ is a {\em global context\/} mapping each shared variable to a corresponding valuation. $\pws$ is the set of all possible global contexts.
 	\item  $\tau:\mathbb{R}^{\geq 0}$ is the {\em global time\/}.
 	\item $\turn\in\{\mathtt{prog,env}\}$ is a binary bookkeeping variable;  $\turn = \mathtt{env}$ indicates that  all agents are done executing their programs for the  current round, and the physical environment is evolving.  
 \end{itemize}
 
-We use the notation $\pws$ to represent all possible valuations of the global context $S$.
+%We use the notation $\pws$ to represent all possible valuations of the global context $S$.
 
 
-\paragraph{Update rules rules}
+\paragraph{Update rules}
 The agent (and consequently, the global) configurations change according {\em update rules\/}. The  update rules are rewriting rules that model the changes in the agent configurations due to execution of agent programs as well as environment transitions. Agent programs consist of events and events consist of sequence of $\lgname$ statements. Thus, in describing the transition rules, we start with statement level transitions. 
 
 %Bookkeeping variables are invisible in the language syntax, and only used in the semantics. We now define the \emph{agent configurations}, which are used to specify the semantics of each agent. \newline
 
 \subsection{Statement semantics}
-Execution of each statement in a $\lgname$ program corresponds to updating the 
-
-\sayan{Stopping here.}
-semantics are given by update rules of the type
+Execution of a statement in a $\lgname$ program running on an agent, leads to the agent's configuration being updated. The statement-level updates are relations of the form: 
 $$\stmtrule\ \subseteq (\pws \times \pwl\times \mathit{Stmts} \cup \{\cdot\}) \times \mathscr{P}(\pws\times \pwl \times \mathit{Stmts} \cup \{\cdot\}),$$
 %\fTBD{$\pwstmt$ is very clunky looking, need to change it perhaps?}
-where $\mathit{Stmts}$ refers to the set of all possible statements allowed by language syntax. We introduce the symbol `$\cdot$' to indicate an ``empty" statement, which does not affect the configurations. The update relation takes as input a tuple of (1) an agent configuration, (2) a global context, and (3) a statement, and maps it to a set of such tuples. 
-
-We provide the semantics for some of the syntactic productions in $\lgname$
+where $\mathit{Stmts}$ refers to the set of all possible statements allowed by $\lgname$ syntax. The symbol `$\cdot$'  indicates an ``empty" statement, which does not affect the configurations. That is, the update relation takes as input a tuple of (1) a global context, (2) an agent configuration, and (3) a statement, and maps it to a set of such tuples. As example, we give the semantic relations for some of the salient statement types in $\lgname$.
 
 
-\subsubsection{Program variable/program statement updates}
+\subsubsection{Program variable updates}
 \newline
-Rule \textsc{Lvar-assign} describes the semantics of a local variable assignment. $x\notin \mathit{Keys}(S) \wedge x \in \mathit{Keys(L.M)}$ represents the fact that there is no mapping from $x$ in the global context $S$, but there is one in the local context $L.M$. The notation $\mathit{pc} = x = c \rightsquigarrow \mathit{pc}^\prime$ represents that syntactic production $\mathit{pc}^\prime$ is the one following the statement $x = c$ from the production $\mathit{pc}$. $M[x\mapsto v]$ refers to the fact that in the map $M$, the key $x$ maps to the value $v$. 
+Rule \textsc{Lvar-assign} describes the semantics of how an assignment for a local variable $x$ updates the agent configuration $L$ to $L'$ by modifying $L.M$. In more detail, $x\notin \mathit{Keys}(S) \wedge x \in \mathit{Keys(L.M)}$ represents the fact that there is no mapping from $x$ in the global context $S$, but there is one in the local context $L.M$. The notation $\mathit{pc} = x = c \rightsquigarrow \mathit{pc}^\prime$ represents that syntactic production $\mathit{pc}^\prime$ is the one following the statement $x = c$ from the production $\mathit{pc}$. $M[x\mapsto v]$ refers to the fact that in the map $M$, the key $x$ maps to the value $v$. 
 
 \begin{mdframed}
 \scriptsize
@@ -106,11 +102,12 @@ Rule \textsc{Lvar-assign} describes the semantics of a local variable assignment
 \end{mdframed}
 
 \noindent
-
-\subsubsection{Shared memory updates}
+\sayan{Why not L.pc but L.M ? The $\rightarrow_S$ can be confusing, should we make is $\rightarrow_{Stmt}?$} 
+\subsubsection{Shared variable updates}
+Similarly, rule \textsc{Svar-assign} describes the semantics of assignment to a shared variable $x$ updates the agent configuration $L$ to $L'$ by modifying $L.M$
 
  The set of all copies of the local copies shared variables can be seen as the \emph{distributed shared memory}. The correctness of a program relies on consistent values of the agents' local values of shared variables. When an agent writes to a variable, it updates its local copy and our implementation of the $\lgname$ framework uses message passing to inform the other agents of the change. 
-%
+% 
 \begin{mdframed}
 \scriptsize
 \begin{mathpar}
