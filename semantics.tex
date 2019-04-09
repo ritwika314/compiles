@@ -56,20 +56,20 @@ Consider the Task application in \reffig{taskapp}. The local value of the variab
 
 \subsection{System configurations}
 
-We define the semantics of the overall system in terms of a nondeterministic, hybrid automaton~\cite{TIOAmon}. The state of the automaton is defined in terms of {\em configurations\/} consisting of the state components of the individual agents and the physical environment. 
+We define the semantics of the overall system in terms of a nondeterministic, discrete-time transition system or a system automaton. The state of the automaton is defined in terms of {\em system configurations\/} consisting of the agent configurations and the state of the physical environment. 
 
-A {\em system configuration\/} with sampling parameter $\delta>0$ is a tuple 
-$\gconfig_\delta = (\lset,{S},\tau,\turn)$, where
+A {\em system configuration\/} 
+%with sampling parameter $\delta>0$ 
+is a tuple $\gconfig = (\lset,{S},\tau,\turn)$, where
 \begin{itemize}
 	\item ${L} = \{\lconfig{i}\}_{i\in\UINS}$ is a list of {\em agent configurations\/}; $\lconfig{i}$ is the  configuration of the $i^{\mathit{th}}$ agent.
-	\item ${S} : \mathit{Var} \mapsto \mathit{Val}$ is the {\em global context\/}, mapping each shared variable to a corresponding valuation.
+	\item ${S} : \mathit{Var} \mapsto \mathit{Val}$ is a {\em global context\/} mapping each shared variable to a corresponding valuation.
 	\item  $\tau:\mathbb{R}^{\geq 0}$ is the {\em global time\/}.
-	\item $\turn\in\{\mathtt{prog,env}\}$ is a binary bookkeeping variable where $\turn = \mathtt{env}$ represents that all agents are performing their environment transition. 
+	\item $\turn\in\{\mathtt{prog,env}\}$ is a binary bookkeeping variable;  $\turn = \mathtt{env}$ indicates that  all agents are done executing their programs for the  current round, and the physical environment is evolving.  
 \end{itemize}
+The global configuration changes according to state transition rules or {\em update rules\/}. The  update rules are rewriting rules that model the changes in the agent configurations as well as the changes in the environment.  
 
 %Bookkeeping variables are invisible in the language syntax, and only used in the semantics. We now define the \emph{agent configurations}, which are used to specify the semantics of each agent. \newline
-
-\sayan{Stopping here. Several things undefined at this point. Koord grammar. Why is agent configuration $l$ and not $L_i$ as defined above?}
 
 \subsection{Update rules}
 We provide the semantics for some of the syntactic productions in $\lgname$, which will help us discuss the overall semantics of program and environment transitions. Program transitions are mainly comprised of execution of statements. The statement semantics are given by update rules of the type
