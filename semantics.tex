@@ -49,6 +49,9 @@ A {\em configuration\/} of agent $\mathit{i}$, $i \in \UINS$, running $\lgname$ 
  \item $\turn:\{\mathtt{prog,env}\}$ is a bookkeeping variable; $\turn = \mathtt{env}$ indicates that agent $i$ has finished executing its program for the current round.  
 \end{itemize}
 The components of an agent configuration in the tuple $L_i$ are accessed using the usual dot ($\cdot$) notation. That is, $L_i.M$ refers to the local context $M$ in agent configuration $L_i$, for the agent with pid $i$ in the system.
+
+Consider the Task application in \reffig{taskapp}. The local value of the variable $p$ in line\ref{vl1} for agent with $\myuin$ 0 is represented as $L_0.M(p)$. 
+
 \sayan{May be use the Task application here. Does $L_i.M(p)$ make sense? Maybe there are better examples. It would be good to explain ``syntax production'' with the example.}
 
 \subsection{System configurations}
@@ -59,9 +62,9 @@ A {\em system configuration\/} with sampling parameter $\delta>0$ is a tuple
 $\gconfig_\delta = (\lset,{S},\tau,\turn)$, where
 \begin{itemize}
 	\item ${L} = \{\lconfig{i}\}_{i\in\UINS}$ is a list of {\em agent configurations\/}; $\lconfig{i}$ is the  configuration of the $i^{\mathit{th}}$ agent.
-	\item ${S} : \mathit{Var} \mapsto \mathit{Val}$ is the {\em global context\/}, which is a mapping of all shared variable names to their values, 
+	\item ${S} : \mathit{Var} \mapsto \mathit{Val}$ is the {\em global context\/}, mapping each shared variable to a corresponding valuation.
 	\item  $\tau:\mathbb{R}^{\geq 0}$ is the {\em global time\/}.
-	\item $\turn\in\{\mathtt{prog,env}\}$ is a binary bookkeeping variable which represents whether the system is performing a program or environment transition. 
+	\item $\turn\in\{\mathtt{prog,env}\}$ is a binary bookkeeping variable where $\turn = \mathtt{env}$ represents that all agents are performing their environment transition. 
 \end{itemize}
 
 %Bookkeeping variables are invisible in the language syntax, and only used in the semantics. We now define the \emph{agent configurations}, which are used to specify the semantics of each agent. \newline
@@ -72,10 +75,12 @@ $\gconfig_\delta = (\lset,{S},\tau,\turn)$, where
 We provide the semantics for some of the syntactic productions in $\lgname$, which will help us discuss the overall semantics of program and environment transitions. Program transitions are mainly comprised of execution of statements. The statement semantics are given by update rules of the type
 $$\stmtrule\ \subseteq (\pws \times \pwl\times \mathit{Stmts} \cup \{\cdot\}) \times \mathscr{P}(\pws\times \pwl \times \mathit{Stmts} \cup \{\cdot\}),$$
 %\fTBD{$\pwstmt$ is very clunky looking, need to change it perhaps?}
-where $\mathit{Stmts}$ refers to the set of all possible statements allowed by language syntax. We introduce the symbol `$\cdot$' to indicate an ``empty" statement, which does not affect the configurations. The update relation takes as input a tuple of (1) an agent configuration, (2) a global context, and (3) a statement, and maps it to a set of such tuples. 
+where $\pws$ is the set of all possible global contexts, \pwl is the set of all possible agent configurations, and $\mathit{Stmts}$ refers to the set of all possible statements allowed by language syntax. We introduce the symbol `$\cdot$' to indicate an ``empty" statement, which does not affect the configurations. The update relation takes as input a tuple of (1) an agent configuration, (2) a global context, and (3) a statement, and maps it to a set of such tuples. 
 \subsubsection{Program variable/program statement updates}
 
-The following rules display the variable lookup and assignment semantics for $\lgname$. The variable lookup rule \textsc{Var-Lookup} states that every agent has a local copy of every variable in the program, and if an agent is evaluating an expression involving variable $x$, it will replace $x$ with the current value $v$ from the local context $M$. $M[x\mapsto v]$ here refers to the fact that in the map $M$, the key $x$ maps to the value $v$. \textsc{Lvar-assign} describes the semantics of a local variable assignment. $x\notin \mathit{Keys}(S) \wedge x \in \mathit{Keys(L.M)}$ represents the fact that there is no mapping from $x$ in the global context $S$, but there is one in the local context $L.M$. 
+The following rules display the variable lookup and assignment semantics for $\lgname$. The variable lookup rule \textsc{Var-Lookup} states that every agent has a local copy of every variable in the program, and if an agent is evaluating an expression involving variable $x$, it will replace $x$ with the current value $v$ from the local context $M$. $M[x\mapsto v]$ here refers to the fact that in the map $M$, the key $x$ maps to the value $v$. 
+
+\textsc{Lvar-assign} describes the semantics of a local variable assignment. $x\notin \mathit{Keys}(S) \wedge x \in \mathit{Keys(L.M)}$ represents the fact that there is no mapping from $x$ in the global context $S$, but there is one in the local context $L.M$. The syntactic production $\mathit{pc}^\prime$ is the one following the statement $x = c$ from the production $\mathit{pc}$. 
 
 \begin{mdframed}
 \scriptsize
@@ -88,7 +93,8 @@ The following rules display the variable lookup and assignment semantics for $\l
 
 \hspace{-1in} \inferrule*[Right=\sc{lvar-assign}]
     {\begin{array}{l}
-    x \notin \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\agnt .{M}) \cr \wedge {\agnt = (P, {M},\mathit{sm},\mathtt{prog})\ \wedge\ \agnt^\prime = (P,{M}[x\mapsto c],\mathit{sm},  \mathtt{prog})}\end{array} }
+    x \notin \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\agnt .{M}) \wedge \mathit{pc} = (x = c) \rightsquigarrow \mathit{pc}^\prime \cr \wedge {\agnt = (\mathit{pc}, {M},\mathit{sm},\mathtt{prog})\ \wedge\ \agnt^\prime = (\mathit{pc^\prime},{M}[x\mapsto c],\mathit{sm},  \mathtt{prog})
+    }\end{array} }
     {\langle{S},\agnt, x = c \rangle {\rightarrow_{S}}  \langle{S},\agnt^\prime,\cdot\rangle}\label{va2} \and \qquad\qquad \\
     \end{mathpar}
 \end{mdframed}
@@ -105,9 +111,9 @@ The following rules display the variable lookup and assignment semantics for $\l
 \hspace{-.5in}\inferrule*[Right=\sc{svar-assign}]
     {\begin{array}{l}
     x \in \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\agnt .{M}) 
-    \wedge\ \agnt = (P, {M},\mathit{sm},\mathtt{prog}) \cr
+    \wedge\ \agnt = (\mathit{pc}, {M},\mathit{sm},\mathtt{prog}) \cr
     \wedge {S}^\prime = {S}[x \mapsto v]
-    \wedge\ \agnt^\prime = (P,{M}[x\mapsto v],\mathit{sm}, \mathtt{prog})
+    \wedge\ \agnt^\prime = (\mathit{pc^\prime},{M}[x\mapsto v],\mathit{sm}, \mathtt{prog}\wedge \mathit{pc} = (x = c) \rightsquigarrow \mathit{pc}^\prime)
     \end{array}
     }
     {\langle{S},\agnt, x = v \rangle {\rightarrow_{S}}  \langle{S}^\prime,\agnt^\prime,\cdot\rangle}\label{va1} \\
@@ -130,18 +136,18 @@ The statement semantics are only defined when the turn of the agent was set to \
 \end{mdframed}
 
 
-Given the control flow statements, the following rules capture two facts. Rule \textsc{event} states that only the effect of an an enabled event may be executed, and a marker \emph{endEvent} is added after the effect of that event to indicate that the event has executed. Rule \textsc{prog-to-env} states that
+Given the control flow statements, the following rules capture two facts. Rule \textsc{event} states that only the effect of an an enabled event may be executed, and a marker(statement) \emph{endEvent} is added after the effect of that event to indicate that the event has executed. Rule \textsc{prog-to-env} states that
 after the event is executed, the $\turn$ of the agent is set to $\mathtt{env}$ indicating that after this execution, an environment transition occurs. We will demonstrate in \refsect{experiments} that the system can display non deterministic behaviors arising from different agents executing their events in different orders.
 \begin{mdframed}
 \scriptsize
 \begin{mathpar}
 \hspace{-.5in}
 \inferrule*[Right=\sc{event}]
-    {\begin{array}{l} \mathit{ev} = \s{pre } \mathit{Cond} \s{ eff }\mathit{Ss} \cr \wedge {\agnt= (P,{M},\mathit{sm},\mathtt{prog}) \wedge\ \agnt^\prime =  (P,{M},\mathit{sm},\mathtt{prog})\wedge \mathit{eval(\s{pre}, L.M)} }\end{array}} 
+    {\begin{array}{l} \mathit{ev} = \s{pre } \mathit{Cond} \s{ eff }\mathit{Ss} \wedge \mathit{pc}^\prime = \mathit{pc} \rightsquigarrow Ss \cr \wedge {\agnt= (\mathit{pc},{M},\mathit{sm},\mathtt{prog}) \wedge\ \agnt^\prime =  (\mathit{pc}^\prime,{M},\mathit{sm},\mathtt{prog})\wedge \mathit{eval(\s{pre}, L.M)} }\end{array}} 
     {\langle{S},\agnt, \cdot \rangle {\rightarrow_{S}}  \langle{S},\agnt^\prime, \mathit{Ss;endEvent} \rangle }\label{e1}\\
 \hspace{-.5in}
     \inferrule*[Right=\sc{prog-to-env}]
-    {\begin{array}{l} {\agnt= (P,{M},\mathit{sm},\mathtt{prog}) \wedge\ \agnt^\prime =  (P,{M},\mathit{sm},\mathtt{env}) }\end{array}} 
+    {\begin{array}{l} {\agnt= (\mathit{pc},{M},\mathit{sm},\mathtt{prog}) \wedge\ \agnt^\prime =  (\mathit{pc}^\prime,{M},\mathit{sm},\mathtt{env}) \wedge \mathit{pc} = \mathit{endEvent} \rightsquigarrow \mathit{pc}^\prime}\end{array}} 
     {\langle{S},\agnt, \mathit{endEvent} \rangle {\rightarrow_{S}}  \langle{S},\agnt^\prime, \cdot \rangle }\label{e1}
         \end{mathpar}
 \end{mdframed}
@@ -173,11 +179,11 @@ First, we present the semantics of executing the events for all agents. A $\lgna
 
 
 %\fTBD{Agent local states and propagation over messages.}
-Now that we have the semantics for system to finish the program transition, we present the semantics for environment transitions, and how the \emph{turn} resets to \verb|prog|. Suppose the function $f:\mathit{Sens} \times Val \times \mathbb{R} \mapsto \Val$ captures the behavior of the controller, and can be used to update the sensor ports after time $\delta$. The rule \textsc{envtrans} shows the semantics of the system configuration after the rule \ref{runsys}.
+Now that we have the semantics for system to finish the program transition, we present the semantics for environment transitions, and how the \emph{turn} resets to \verb|prog|. Suppose the function $f:\mathit{Var}\times \mathit{Sens} \times Val \times \mathbb{R} \mapsto \Val$ captures the behavior of the controller, and can be used to update the sensor ports after time $\delta$. The rule \textsc{envtrans} shows the semantics of the system configuration after the rule \ref{runsys}.
 \begin{mdframed}
     	\scriptsize
     \begin{mathpar}
-    \inferrule*[Right =\sc{envtrans}]{ \begin{array} \forall i \in \UINS,\lconfig{i}^\prime.\mathit{sm} = \agnt.\mathit{f}(\lconfig{i}.\mathit{sm},\delta) \wedge\cr \forall x \in \mathit{Keys}({S}),\lconfig{i}'.{M}[x \mapsto S[x]] \wedge \lconfig{i}.\turn = \mathtt{env} \end{array}}
+    \inferrule*[Right =\sc{envtrans}]{ \begin{array} \forall i \in \UINS,\lconfig{i}^\prime.\mathit{sm} = \agnt.\mathit{f}(\lconfig{i}.M,\lconfig{i}.\mathit{sm},\delta) \wedge\cr \forall x \in \mathit{Keys}({S}),\lconfig{i}'.{M}[x \mapsto S[x]] \wedge \lconfig{i}.\turn = \mathtt{env} \end{array}}
     { (L, {S}, \tau,\mathtt{prog})\rightarrow_G ({L}^\prime, {S}, \tau + \delta,\mathtt{env}) \label{env}     }
     \\
   \hspace{-1in}  
