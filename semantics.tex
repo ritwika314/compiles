@@ -111,7 +111,7 @@ The following rules display the variable lookup and assignment semantics for $\l
 \end{mdframed}
 \subsection{Event semantics}
 
-The statement semantics are only defined when the turn of the agent was set to \texttt{prog}. We first present some rules for control flow in the program. The rules \ref{ss1} ensures that a statement are processed completely before moving on to processing the next statement, and \ref{ss2} ensures that once a statement that has been processed completely, the next statement comes up for processing. 
+The statement semantics are only defined when the turn of the agent was set to \texttt{prog}. We first present some rules for control flow in the program. The rules \textsc{stmt-seq-1} ensures that a statement are processed completely before moving on to processing the next statement, and \textsc{stmt-seq-2} ensures that once a statement that has been processed completely, the next statement comes up for processing. 
 \begin{mdframed}
 	\scriptsize
 \begin{mathpar}
@@ -157,28 +157,29 @@ First, we present the semantics of executing the events for all agents. A $\lgna
 \begin{mdframed}
 \scriptsize
 \begin{mathpar}
-\hspace{0.2in}\inferrule*[Right=\sc{SR},Left={$\forall i\in\UINS$}]
+\hspace{0.2in}\inferrule*[Right=\sc{run},Left={$\forall i\in\UINS$}]
 { (S,\lconfig{i},\lconfig{i}.p)\stmtrule(S^\prime,\lconfig{i}^\prime,p^\prime)\stmtrule\ldots\stmtrule (S^{\prime\prime},\lconfig{i}^{\prime\prime},\ \cdot\ )\wedge \lconfig{i}^{\prime\prime}.\turn=\mathtt{env}}
 {({L}, S, \tau,  \mathtt{prog})\rightarrow_G ({L^{\prime\prime}}, S^{\prime\prime}, \tau, \mathtt{env})}\label{runsys}
 \end{mathpar}
 \end{mdframed}
 
 
-\fTBD{FIXING Rule REFERENCES}The rule \ref{runsys} expresses that starting from a global configuration $c = ({L}, S, \tau, \mathtt{env})$, each agent $i$ with local configuration $\lconfig{i}$ processes its program $p$ using a sequence of $\stmtrule$ rewrites, until its event is executed, and its $\turn$ set to $\mathtt{env}$ at the end of the event execution. Overall, the system goes from a configuration $c$ to $c^{\prime\prime}= ({L^{\prime\prime}}, S^{\prime\prime}, \tau, \mathtt{env})$, with possibly different agent configurations and global context depending on whether any of the events executed resulted in writes to shared variables.
+\fTBD{FIXING Rule REFERENCES}The rule \textsc{run}  expresses that starting from a global configuration $c = ({L}, S, \tau, \mathtt{env})$, each agent $i$ with local configuration $\lconfig{i}$ processes its program $p$ using a sequence of $\stmtrule$ rewrites, until its event is executed, and its $\turn$ set to $\mathtt{env}$ at the end of the event execution. Overall, the system goes from a configuration $c$ to $c^{\prime\prime}= ({L^{\prime\prime}}, S^{\prime\prime}, \tau, \mathtt{env})$, with possibly different agent configurations and global context depending on whether any of the events executed resulted in writes to shared variables.
 
 
 
 %\fTBD{Agent local states and propagation over messages.}
-Now that we have the semantics for system to finish the program transition, we present the semantics for environment transitions, and how the \emph{turn} resets to \verb|prog|. Suppose the function $f:\mathit{Sens} \times Val \times \mathbb{R} \mapsto \Val$ captures the behavior of the controller, and can be used to update the sensor ports after time $\delta$. The rule \ref{env} shows the semantics of the system configuration after the rule \ref{runsys}.
+Now that we have the semantics for system to finish the program transition, we present the semantics for environment transitions, and how the \emph{turn} resets to \verb|prog|. Suppose the function $f:\mathit{Sens} \times Val \times \mathbb{R} \mapsto \Val$ captures the behavior of the controller, and can be used to update the sensor ports after time $\delta$. The rule \textsc{envtrans} shows the semantics of the system configuration after the rule \ref{runsys}.
 \begin{mdframed}
     	\scriptsize
     \begin{mathpar}
-    \inferrule*[Right =\sc{envtrans}]{ \forall i \in \UINS,\lconfig{i}^\prime.\mathit{sm} = \agnt.\mathit{f}(\lconfig{i}.\mathit{sm},\delta) \wedge\ \forall x \in \mathit{Keys}({S}),\lconfig{i}'.{M}[x \mapsto S[x]] \wedge \lconfig{i}.\turn = \mathtt{env}}
+    \inferrule*[Right =\sc{envtrans}]{ \begin{array} \forall i \in \UINS,\lconfig{i}^\prime.\mathit{sm} = \agnt.\mathit{f}(\lconfig{i}.\mathit{sm},\delta) \wedge\cr \forall x \in \mathit{Keys}({S}),\lconfig{i}'.{M}[x \mapsto S[x]] \wedge \lconfig{i}.\turn = \mathtt{env} \end{array}}
     { (L, {S}, \tau,\mathtt{prog})\rightarrow_G ({L}^\prime, {S}, \tau + \delta,\mathtt{env}) \label{env}     }
-    
+    \\
+  \hspace{-1in}  
  \inferrule*[Right=\sc{agent-env-to-prog}]
      {\begin{array}{l} \forall i \in \UINS , \lconfig{i}.\turn = \mathtt{env} \wedge \lconfig{i}^\prime.\turn = \mathtt{prog} \end{array}}
-     {  ({L}, S, \tau, \mathtt{env})\rightarrow_G ({L^\prime}, S, \tau, \mathtt{env}) \label{agntenvturn}     }\\
+     {  ({L}, S, \tau, \mathtt{env})\rightarrow_G ({L^\prime}, S, \tau, \mathtt{env}) \label{agntenvturn}   \and \qquad \qquad }\\
     
     
     
@@ -189,10 +190,10 @@ Now that we have the semantics for system to finish the program transition, we p
 \end{mathpar}
     \end{mdframed}
 
-Rule \ref{agntenvturn} is the semantic rule for setting the $\mathit{turn}$ of each agent back to $\mathtt{prog}$ from $\mathtt{env}$ after the environment transition has been completed. The semantics synchronizes the program transitions of each agent, ensuring that the event executions for each happen every $\delta$ time.
+Rule \textsc{agnt-env-to-prog} is the semantic rule for setting the $\mathit{turn}$ of each agent back to $\mathtt{prog}$ from $\mathtt{env}$ after the environment transition has been completed. The semantics synchronizes the program transitions of each agent, ensuring that the event executions for each happen every $\delta$ time.
     
     
-Rule \ref{env} captures the fact that the global context $S$ is copied into local context of each agent $i \ (\lconfig{i}.M)$, thus ensuring that all agents have consistent shared variable values before the next program transition. After that, rule \ref{envturn} changes the turn of each agent back to program. In an actual execution, the controller  would run the program on hardware, whose sensor ports evolve for $\delta$ time between program transitions. 
+Rule \textsc{envtrans} captures the fact that the global context $S$ is copied into local context of each agent $i \ (\lconfig{i}.M)$, thus ensuring that all agents have consistent shared variable values before the next program transition. After that, rule \textsc{env-to-prog} changes the turn of each agent back to program. In an actual execution, the controller  would run the program on hardware, whose sensor ports evolve for $\delta$ time between program transitions. 
 
 \fTBD{Relate this to assumptions}
 \subsection{Implementation in K}
