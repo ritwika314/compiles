@@ -87,9 +87,9 @@ We provide the semantics for some of the syntactic productions in $\lgname$
 
 \subsubsection{Program variable/program statement updates}
 
-The following rules display the variable lookup and assignment semantics for $\lgname$. The variable lookup rule \textsc{Var-Lookup} states that every agent has a local copy of every variable in the program, and if an agent is evaluating an expression involving variable $x$, it will replace $x$ with the current value $v$ from the local context $M$. $M[x\mapsto v]$ here refers to the fact that in the map $M$, the key $x$ maps to the value $v$. 
+The following rules displays the variable  assignment semantics for $\lgname$.  
 
-\textsc{Lvar-assign} describes the semantics of a local variable assignment. $x\notin \mathit{Keys}(S) \wedge x \in \mathit{Keys(L.M)}$ represents the fact that there is no mapping from $x$ in the global context $S$, but there is one in the local context $L.M$. The syntactic production $\mathit{pc}^\prime$ is the one following the statement $x = c$ from the production $\mathit{pc}$. 
+\textsc{Lvar-assign} describes the semantics of a local variable assignment. $x\notin \mathit{Keys}(S) \wedge x \in \mathit{Keys(L.M)}$ represents the fact that there is no mapping from $x$ in the global context $S$, but there is one in the local context $L.M$. The syntactic production $\mathit{pc}^\prime$ is the one following the statement $x = c$ from the production $\mathit{pc}$. $M[x\mapsto c]$ here refers to the fact that in the map $M$, the key $x$ maps to the value $c$. 
 
 \begin{mdframed}
 \scriptsize
