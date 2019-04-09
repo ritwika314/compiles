@@ -49,6 +49,7 @@ A {\em configuration\/} of agent $\mathit{i}$, $i \in \UINS$, running $\lgname$ 
  \item $\turn:\{\mathtt{prog,env}\}$ is a bookkeeping variable; $\turn = \mathtt{env}$ indicates that agent $i$ has finished executing its program for the current round.  
 \end{itemize}
 The components of an agent configuration in the tuple $L_i$ are accessed using the usual dot ($\cdot$) notation. That is, $L_i.M$ refers to the local context $M$ in agent configuration $L_i$, for the agent with pid $i$ in the system.
+\sayan{May be use the Task application here. Does $L_i.M(p)$ make sense? Maybe there are better examples. It would be good to explain ``syntax production'' with the example.}
 
 \subsection{System configurations}
 
