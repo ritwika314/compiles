@@ -21,8 +21,8 @@ Compared to $\delta$, the time taken by the agent to execute the computational s
  In the rest of this section, we present the formal semantics of the $\lgname$ programming language. The complete formalization of the semantics in \K is available from~\cite{} \sayan{webpage/github}. The syntax of the language is defined using a BNF grammar, provided in full for the interested reader in \rg{the appendix}.
  
 \subsection{Program (cyber) variables and physical variables}
-
-We first discuss the types of variables used by the $\lgname$ programs. Throughout this section we refer to the $\mathit{Task}$ application for discussion.
+\label{sec:variables}
+We first introduce the types of variables used by the $\lgname$ programs. Throughout, we refer to the $\mathit{Task}$ application as an exmaple.
 
 \paragraph{Program variables}
 %$\lgname$ provides several types of access for program variables. 
@@ -30,15 +30,26 @@ An agent's $\lgname$ program can access three types of variables.
 %
 \begin{itemize}
 	\item {\em Local program variables\/} record the state of the program. For example, the variable $p$ of type $\mathit{path}$ (Line~\ref{pathvar}) stores a path for the agent. 
-\item {\em Distributed shared variables\/} are used for communication across agents.  For example, {\bf allwrite} $\mathit{taskList}$ (Line~\ref{awvar}) is a multi-writer list of tasks which can be written and read by any participating agent. Shared variables can also be single-writer multi-reader ({\bf allread}). 
-\item {\em Port variables\/} are used to read from and write to sensor and actuator ports of the agent. For example, the $\mathit{Motion}$ controller for the $\mathit{Task}$ app  drives the agent  through a route, as directed by value set at the actuator port $\mathit{Motion.route}$. The sensor port $\mathit{Motion.psn}$ gives the position of the agent in a fixed coordinate system and $\mathit{Motion.done}$ indicates  whether the $\mathit{Motion}$ controller is active or inactive.
+\item {\em Distributed shared variables\/} are used for communication across agents.  For example, {\bf allwrite} $\mathit{taskList}$ (Line~\ref{awvar}) is a multi-writer list of tasks which can be written-to and read-from by all participating agents. Shared variables can also be single-writer multi-reader ({\bf allread}). 
+\item {\em Port variables\/} are used to read from and write to sensor and actuator ports of the agent. For example, the $\mathit{Motion}$ controller for the $\mathit{Task}$ app  drives the agent  through a route, as directed by value set at the actuator port $\mathit{Motion.route}$. The sensor port $\mathit{Motion.psn}$ gives the position of the agent (in a fixed coordinate system) and $\mathit{Motion.done}$ indicates  whether the $\mathit{Motion}$ controller is active or inactive.
 \end{itemize}
 The valuation of these variables define the configuration for an agent. 
-
+%Also, should 
 The agent program also has access to two system-level constant parameters (a) a unique integer identifier $\myuin$ for itself and (b) a list $\UINS$ of identifiers of all participating agents\footnote{Our current system implementation assumes that the set of possible participating agents is known. This assumption will be relaxed in the future.}. 
 
+\paragraph{Agent configurations}
+The  syntax and grammar for $\lgname$ is given in the Appendix. 
+Let us fix $P$ to be a syntactically correct agent program. Let $\Var$ be the set of program and shared variables in $P$. Let $\mathit{Sens}$ be the set of sensor ports of the controller used in $P$. Let $\mathit{Val}$ be the set possible valuations that these variables can take. 
+%Given that $\mathbb{P}$ is the set of all the productions in the $\lgname$ grammar,  being used in $P$, 
+A {\em configuration\/} of agent $\mathit{i}$, $i \in \UINS$, running $\lgname$ program $P$ is a tuple $ L_i = (\mathit{pc}, {M},\mathit{sm},\turn)$, where
+\begin{itemize}
+ \item $\mathit{pc}$ is a syntactic production that generates $P$. 
+\item ${M} : \Var \mapsto \Val$ is a {\em local context\/} mapping each variable to a corresponding valuation.
+ \item $\mathit{sm} : \mathit{Sens} \mapsto \Val$ is a mapping of each sensor port to a valuation.
+ \item $\turn:\{\mathtt{prog,env}\}$ is a bookkeeping variable; $\turn = \mathtt{env}$ indicates that agent $i$ has finished executing its program for the current round.  
+\end{itemize}
+The components of an agent configuration in the tuple $L_i$ are accessed using the usual dot ($\cdot$) notation. That is, $L_i.M$ refers to the local context $M$ in agent configuration $L_i$, for the agent with pid $i$ in the system.
 
- 
 \subsection{System configurations}
 
 We define the semantics of the overall system in terms of a nondeterministic, hybrid automaton~\cite{TIOAmon}. The state of the automaton is defined in terms of {\em configurations\/} consisting of the state components of the individual agents and the physical environment. 
@@ -55,15 +66,7 @@ $\gconfig_\delta = (\lset,{S},\tau,\turn)$, where
 %Bookkeeping variables are invisible in the language syntax, and only used in the semantics. We now define the \emph{agent configurations}, which are used to specify the semantics of each agent. \newline
 
 \sayan{Stopping here. Several things undefined at this point. Koord grammar. Why is agent configuration $l$ and not $L_i$ as defined above?}
-Given that $\mathbb{P}$ is the set of all the productions in the $\lgname$ grammar, $\Var$ is the set of variables, $Val$ be is set of values that an expression in the $\lgname$ can evaluate to, $\Cfield$ is the set of sensor and actuator ports of the controller being used in $P$, the configuration of an agent with $\mathit{i}$ is a tuple $ L_i = (P, {M},\cp,\turn)$, where
-\begin{itemize}
- \item $p \in \mathbb{P}$ is the current syntactic production.
-\item ${M} : \Var \mapsto \Val$ is its {\em local context\/} mapping all variables in $P$ to agent local values.
- \item $\mathit{sm} : \mathit{Sens} \mapsto \Val$ is the mapping of sensor variables to values.
- \item $\turn \in \{\mathtt{prog,env}\}$ is a bookkeeping variable indicating whether the specific agent should be executing a program or environment transition. 
-\end{itemize}
-The components of an agent configuration in the tuple $l$ are accessed
-using the dot (``$.$'') notation, for example, $L_i.M$ refers to the local context $M$ of the agent with pid $i$ in the system.
+
 \subsection{Update rules}
 We provide the semantics for some of the syntactic productions in $\lgname$, which will help us discuss the overall semantics of program and environment transitions. Program transitions are mainly comprised of execution of statements. The statement semantics are given by update rules of the type
 $$\stmtrule\ \subseteq (\pws \times \pwl\times \mathit{Stmts} \cup \{\cdot\}) \times \mathscr{P}(\pws\times \pwl \times \mathit{Stmts} \cup \{\cdot\}),$$
