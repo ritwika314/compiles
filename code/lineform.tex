@@ -1,0 +1,22 @@
+
+init {
+ switch = 1;
+ temp = [40,55];
+}
+
+Update() {
+pre (true)
+eff {
+   if (temp > 70 ){
+     if (temp < 75 ){
+     switch = -1; 
+    }
+     else {
+     switch = -2;
+    }
+  }
+   else {
+     switch = 1;
+   }
+}  
+}
