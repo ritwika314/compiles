@@ -8,13 +8,16 @@ The interaction model of an agent executing a $\lgname$ program is shown in \ref
 $\lgname$ design comprises of a \emph{turn}-based alternating semantics of discrete and dynamic behavior of each agent in the distributed system. The agents can be viewed as performing \emph{rounds} of execution, where each round consists of a \begin{inparaenum} \item \emph{A program transition} which is a discrete computational step, and \item \emph{An environment transition} which is the dynamic behavior of the agents specified by the controllers \end{inparaenum}. In our semantics, we represent whether it is the turn of a program transition or an environment transition to be executed on each agent by a $\mathit{turn}$ variable.  
 
 In a program transition in a round, each agent first nondeterministically chooses an \emph{enabled} event, or an event whose precondition evaluates to \verb|True|. It then executes the statements in the effect of that event. %This may involve reading sensor ports, performing computations using local and shared variables, and writing to actuator ports. 
-Then, the agent performs the environment transition in the round, during which it interacts with the physical environment and behaves as dictated by the actuator ports on the controller for $\delta$ amount of time.  \footnote{ $\delta>0$ is a constant \emph{sampling period} parameter. The sampling parameter can be provided by the user, and each controller that $\lgname$ supports has a default sampling parameter which has been set based on the experiments using the controller. See \refsect{experiments} for more details.} %During this time, the program variables and the actuator port values remain constant, the state of the environment (controller and plant) and the values of the sensor ports change according to the dynamics of the environment.
+Then, the agent performs the environment transition in the round, during which it interacts with the physical environment and behaves as dictated by the actuator ports on the controller for $\delta$ amount of time.  \footnote{ $\delta>0$ is a constant \emph{sampling period} parameter. The sampling parameter can be provided by the user, and each controller that $\lgname$ supports has a default sampling parameter which has been set based on the experiments using the controller. See \refsect{experiments} for more details.}  %During this time, the program variables and the actuator port values remain constant, the state of the environment (controller and plant) and the values of the sensor ports change according to the dynamics of the environment.
 
-\sayan{Moved from later.
+\sayan{
 The agent program specifies the controller which determines the dynamic behavior of each agent and its interaction with the environment. \reffig{arch} shows how  each controller has sensor ports and actuator ports which the agent programs use to interact with the controller and consequently, with the physical environment. The agent program can read from the sensor ports read and write to the actuator ports during the program transition. The sensor ports are updated during the environment transition according to the controller dynamics. 
 }
 
-Compared to $\delta$, the time taken by the agent to execute the computational step is negligible, and in our formalization we treat it as zero logical time. Because each program transition takes zero logical time, we can assume all the agents start and finish executing their program transitions at the same time, and their environment transitions at the same time respectively. As our design choices impose this synchronicity on all agent executions, the system can also be seen to be executing program and environment transition by \emph{turns}, where all the agents execute the environment transitions in a round only after all of them have finished executing the program transitions in that round.  
+Compared to $\delta$, the time taken by the agent to execute the computational step is negligible, and in our formalization we treat it as zero logical time. Because each program transition takes zero logical time, we can assume all the agents start and finish executing their program transitions at the same time, and their environment transitions at the same time respectively. As our design choices impose this synchronicity on all agent executions, the system can also be seen to be executing program and environment transitions by \emph{turns}, where all the agents execute the environment transitions in a round only after all of them have finished executing the program transitions in that round. Intuitively, the agents in the system execute the statements in their events as part of the program transition of the system in a round, and then the system makes the environment transition as shown below. 
+$$
+\underbrace{C_1\rightarrow_{stmt} C_2\rightarrow_\mathit{stmt}\ldots \rightarrow_{stmt}C_n}_{\mbox{program transition}}\rightarrow_\mathit{env} C^\prime_n
+$$
 
 %Collectively, the (distributed) \emph{system} of all the agents executing this program itself can be captured by an alternating semantics of discrete computational and dynamic behavior.
 
@@ -30,7 +33,8 @@ An agent's $\lgname$ program can access three types of variables.
 %
 \begin{itemize}
 	\item {\em Local program variables\/} record the state of the program. For example, the variable $p$ of type $\mathit{path}$ (Line~\ref{pathvar}) stores a path for the agent. 
-\item {\em Distributed shared variables\/} are used for communication across agents.  For example, {\bf allwrite} $\mathit{taskList}$ (Line~\ref{awvar}) is a multi-writer list of tasks which can be written-to and read-from by all participating agents. Shared variables can also be single-writer multi-reader ({\bf allread}). 
+\item {\em Distributed shared variables\/} are used for communication across agents.  For example, {\bf allwrite} $\mathit{taskList}$ (Line~\ref{awvar}) is a multi-writer list of tasks which can be written-to and read-from by all participating agents. Shared variables can also be single-writer multi-reader ({\bf allread}). Each agent maintains a copy of the all shared variables as part of their local state information. 
+
 \item {\em Port variables\/} are used to read from and write to sensor and actuator ports of the agent. For example, the $\mathit{Motion}$ controller for the $\mathit{Task}$ app  drives the agent  through a route, as directed by value set at the actuator port $\mathit{Motion.route}$. The sensor port $\mathit{Motion.psn}$ gives the position of the agent (in a fixed coordinate system) and $\mathit{Motion.done}$ indicates  whether the $\mathit{Motion}$ controller is active or inactive.
 \end{itemize}
 The valuation of these variables define the configuration for an agent. 
@@ -53,7 +57,7 @@ $\pwl$ denotes  the set of all possible agent configurations. The components of 
 %
 Consider the Task application in \reffig{taskapp}. The local value of the variable $p$ in line\ref{vl1} for agent with $\myuin$ 0 is represented as $L_0.M(p)$. 
 
-\sayan{May be use the Task application here. Does $L_i.M(p)$ make sense? Maybe there are better examples. It would be good to explain ``syntax production'' with the example.}
+%\sayan{May be use the Task application here. Does $L_i.M(p)$ make sense? Maybe there are better examples. It would be good to explain ``syntax production'' with the example.}
 
 
 \subsection{System configurations}
@@ -75,11 +79,12 @@ is a tuple $\gconfig = (\lset,{S},\tau,\turn)$, where
 
 
 \paragraph{Update rules}
-The agent (and consequently, the global) configurations change according {\em update rules\/}. The  update rules are rewriting rules that model the changes in the agent configurations due to execution of agent programs as well as environment transitions. Agent programs consist of events and events consist of sequence of $\lgname$ statements. Thus, in describing the transition rules, we start with statement level transitions. 
+The agent (and consequently, the global) configurations change according to {\em update rules\/}. The  update rules are rewriting rules that model the changes in the agent configurations due to execution of agent programs as well as environment transitions. Agent programs consist of events and events consist of sequence of $\lgname$ statements. Thus, in describing the transition rules, we start with statement level transitions. 
 
 %Bookkeeping variables are invisible in the language syntax, and only used in the semantics. We now define the \emph{agent configurations}, which are used to specify the semantics of each agent. \newline
 
 \subsection{Statement semantics}
+\label{sec:stmt}
 Execution of a statement in a $\lgname$ program running on an agent, leads to the agent's configuration being updated. The statement-level updates are relations of the form: 
 $$\stmtrule\ \subseteq (\pws \times \pwl\times \mathit{Stmts} \cup \{\cdot\}) \times \mathscr{P}(\pws\times \pwl \times \mathit{Stmts} \cup \{\cdot\}),$$
 %\fTBD{$\pwstmt$ is very clunky looking, need to change it perhaps?}
@@ -87,81 +92,82 @@ where $\mathit{Stmts}$ refers to the set of all possible statements allowed by $
 
 
 \subsubsection{Program variable updates}
-\newline
-Rule \textsc{Lvar-assign} describes the semantics of how an assignment for a local variable $x$ updates the agent configuration $L$ to $L'$ by modifying $L.M$. In more detail, $x\notin \mathit{Keys}(S) \wedge x \in \mathit{Keys(L.M)}$ represents the fact that there is no mapping from $x$ in the global context $S$, but there is one in the local context $L.M$. The notation $\mathit{pc} = x = c \rightsquigarrow \mathit{pc}^\prime$ represents that syntactic production $\mathit{pc}^\prime$ is the one following the statement $x = c$ from the production $\mathit{pc}$. $M[x\mapsto v]$ refers to the fact that in the map $M$, the key $x$ maps to the value $v$. 
+Rule \textsc{Lvar-assign} describes the semantics of how an assignment for a local variable $x$ updates the agent configuration $L$ to $L'$ by modifying $M$. Specifically, $x\notin \mathit{Keys}(S) \wedge x \in \mathit{Keys(M)}$ represents the fact that there is no mapping from $x$ in the global context $S$, but there is one in the local context $M$. The notation $\mathit{pc} = x = c \rightsquigarrow \mathit{pc}^\prime$ represents that syntactic production $\mathit{pc}^\prime$ is the one following the statement $x = c$ from the production $\mathit{pc}$. $M[x\mapsto v]$ refers to the fact that in the map $M$, the key $x$ maps to the value $v$. 
 
 \begin{mdframed}
 \scriptsize
 \begin{mathpar}
  \inferrule*[Right=\sc{lvar-assign}]
     {\begin{array}{l}
-    x \notin \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\agnt .{M}) \wedge \mathit{pc} = (x = c) \rightsquigarrow \mathit{pc}^\prime \cr \wedge {\agnt = (\mathit{pc}, {M},\mathit{sm},\mathtt{prog})\ \wedge\ \agnt^\prime = (\mathit{pc^\prime},{M}[x\mapsto c],\mathit{sm},  \mathtt{prog})
+    x \notin \mathit{Keys}({S}) \wedge x \in \mathit{Keys}({M}) \wedge \mathit{pc} = (x = c) \rightsquigarrow \mathit{pc}^\prime \cr \wedge {\agnt = (\mathit{pc}, {M},\mathit{sm},\mathtt{prog})\ \wedge\ \agnt^\prime = (\mathit{pc^\prime},{M}[x\mapsto c],\mathit{sm},  \mathtt{prog})
     }\end{array} }
-    {\langle{S},\agnt, x = c \rangle {\rightarrow_{S}}  \langle{S},\agnt^\prime,\cdot\rangle}\label{va2} \and \qquad\qquad \\
+    {\langle{S},\agnt, x = c \rangle {\stmtrule}  \langle{S},\agnt^\prime,\cdot\rangle}\label{va2} \and \qquad\qquad \\
     \end{mathpar}
 \end{mdframed}
 
 \noindent
-\sayan{Why not L.pc but L.M ? The $\rightarrow_S$ can be confusing, should we make is $\rightarrow_{Stmt}?$} 
+%\sayan{Why not L.pc but L.M ? The $\rightarrow_S$ can be confusing, should we make is $\rightarrow_{Stmt}?$} 
 \subsubsection{Shared variable updates}
-Similarly, rule \textsc{Svar-assign} describes the semantics of assignment to a shared variable $x$ updates the agent configuration $L$ to $L'$ by modifying $L.M$
+Similar to the rule \textsc{lvar-assign}, rule \textsc{Svar-assign} describes how the semantics of assignment to a shared variable $x$ updates the current configuration. 
 
- The set of all copies of the local copies shared variables can be seen as the \emph{distributed shared memory}. The correctness of a program relies on consistent values of the agents' local values of shared variables. When an agent writes to a variable, it updates its local copy and our implementation of the $\lgname$ framework uses message passing to inform the other agents of the change. 
+When an agent writes to a shared variable, it updates both its local context $M$, as well as the global context $S$. Our implementation of the $\lgname$ runtime system uses message passing to inform the other agents of the change. 
 % 
 \begin{mdframed}
 \scriptsize
 \begin{mathpar}
 \hspace{-.5in}\inferrule*[Right=\sc{svar-assign}]
     {\begin{array}{l}
-    x \in \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\agnt .{M}) 
-    \wedge\ \agnt = (\mathit{pc}, {M},\mathit{sm},\mathtt{prog}) \cr
-    \wedge {S}^\prime = {S}[x \mapsto v]
+    x \in \mathit{Keys}({S})
+    \wedge\ \agnt = (\mathit{pc}, {M},\mathit{sm},\mathtt{prog}) 
+    \wedge {S}^\prime = {S}[x \mapsto v]\cr
     \wedge\ \agnt^\prime = (\mathit{pc^\prime},{M}[x\mapsto v],\mathit{sm}, \mathtt{prog})\wedge \mathit{pc} = (x = c) \rightsquigarrow \mathit{pc}^\prime
     \end{array}
     }
-    {\langle{S},\agnt, x = v \rangle {\rightarrow_{S}}  \langle{S}^\prime,\agnt^\prime,\cdot\rangle}\label{va1} \\
+    {\langle{S},\agnt, x = v \rangle {\stmtrule}  \langle{S}^\prime,\agnt^\prime,\cdot\rangle}\label{va1} \\
     \end{mathpar}
 \end{mdframed}
 \subsection{Event semantics}
 
-The statement semantics are only defined when the turn of the agent was set to \texttt{prog}. We first present some rules for control flow in the program. The rules \textsc{stmt-seq-1} ensures that a statement are processed completely before moving on to processing the next statement, and \textsc{stmt-seq-2} ensures that once a statement that has been processed completely, the next statement comes up for processing. 
+The statement processing rules in \refsect{stmt} are applicable only when the turn of the agent is set to \texttt{prog}. As a result, statements in a program can only be executed during the program transition. We first present some rules for control flow in the program. The rule \textsc{stmt-seq-1} ensures that a statement are processed completely before moving on to processing the next statement, and \textsc{stmt-seq-2} ensures that once a statement that has been processed completely, the next statement comes up for processing. 
+
 \begin{mdframed}
 	\scriptsize
 \begin{mathpar}
 \inferrule*[Right=\sc{stmt-seq-1}]
-    {\langle{S},\agnt, St_1 \rangle {\rightarrow_{S}}  \langle{S}^\prime,\agnt^\prime, St_1^\prime\rangle}
-    {\langle{S},\agnt, St_1\ St_2 \rangle {\rightarrow_{S}}  \langle{S}^\prime,\agnt^\prime, St_1^\prime\ St_2 \rangle}\label{ss1} \and \qquad \\
+    {\langle{S},\agnt, St_1 \rangle {\stmtrule}  \langle{S}^\prime,\agnt^\prime, St_1^\prime\rangle}
+    {\langle{S},\agnt, St_1\ St_2 \rangle {\stmtrule}  \langle{S}^\prime,\agnt^\prime, St_1^\prime\ St_2 \rangle}\label{ss1} \and \qquad \\
 \inferrule*[Right=\sc{stmt-seq-2}]
    {\;}
-    {\langle{S},\agnt, \cdot \ St_2 \rangle {\rightarrow_{S}}  \langle{S},\agnt, St_2 \rangle}\label{ss2}\and \qquad \qquad \qquad \qquad \\
+    {\langle{S},\agnt, \cdot \ St_2 \rangle {\stmtrule}  \langle{S},\agnt, St_2 \rangle}\label{ss2}\and \qquad \qquad \qquad \qquad \\
+    \hspace{-.5in}
+\inferrule*[Right=\sc{event}]
+    {\begin{array}{l} \mathit{ev} = \s{pre } \mathit{Cond} \s{ eff }\mathit{Ss} \wedge \mathit{pc}^\prime = \mathit{pc} \rightsquigarrow Ss \cr \wedge {\agnt= (\mathit{pc},{M},\mathit{sm},\mathtt{prog}) \wedge\ \agnt^\prime =  (\mathit{pc}^\prime,{M},\mathit{sm},\mathtt{prog})\wedge \mathit{eval(\s{pre}, L.M)} }\end{array}} 
+    {\langle{S},\agnt, \cdot \rangle {\stmtrule}  \langle{S},\agnt^\prime, \mathit{Ss;endEvent} \rangle }\label{e1}
    
 \end{mathpar}
 \end{mdframed}
 
 
-Given the control flow statements, the following rules capture two facts. Rule \textsc{event} states that only the effect of an an enabled event may be executed, and a marker(statement) \emph{endEvent} is added after the effect of that event to indicate that the event has executed. Rule \textsc{prog-to-env} states that
-after the event is executed, the $\turn$ of the agent is set to $\mathtt{env}$ indicating that after this execution, an environment transition occurs. We will demonstrate in \refsect{experiments} that the system can display non deterministic behaviors arising from different agents executing their events in different orders.
+Given the control flow statements, rule \textsc{event} states that only the effect of an an enabled event may be executed. The predicate $\mathit{eval}(\mathit{pre},M)$ evaluates to $\verb|True|$ when the precondition $\mathit{pre}$ of an event evaluates to $\mathit{True}$ in the local context $M$ of a given state. A marker(statement) \emph{endEvent} is added after the effect of that event to indicate that the event has executed. 
+
 \begin{mdframed}
 \scriptsize
 \begin{mathpar}
 \hspace{-.5in}
-\inferrule*[Right=\sc{event}]
-    {\begin{array}{l} \mathit{ev} = \s{pre } \mathit{Cond} \s{ eff }\mathit{Ss} \wedge \mathit{pc}^\prime = \mathit{pc} \rightsquigarrow Ss \cr \wedge {\agnt= (\mathit{pc},{M},\mathit{sm},\mathtt{prog}) \wedge\ \agnt^\prime =  (\mathit{pc}^\prime,{M},\mathit{sm},\mathtt{prog})\wedge \mathit{eval(\s{pre}, L.M)} }\end{array}} 
-    {\langle{S},\agnt, \cdot \rangle {\rightarrow_{S}}  \langle{S},\agnt^\prime, \mathit{Ss;endEvent} \rangle }\label{e1}\\
-\hspace{-.5in}
     \inferrule*[Right=\sc{prog-to-env}]
-    {\begin{array}{l} {\agnt= (\mathit{pc},{M},\mathit{sm},\mathtt{prog}) \wedge\ \agnt^\prime =  (\mathit{pc}^\prime,{M},\mathit{sm},\mathtt{env}) \wedge \mathit{pc} = \mathit{endEvent} \rightsquigarrow \mathit{pc}^\prime}\end{array}} 
-    {\langle{S},\agnt, \mathit{endEvent} \rangle {\rightarrow_{S}}  \langle{S},\agnt^\prime, \cdot \rangle }\label{e1}
+    {\begin{array}{l} {\agnt= (\mathit{pc},{M},\mathit{sm},\mathtt{prog}) \wedge\cr \agnt^\prime =  (\mathit{pc}^\prime,{M},\mathit{sm},\mathtt{env}) \wedge \mathit{pc} = \mathit{endEvent} \rightsquigarrow \mathit{pc}^\prime}\end{array}} 
+    {\langle{S},\agnt, \mathit{endEvent} \rangle {\stmtrule}  \langle{S},\agnt^\prime, \cdot \rangle }\and \qquad \qquad \label{e1}
         \end{mathpar}
 \end{mdframed}
 
-
-
+Rule \textsc{prog-to-env} states that
+after the event is executed, the $\turn$ of the agent is set to $\mathtt{env}$ indicating that after this execution, an environment transition occurs. The semantics doesn't specify an order of execution for the program transition (in other words, execution of an enabled event) by the agents in the system. We will demonstrate in \refsect{experiments} that the system can display non deterministic behaviors which arises from the agents in a system executing their events in different orders.
 
 \subsection{Alternating synchronous cyber-physical semantics} 
 
 
-\noindent The advancement of time and environment transitions govern the changes in the system configuration. The rewrite rule is a mapping from an initial system configuration to a set of configurations. It has the type
+\noindent The advancement of time and environment transitions govern the changes in the system configuration. The system level program transition rewrite rule is a mapping from an initial system configuration to a set of configurations. It has the type
+
 $$\rightarrow_G\ \subseteq (\mathbb{L}\times \pws \times \mathbb{R}^+\times \{\mathtt{prog,env}\}) \times \mathscr{P}(\mathbb{L}\times\pws \times \mathbb{R}^+ \times \{\mathtt{prog,env}\}) $$
 
 First, we present the semantics of executing the events for all agents. A $\lgname$ program can be seen as sequences of $\stmtrule$ rules, which determine event executions followed by an environment transition. To express this, we define a rule that shows the the changes in the configuration of the overall system due to all the agents executing their program just before an environment transition is applicable.  
@@ -186,13 +192,13 @@ Now that we have the semantics for system to finish the program transition, we p
 \begin{mdframed}
     	\scriptsize
     \begin{mathpar}
-    \inferrule*[Right =\sc{envtrans}]{ \begin{array} \forall i \in \UINS,\lconfig{i}^\prime.\mathit{sm} = \agnt.\mathit{f}(\lconfig{i}.M,\lconfig{i}.\mathit{sm},\delta) \wedge\cr \forall x \in \mathit{Keys}({S}),\lconfig{i}'.{M}[x \mapsto S[x]] \wedge \lconfig{i}.\turn = \mathtt{env} \end{array}}
+    \inferrule*[Right =\sc{envtrans}]{ \begin{array} \forall i \in \UINS,\lconfig{i}^\prime.\mathit{sm} = \mathit{f}(\lconfig{i}.M,\lconfig{i}.\mathit{sm},\delta) \wedge\cr \forall x \in \mathit{Keys}({S}),\lconfig{i}'.{M}[x \mapsto S[x]] \wedge \lconfig{i}.\turn = \mathtt{env} \end{array}}
     { (L, {S}, \tau,\mathtt{prog})\rightarrow_G ({L}^\prime, {S}, \tau + \delta,\mathtt{env}) \label{env}     }
     \\
-  \hspace{-1in}  
+  \hspace{-2in}  
  \inferrule*[Right=\sc{agent-env-to-prog}]
      {\begin{array}{l} \forall i \in \UINS , \lconfig{i}.\turn = \mathtt{env} \wedge \lconfig{i}^\prime.\turn = \mathtt{prog} \end{array}}
-     {  ({L}, S, \tau, \mathtt{env})\rightarrow_G ({L^\prime}, S, \tau, \mathtt{env}) \label{agntenvturn}   \and \qquad \qquad }\\
+     {  ({L}, S, \tau, \mathtt{env})\rightarrow_G ({L^\prime}, S, \tau, \mathtt{env}) \label{agntenvturn}    }\and \qquad \qquad \\
     
     
     
@@ -203,7 +209,7 @@ Now that we have the semantics for system to finish the program transition, we p
 \end{mathpar}
     \end{mdframed}
 
-Rule \textsc{agnt-env-to-prog} is the semantic rule for setting the $\mathit{turn}$ of each agent back to $\mathtt{prog}$ from $\mathtt{env}$ after the environment transition has been completed. The semantics synchronizes the program transitions of each agent, ensuring that the event executions for each happen every $\delta$ time.
+Rule \textsc{agnt-env-to-prog} is the semantic rule for setting the $\mathit{turn}$ of each agent back to $\mathtt{prog}$ from $\mathtt{env}$ after the environment transition has been completed. The semantics synchronizes the program transitions of each agent, ensuring that an event execution for each agent happens every $\delta$ time.
     
     
 Rule \textsc{envtrans} captures the fact that the global context $S$ is copied into local context of each agent $i \ (\lconfig{i}.M)$, thus ensuring that all agents have consistent shared variable values before the next program transition. After that, rule \textsc{env-to-prog} changes the turn of each agent back to program. In an actual execution, the controller  would run the program on hardware, whose sensor ports evolve for $\delta$ time between program transitions. 
