@@ -33,7 +33,7 @@ An agent's $\lgname$ program can access three types of variables.
 %
 \begin{itemize}
 	\item {\em Local program variables\/} record the state of the program. For example, the variable $p$ of type $\mathit{path}$ (Line~\ref{pathvar}) stores a path for the agent. 
-\item {\em Distributed shared variables\/} are used for communication across agents.  For example, {\bf allwrite} $\mathit{taskList}$ (Line~\ref{awvar}) is a multi-writer list of tasks which can be written-to and read-from by all participating agents. Shared variables can also be single-writer multi-reader ({\bf allread}). Each agent maintains a copy of the all shared variables as part of their local state information. 
+\item {\em Distributed shared variables\/} are used for communication across agents.  For example, {\bf allwrite} $\mathit{taskList}$ (Line~\ref{awvar}) is a multi-writer list of tasks which can be written-to and read-from by all participating agents. Shared variables can also be single-writer multi-reader ({\bf allread}). For each shared variable, an agent maintains a {\em local copy\/}  of the variable. 
 
 \item {\em Port variables\/} are used to read from and write to sensor and actuator ports of the agent. For example, the $\mathit{Motion}$ controller for the $\mathit{Task}$ app  drives the agent  through a route, as directed by value set at the actuator port $\mathit{Motion.route}$. The sensor port $\mathit{Motion.psn}$ gives the position of the agent (in a fixed coordinate system) and $\mathit{Motion.done}$ indicates  whether the $\mathit{Motion}$ controller is active or inactive.
 \end{itemize}
@@ -109,8 +109,8 @@ Rule \textsc{Lvar-assign} describes the semantics of how an assignment for a loc
 %\sayan{Why not L.pc but L.M ? The $\rightarrow_S$ can be confusing, should we make is $\rightarrow_{Stmt}?$} 
 \subsubsection{Shared variable updates}
 Similar to the rule \textsc{lvar-assign}, rule \textsc{Svar-assign} describes how the semantics of assignment to a shared variable $x$ updates the current configuration. 
-
-When an agent writes to a shared variable, it updates both its local context $M$, as well as the global context $S$. Our implementation of the $\lgname$ runtime system uses message passing to inform the other agents of the change. 
+%
+When an agent writes to a shared variable, it updates both its local copy in the local context $M$, as well as the global context $S$. The implementation of the runtime system for $\lgname$ message passing to send the updates to local variables to other agents. 
 % 
 \begin{mdframed}
 \scriptsize
