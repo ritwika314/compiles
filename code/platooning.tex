@@ -1,0 +1,29 @@
+Platoon(pid)
+
+using Motion 
+    sensors:`
+       pos psn
+    actuators:
+       float xvel
+       
+allread:
+   pos mypos = Motion.psn
+
+local:
+   float safedist = 5.0
+   float dist 
+   
+   
+SetVelocity:
+  pre True
+  eff :
+     if (pid == numBots - 1) :
+        Motion.xvel = 2.0
+     else:
+        dist = pos[pid + 1].x - pos[pid].x
+        if (dist >= safedist):
+            Motion.xvel = 2.0
+        else:
+            Motion.xvel = 1.0
+    mypos[pid] = Motion.psn
+
