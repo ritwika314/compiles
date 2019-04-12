@@ -1,10 +1,12 @@
 \section{$\lgname$ Software Stack}
 \label{sec:verif}
-% page
+(1 page)
 
-Statement about the gap between artifacts and models 
+\sayan{Download link, what it does, hardware. Mention IROS submission.}
+
 
 \subsection{Runtime system}
+Statement about the gap between artifacts and models 
 
 \paragraph{Shared mem via message passing}
 Timing assumptions
@@ -16,10 +18,10 @@ Messages
 
 \paragraph{Path planner and motion model}
 
+\subsection{Verification}
 
-
-\subsection{Assumptions}
-yber-physical systems involve aspects of concurrency, distributed systems, and dynamical systems, and therefore, a formal semantics for any such system depends on several assumptions. In the design of $\lgname$, we made several choices that were enforced by either the nature of the applications we wanted to be able to implement, or supported by the observable constraints during hardware deployment.  In this section, we take a moment to distinguish those choices from the more fundamental design embedded in $\lgname$.
+\paragraph{Assumptions and justification}
+Cyber-physical systems involve aspects of concurrency, distributed systems, and dynamical systems, and therefore, a formal semantics for any such system depends on several assumptions. In the design of $\lgname$, we made several choices that were enforced by either the nature of the applications we wanted to be able to implement, or supported by the observable constraints during hardware deployment.  In this section, we take a moment to distinguish those choices from the more fundamental design embedded in $\lgname$.
 
 \paragraph*{Periodic event execution semantics}
 Our semantics assumes periodic execution of agent programs, with minimum period defined by the sampling parameter $\delta>0$. This is a standard programming style in embedded and control systems. Several other languages, such as Giotto~\cite{henzinger2003giotto,benveniste2003synchronous}, use  similar semantics. The Giotto paper, shows how  interrupts can be emulated in this execution model. There is substantial work supporting analysis of such time-triggered systems~\cite{WMLM:TECS2010}.

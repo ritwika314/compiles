@@ -1,7 +1,35 @@
-\section{Experiments}
+\section{$\lgname$ case studies}
+
+(2 pages)
 \sayan{Move elsewhere. Implementation details and usage details. Mutex, controller, path planning.}
 Implementation of the sensor.. GPS indoor positioning, done variable. 
 %
+
+\subsection{Braking: End-to-end}
+\label{sec:braking}
+(1 col)
+Show the code
+
+Time plot x2
+
+Verified
+\subsection{Formation: portability}
+\label{sec:braking}
+
+Simplicity of code because of shared variables.
+
+Logs, visualized.
+
+\subsection{Task: portability and heterogeneous}
+
+Figures screenshots. 
+
+Numbers, Change motion model and sensor? 
+
+
+Convergence time, task completion time.
+
+
 
 Mutual exclusion is always an essential feature when shared variables are involved. $\lgname$ provides a locking mechanism using the keyword $\mathit{atomic}$, which the $\mathit{Assign}$ event uses to update the shared list of tasks $\mathit{taskList}$ safely. $\lgname$ supports two types of shared variables, multiwriter-multireader (\emph{allwrite}), and singlewriter-multireader (\emph{allread}) shared variables, whose functionality is as their names suggest. 
  %
