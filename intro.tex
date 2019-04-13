@@ -1,13 +1,11 @@
 \section{Introduction}
 \label{sec:intro}
+Programming systems that interact with physical processes are gaining importance for robotics, manufacturing, IoT, and other cyber-physical systems. Traditional domain specific languages and models for these systems are platform specific as they combine various low-level sensing, communication, and control tasks with the higher-level applications~\cite{nordmann2014robotics}. For sophisticated high-level software applications, the tight-coupling of application design with platform-specific details hinders development, portability, code reuse,  verification, and synthesis.
 
-Consider the development process for a location-sharing application for mobile phones. 
-The developer codes in a high-level language like Objective C or Swift, focusing her energies on getting the application logic right. 
-A compiler generates the executable code automatically.  
-Even executables for different hardware platforms can  be generated automatically, essentially by linking the correct platform-specific libraries. 
-The programming and compiler infrastructure comes with tools for testing, debugging, and validation. 
-Due to this software framework, the simple app can be written, deployed, and tested over a weekend, by high school students. 
+This need for raising the level of abstraction and separating the \emph{platform-independent} decision and coordination tasks from \emph{platform-dependent} concerns such as sensing, communication, and low-level control motivates our work. For example, to develop an application for distributed package delivery with mobile robots in a building, the code for assigning robots to visit way-points in different rooms, load-balancing, and handling failures.  This application design is independent of the underlying platform, and therefore, should ideally be transferable across platforms. In contrast, steering control of the individual vehicles, indoor positioning, and message-level communication protocols are tied to the specific hardware.
+
 %
+
 
 Contrast that with the development of a similar location-based application for a heterogeneous collection of mobile robots. 
 There are no languages for programming  robots that give the programmer the high-level of abstractions to say, for example, ``move from $A$ to $B$ avoiding $U$''. 
