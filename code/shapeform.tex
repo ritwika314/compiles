@@ -2,17 +2,20 @@ Lineform(pid)
 
 using Motion:
 ...
+
 allread:
   pos p$\label{shapeformp}$
 
 local:
-  list<int> nbrs = getneighbors(pid) 
-  bool isCorner = isCorner(pid)
+  List<List<int>> nbrs = ...
+  List<int> corners = ...
+  
 
 Updatepos:
   pre True
   eff :
-     if not(isCorner(pid)) :
-        Motion.target = midpoint(nbrs)
+     if not(pid in corners) :
+        Motion.target = midpoint(get(nbrs,pid))
     p[pid] = Motion.psn
 
+    

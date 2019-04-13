@@ -9,6 +9,6 @@ Updatepos:
   pre True
   eff :
      if not(pid == numBots - 1 or pid == 0) :
-        Motion.target = midpoint(p[pid+1],p[pid-1])
+        Motion.target = midpoint(<p[pid+1],p[pid-1]>)
     p[pid] = Motion.psn
 
