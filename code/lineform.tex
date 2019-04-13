@@ -1,22 +1,14 @@
+Lineform(pid)
 
-init {
- switch = 1;
- temp = [40,55];
-}
+using Motion:
+...
+allread:
+  pos p$\label{lineformp}$
 
-Update() {
-pre (true)
-eff {
-   if (temp > 70 ){
-     if (temp < 75 ){
-     switch = -1; 
-    }
-     else {
-     switch = -2;
-    }
-  }
-   else {
-     switch = 1;
-   }
-}  
-}
+Updatepos:
+  pre True
+  eff :
+     if not(pid == numBots - 1 or pid == 0) :
+        Motion.target = midpoint(p[pid+1],p[pid-1])
+    p[pid] = Motion.psn
+

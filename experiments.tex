@@ -1,84 +1,130 @@
 \section{$\lgname$ case studies}
 
-(2 pages)
-\sayan{Move elsewhere. Implementation details and usage details. Mutex, controller, path planning.}
-Implementation of the sensor.. GPS indoor positioning, done variable. 
-%
-
+We developed a simulator for $\lgname$ applications within the to provide the user a way of testing their discrete event loop with custom motion models to test and debug the application program logic. The  simulator uses motion automata, which can be provided any programmable dynamics to simulate the robot dynamics. The simulated sensed data can also be provided realistic noises and dynamics to mimic actual system dynamics. We present some case studies to demonstrate different features of the language using simulations.
 \subsection{Platooning}
+%end to end
 \label{sec:platooning}
-In this program, the system handles automated vehicles performing platooning by communicating through shared variables. The goal of this program is to maintain at least a \emph{safe} distance between any two consecutive cars. The first car (highest pid) moves at a constant $x$ velocity. Every other car with pid $i$ sets the actuator that sets its velocity based on its distance from the car with pid $i+1$. The cars communicate through the \emph{allread} variable $\mathit{pos}$, which they update every time they execute the event \emph{SetVelocity}, or every $\delta$ time units.
+In this program, the system handles automated vehicles performing platooning by communicating through shared variables. The goal of this program is to maintain at least a \emph{safe} distance between any two consecutive cars. The first car (highest pid) sets its acceleration to 2 or -2 every 10 rounds. The motion controller for the car has bounds on highest and lowest velocities allowed. Every other car with pid $i$ sets the actuator for its acceleration based on its distance from the car with pid $i+1$. The cars communicate through the \emph{allread} variable $\mathit{pos}$, which they update every time they execute the event \emph{SetAcc}, or every $\delta$ time units.
 
 \begin{figure}[ht!]
     \noindent
     \begin{center}
         \scriptsize
         \two{0.4}{0.6}
-        {\lstinputlisting[language=xyzNums,firstline=1,lastline=15,frame=none]{code/platooning.tex}}
-        {\lstinputlisting[language=xyzNums,firstline=16,frame=none,firstnumber=16]{code/platooning.tex}}
+        {\lstinputlisting[language=xyzNums,firstline=1,lastline=21,frame=none]{code/platooning2.tex}}
+        {\lstinputlisting[language=xyzNums,firstline=22,frame=none,firstnumber=22]{code/platooning2.tex}}
     \end{center}
-    \caption{$\lgname$ program for robot $i$ in a Platoon to adjust its $x$ velocity accordingly .}
+    \caption{$\lgname$ program for robot $i$ in a Platoon to adjust its $x$ acceleration accordingly .}
     \label{fig:platooningapp}
 \end{figure}
 
 
-\reffig{platoon} (\emph{Left}) shows $x$ vs $\mathit{time}$ plot of the program shown in \reffig{platooningapp}. In \emph{Platoon} we set the $x$ velocities based on separation, and the first car is moving at a constant velocity. As expected eventually, the cars start moving at a constant separation from each other. 
-\begin{figure}[ht!]
-    \noindent
-    \begin{center}
-        \scriptsize
-        \two{0.4}{0.6}
-        {\lstinputlisting[language=xyzNums,firstline=15,lastline=25,firstnumber=15,frame=none]{code/platooning2.tex}}
-        {\lstinputlisting[language=xyzNums,firstline=26,frame=none,firstnumber=26,lastline=36]{code/platooning2.tex}}
-    \end{center}
-    \caption{ Updating the \emph{Platoon} app to include periodic velocity changes for the first car}
-    \label{fig:platooningapp2}
-\end{figure}
-
-We make a small change to \emph{Platoon} to make the first car periodically switch its velocities (\reffig{platooningapp2}), and the resulting $x$ vs $\mathit{time}$ plot is shown in \reffig{platoon} (\emph{Right}).
+\reffig{platoon} (\emph{Left}) shows the resulting $x$ vs $\mathit{time}$ plot in \reffig{platoon} (\emph{Right}). We saved these plots from the simulator, the blue progress bar on the top of the plot shows how far in the current simulation is this plot generated. 
 
 \begin{figure}[h!]
 \begin{minipage}{0.5\textwidth}
-\includegraphics[width=.5\textwidth]{figs/braking_1.png}}\hfill%
+\includegraphics[width=.5\textwidth]{figs/braking_acc.png}}\hfill%
 %\includegraphics[width=.3\textwidth]{figs/Platooning_2.png}}\hfill%
-\includegraphics[width=.5\textwidth]{figs/braking_3.png}}
+\includegraphics[width=.5\textwidth]{figs/braking_bad.png}
 \end{minipage}%
 	\caption{\small {Platoon of four cars. \emph{Left} shows the first car moving with a constant velocity} and \emph{Right} shows the first car switching velocities periodically.}
 \label{fig:platoon}
 \end{figure}
 
 %FIGURE OUT THE VERIFICATION. 
- A \emph{correct} program should ensure that at no point, the separation along the $x$-axis between two of agents is less than the required safe distance.  Note, that the variable $\emph{safedist}$ needs to be set to higher than the actual required separation to account for reacting to the previous vehicle updating its $\mathit{pos}$ value, depending on how long the sampling parameter $\delta$ is. We  verified using our bounded model checker, that \emph{Platoon}(\reffig{platooningapp}) was indeed safe (for four cars) frequent sampling, i.e, when $\delta$ is small enough and the variable $\emph{pos}$ is updated frequently, and unsafe otherwise.  \reffig{unsafeplatoon} shows the $x$ vs $\mathit{time}$ when the cars react too slowly.
+ A \emph{correct} program should ensure that at no point, the separation along the $x$-axis between two of agents is less than the required safe distance.  Note, that the variable $\emph{safedist}$ needs to be set to higher than the actual required separation to account for reacting to the previous vehicle updating its $\mathit{pos}$ value, depending on how long the sampling parameter $\delta$ is. We  verified using our bounded model checker, that \emph{Platoon}(\reffig{platooningapp}) was indeed safe (for four cars) frequent sampling, i.e, when $\delta$ is small enough and the variable $\emph{pos}$ is updated frequently, and unsafe otherwise.  \reffig{platoon}(Right) shows the $x$ vs $\mathit{time}$ when the cars react too slowly.
 
-\begin{figure}[h!]
-\includegraphics[scale=0.3]{figs/unsafe_braking.png}
-	\caption{\small {Platoon of four cars. \emph{Left} shows the first car moving with a constant velocity} and \emph{Right} shows the first car switching velocities periodically.}
-\label{fig:unsafeplatoon}
+
+\subsection{Formation}
+%portability
+\label{sec:formation}
+We used $\lgname$ to do implement some standard robotics \emph{formation} programs. The \emph{Lineform} app uniformly lines up the positions of  agents between the robots with the minimum and maximum $pid$. For the non-extremal agents, it sets the target way-point as the mid-point of the position of its neighbors. This type of linear update rule of is an example of hundreds of textbook algorithms for distributed consensus, rendezvous, optimization, swarm flocking, pattern formation~\cite{Tsitsiklis:1986,Blondel,Magnusbook2010} that are directly translated to working implementations using $\lgname$. The mathematical description of the algorithm found in control theory textbooks is shown on the right. 
+
+\begin{figure}[ht!]
+	\label{fig:lineform}
+	\noindent
+	\begin{center}
+		\scriptsize
+		\two{0.4}{0.6}
+		{\lstinputlisting[language=xyzNums,frame=none]{code/lineform.tex}}
+		{ \vspace{0.1in}
+                        $x_{t+1} = Ax_{t}$, where \\
+			$x_0$: vector of initial position of agents, \\
+			$x_{t}$: position vector at time $t$, and \\
+		        $A$: is the \emph{transition matrix}, for lineform  \\
+                  
+			$A  = \left[ \begin{array}{ccccc}
+			0 & 0 & 0 & 0 & 0\\
+			\frac{1}{2} & 0 & \frac{1}{2} & 0 & 0\\
+			0 & \frac{1}{2} & 0 & \frac{1}{2} & 0  \\
+			0 & 0 & \frac{1}{2} & 0 & \frac{1}{2} \\
+			0 & 0 & 0 & 0 & 0\\			
+			\end{array}\right]$
+			}
+	\par
+        
+	\end{center}
+	\caption{\small $\lgname$ program for line formation ({\em Left}) and its mathematical counterpart in robotics and control textbooks ({\em Right}).}
 \end{figure}
 
-\subsection{Formation: portability}
-\label{sec:formation}
+The shared \emph{allread} variable $p$ (Line\ref{lineformp}) is used by the agents to communicate their position to the other robots. Any auxiliary functions like \emph{midpoint} are defined below the program. 
+\iffalse
 
-Simplicity of code because of shared variables.
+\reffig{lineformplots} shows two screenshots of the simulation of this appp with 5 robots forming a line. 
 
-Logs, visualized.
+\begin{figure}[h!]
+\begin{minipage}{0.5\textwidth}
+%\includegraphics[width=.3\textwidth]{figs/Platooning_2.png}}\hfill%
+\includegraphics[width=.5\textwidth]{figs/lineform2.png}\hfill
+\includegraphics[width=.5\textwidth]{figs/lineform3.png}}\hfill%
+%\includegraphics[width=.3\textwidth]{figs/Platooning_2.png}}\hfill%
+\end{minipage}%
+\caption{$x$ vs $y$ plots for Lineform. The grey trails represent the positions of the agents in the last 150 time steps.}
+\label{fig:lineformplots}
+\end{figure}
+\fi
+We updated the Lineform app with a neighbor relation, to create the \emph{Squareform} app as shown in \reffig{squareform}.
 
-\subsection{Task: portability and heterogeneous}
+\begin{figure}[ht!]
+    \noindent
+    \begin{center}
+        \scriptsize
+        \two{0.4}{0.6}
+        {\lstinputlisting[language=xyzNums,firstline=1,lastline=10,frame=none]{code/shapeform.tex}}
+        {\lstinputlisting[language=xyzNums,firstline=11,frame=none,firstnumber=11]{code/shapeform.tex}}
+    \end{center}
+    \caption{$\lgname$ program for robot $i$ in a Platoon to adjust its $x$ acceleration accordingly .}
+    \label{fig:platooningapp}
+\end{figure}
 
-Figures screenshots. 
+\reffig{shapeplots} shows two screenshots of the 3d-simulation for the \emph{Shapeform} app with 25 agents. The agents eventually form a square along the plane specified by the four fixed end agents. 
 
-Numbers, Change motion model and sensor? 
+\begin{figure}[h!]
+\begin{minipage}{0.5\textwidth}
+\includegraphics[width=.5\textwidth]{figs/formation1.png}\hfill
+\includegraphics[width=.5\textwidth]{figs/formation5.png}}\hfill%
+%\includegraphics[width=.3\textwidth]{figs/Platooning_2.png}}\hfill%
+\end{minipage}%
+\caption{$x$ vs $y$ vs $z$ plots for shapeform. The grey trails represent the positions of the agents in the last 150 time steps.}
+\label{fig:shapeformplots}
+\end{figure}
 
+\subsection{Task}
 
-Convergence time, task completion time.
+ \reffig{taskapp} shows a distributed task allocation application written in $\lgname$. Distributed task allocation is challenging as it involves mutual exclusion as well as construction of de-conflicted  paths. Tasks can be abstractions for real location-based objectives like package delivery, surveillance, or fire-fighting. $\lgname$ enables implementation of simple task allocation strategies using shared variables.
 
+Mutual exclusion is always an essential feature when shared variables are involved. $\lgname$ provides a locking mechanism using the keyword $\mathit{atomic}$, which the $\mathit{Assign}$ event uses to update the shared list of tasks $\mathit{taskList}$ safely. 
 
+We used a Dubin's vehicle model for our agents, and RRT-based path planning in this application, to avoid static obstacles specified in the initial configuration file. 
 
-Mutual exclusion is always an essential feature when shared variables are involved. $\lgname$ provides a locking mechanism using the keyword $\mathit{atomic}$, which the $\mathit{Assign}$ event uses to update the shared list of tasks $\mathit{taskList}$ safely. $\lgname$ supports two types of shared variables, multiwriter-multireader (\emph{allwrite}), and singlewriter-multireader (\emph{allread}) shared variables, whose functionality is as their names suggest. 
- %
-The implementation of $\mathit{Motion}$ controller involves, for example, path planners, and platform-specific steering and throttle controllers, and drivers for specific positioning systems. 
+\begin{figure}[h!]
+\begin{minipage}{0.5\textwidth}
+\includegraphics[width=.5\textwidth]{figs/task1.png}\hfill
+\includegraphics[width=.5\textwidth]{figs/task2.png}}\hfill%
+%\includegraphics[width=.3\textwidth]{figs/Platooning_2.png}}\hfill%
+\end{minipage}%
+\caption{$x$ vs $y$ plots for Task App. The grey trails represent the positions of the agents in the last 150 time units, the blue dots represent the task locations of the incomplete tasks, and the green dots represent the task locations of the completed tasks. The black squares represent static obstacles. }
+\label{fig:taskplots}
+\end{figure}
 
-We developed a simulator \reffig{simulator} for $\lgname$ applications within the CyPhyHouse framework to enable the user a way of testing their discrete event loop with simple motion models to test and debug the application program logic. The CyPhyHouse simulator uses motion automata, which can be provided any programmable dynamics to simulate the robot dynamics. The simulated sensed data is also provided realistic noises and dynamics to mimic actual system dynamics. The communication protocols are also a part of the simulator communication module. The time between two computational steps (or discrete event loop iterations) is used to propagate messages to implement shared memory as in the actual hardware stack.
-\subsection{benchmarks}
-\subsection{variations}
-\subsection{results}
+\newpage
