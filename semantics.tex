@@ -1,5 +1,4 @@
 \section{Koord Language and Semantics}
-\subsection{Koord model for distributed CPS}
 
 The interaction model of an agent executing a $\lgname$ program is shown in \reffig{arch}. 
 \begin{figure}[h!]
@@ -26,11 +25,11 @@ The program and the controller interact with each other through {\em sensor} and
     \label{fig:taskapp}
 \end{figure}
     
-{\bf Task Coordination Application} \reffig{taskapp} shows a distributed task allocation application written in $\lgname$. Distributed task allocation is challenging as it involves mutual exclusion as well as construction of de-conflicted  paths. Tasks are abstractions for real location-based objectives like package delivery, surveillance, or fire-fighting.  Koord enables implementation of simple task allocation strategies using shared variables.
-
+\paragraph* {A  Task Coordination Application} \reffig{taskapp} shows a distributed task allocation application written in $\lgname$. Distributed task allocation is challenging as it involves mutual exclusion as well as construction of de-conflicted  paths. Tasks are abstractions for real location-based objectives like package delivery, surveillance, or fire-fighting.  Koord enables implementation of simple task allocation strategies using shared variables. Throughout the rest of this section, we refer to the $\mathit{Task}$ application as an example.
 In $\mathit{Task}$ app, the agents maintain a shared list of tasks ({\em taskList}) to complete, and each agent is uniquely assigned a task from this list in the event {\em Assign}. Once an agent reaches the task location (event {\em Reached}), it does whatever the task entails (event {\em Complete}), and continues this process.
 % language features - what main "issue" each feature addresses . 
 
+\subsection{Koord model for distributed CPS}
 $\lgname$ design comprises of a \emph{turn}-based alternating semantics of discrete and dynamic behavior of each agent in the distributed system. The agents can be viewed as performing \emph{rounds} of execution, where each round consists of a \begin{inparaenum} \item \emph{A program transition} which is a discrete computational step, and \item \emph{An environment transition} which is the dynamic behavior of the agents specified by the controllers \end{inparaenum}. In our semantics, we represent whether it is the turn of a program transition or an environment transition to be executed on each agent by a $\mathit{turn}$ variable.  
 
 In a program transition in a round, each agent first nondeterministically chooses an \emph{enabled} event, or an event whose precondition evaluates to \verb|True|. It then executes the statements in the effect of that event. %This may involve reading sensor ports, performing computations using local and shared variables, and writing to actuator ports. 
@@ -51,7 +50,7 @@ $$
  
 \subsection{Program (cyber) variables and physical variables}
 \label{sec:variables}
-We first introduce the types of variables used by the $\lgname$ programs. Throughout, we refer to the $\mathit{Task}$ application as an example.
+We first introduce the types of variables used by the $\lgname$ programs. 
 
 \paragraph{Program variables}
 %$\lgname$ provides several types of access for program variables. 
