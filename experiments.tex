@@ -1,10 +1,10 @@
 \section{$\lgname$ case studies}
 
-We developed a simulator for $\lgname$ applications within the to provide the user a way of testing their discrete event loop with custom motion models to test and debug the application program logic. The  simulator uses motion automata, which can be provided any programmable dynamics to simulate the robot dynamics. The simulated sensed data can also be provided realistic noises and dynamics to mimic actual system dynamics. We present some case studies to demonstrate different features of the language using simulations.
+The $\lgname$ simulator provides the user a way to test, debug and demonstrate the application program logic, with custom dynamics models without incurring the cost of hardware deployment. In this section, we present some case studies to demonstrate some important capabilities of $\lgname$ using simulations. 
 \subsection{Platooning}
 %end to end
 \label{sec:platooning}
-In this program, the system handles automated vehicles performing platooning by communicating through shared variables. The goal of this program is to maintain at least a \emph{safe} distance between any two consecutive cars. The first car (highest pid) sets its acceleration to 2 or -2 every 10 rounds. The motion controller for the car has bounds on highest and lowest velocities allowed. Every other car with pid $i$ sets the actuator for its acceleration based on its distance from the car with pid $i+1$. The cars communicate through the \emph{allread} variable $\mathit{pos}$, which they update every time they execute the event \emph{SetAcc}, or every $\delta$ time units.
+In this program, the system handles automated vehicles moving in a platoon, by communicating through shared variables. The goal of this program is to maintain at least a \emph{safe} distance between any two consecutive cars. The first car (highest pid) sets its acceleration to 2 or -2 every 10 rounds. The motion controller for the car has bounds on highest and lowest velocities allowed. Every other car with pid $i$ sets the actuator for its acceleration based on its distance from the car with pid $i+1$. The cars communicate through the \emph{allread} variable $\mathit{pos}$, which they update every time they execute the event \emph{SetAcc}, or, as the semantics dictates, every $\delta$ time units.
 
 \begin{figure}[ht!]
     \noindent
@@ -19,7 +19,7 @@ In this program, the system handles automated vehicles performing platooning by 
 \end{figure}
 
 
-\reffig{platoon} (\emph{Left}) shows the resulting $x$ vs $\mathit{time}$ plot in \reffig{platoon} (\emph{Right}). We saved these plots from the simulator, the blue progress bar on the top of the plot shows how far in the current simulation is this plot generated. 
+\reffig{platoon} shows the resulting $x$ vs $\mathit{time}$ plots for different values of $\delta$, or the duration of the environment transition in \reffig{platoon}. These plots were saved directly from the simulator, and the blue progress bar on the top of the plot shows how far in the current simulation this plot is generated.
 
 \begin{figure}[h!]
 \begin{minipage}{0.5\textwidth}
@@ -27,12 +27,12 @@ In this program, the system handles automated vehicles performing platooning by 
 %\includegraphics[width=.3\textwidth]{figs/Platooning_2.png}}\hfill%
 \includegraphics[width=.5\textwidth]{figs/braking_bad.png}
 \end{minipage}%
-	\caption{\small {Platoon of four cars. \emph{Left} shows the first car moving with a constant velocity} and \emph{Right} shows the first car switching velocities periodically.}
+	\caption{\small {Platoon of four cars. \emph{Left} for $\delta = 0.01$, the cars eventually get to safe separations, while reacting to the first car changing its acceleration periodically} and \emph{Right} for $\delta = 0.1$, this shows an unsafe execution where the simulation stops upon a collision.}
 \label{fig:platoon}
 \end{figure}
 
 %FIGURE OUT THE VERIFICATION. 
- A \emph{correct} program should ensure that at no point, the separation along the $x$-axis between two of agents is less than the required safe distance.  Note, that the variable $\emph{safedist}$ needs to be set to higher than the actual required separation to account for reacting to the previous vehicle updating its $\mathit{pos}$ value, depending on how long the sampling parameter $\delta$ is. We  verified using our bounded model checker, that \emph{Platoon} (\reffig{platooningapp}) was indeed safe (for four cars) frequent sampling, i.e, when $\delta$ is small enough and the variable $\emph{pos}$ is updated frequently, and unsafe otherwise.  \reffig{platoon}(Right) shows the $x$ vs $\mathit{time}$ when the cars react too slowly.
+ A \emph{correct} program should ensure that at no point, the separation along the $x$-axis between two of agents is less than the required safe distance.  Note, that the variable $\emph{safedist}$ needs to be set to higher than the actual required separation to account for reacting to the previous vehicle updating its $\mathit{pos}$ value, depending on how long the sampling parameter $\delta$ is. We verified using our bounded model checker, that \emph{Platoon} (\reffig{platooningapp}) was indeed safe (for four cars) frequent position sampling, i.e, when $\delta$ is small enough and the variable $\emph{pos}$ is updated frequently, and unsafe otherwise.  \reffig{platoon}(Right) shows the $x$ vs $\mathit{time}$ when the cars react too slowly.
 
 
 \subsection{Formation}
