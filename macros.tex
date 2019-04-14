@@ -7,6 +7,7 @@
 \newcommand{\p}[1]{\ensuremath{\left(#1\right)}}
 \newcommand{\pl}[1]{\ensuremath{\left\langle#1\right\rangle}}
 \newcommand{\OR}{\mbox{ }|\mbox{ }}
+\newcommand{\NMAX}{N\_A}
 \newcommand{\st}{.\mbox{ }}
 \newcommand{\finto}{\ensuremath{\stackrel{\mathtt{fin}}{\longrightarrow}}}
 \newcommand{\defeq}{\ensuremath{\stackrel{\mathtt{def}}{=}}}
@@ -83,6 +84,42 @@
 				\hspace{.5cm}
 		\parbox[t]{#2\columnwidth}{#5}%
 	}}
+	
+	\lstdefinelanguage{koord}{
+		keywordstyle=\bf, %\figuresize,
+		identifierstyle=\it, % \figuresize,
+		keywords={
+			%         do, 
+                        and , module,
+			agent, sensors, actuators, allread, allwrite, atomic, actuator, assume,
+			else,elseif,end,eff,
+			atomic,for, foreach,forget,
+			input,internal,if,import,in,invariant,
+			local,
+			or,
+			pre,
+			return,
+			sensor,
+			then,def,type,types,thread,to,tasks,
+			using,module
+			variables, vocabulary,
+			when,where, with,while},
+		emph={update,replaceList,findTask,finishTask,beginTask,doMove, doReach, doReachA, forget, getOdometer, getInput, getMotion, getObs, getPos, getxPos, getPosition, getNeighbors, setMotion, inMotion, sharedsw, sharedmw, tuple, map, array, enumeration},
+	}
+	
+	\lstdefinelanguage{koordNums}[]{xyz}
+	{
+		numbers=left,
+		numbersep=15pt,
+		numberstyle=\tiny,
+		stepnumber=1,
+		numbersep=4pt,
+		%xleftmargin=2em,
+		%frame=single,
+		%framexrightmargin=-1.5em,
+		%framexleftmargin=1.5em
+	}
+		
 
 	\lstdefinelanguage{xyz}{
 		%  basicstyle=\figuresize,
@@ -214,6 +251,7 @@
 		{\\TT}{{\hspace{1.5em}}}3
 	}
 	
+	
 	\lstdefinelanguage{xyzNums}[]{xyz}
 	{
 		numbers=left,
@@ -221,10 +259,10 @@
 		numberstyle=\tiny,
 		stepnumber=1,
 		numbersep=4pt,
-		xleftmargin=2em,
-		frame=single,
-		framexrightmargin=-1.5em,
-		framexleftmargin=1.5em
+		%xleftmargin=2em,
+		%frame=single,
+		%framexrightmargin=-1.5em,
+		%framexleftmargin=1.5em
 	}
 	
 	\lstdefinelanguage{xyzNumsRight}[]{xyz}

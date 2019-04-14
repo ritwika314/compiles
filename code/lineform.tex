@@ -1,14 +1,11 @@
 Lineform(pid)
-
-using Motion:
-...
-allread:
-  pos p$\label{lineformp}$
-
-Updatepos:
-  pre True
-  eff :
-     if not(pid == numBots - 1 or pid == 0) :
-        Motion.target = midpoint(<p[pid+1],p[pid-1]>)
-    p[pid] = Motion.psn
+   using Motion:
+      sensors pos psn
+      actuators target
+   allread: pos x $\label{lineformp}$
+   Update:
+      pre True
+      eff if not(pid == MAX - 1 or pid == 0):
+         Motion.target = mid(<x[pid+1],x[pid-1]>)
+         x[pid] = Motion.psn
 
