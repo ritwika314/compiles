@@ -1,7 +1,7 @@
 Platoon
 using Motion 
     sensors pos psn
-    actuators float xvel
+    actuators float xacc
        
 allread:
    pos x = Motion.psn
@@ -9,13 +9,13 @@ allread:
 local:
    float safedist = 5.0
    float dist 
-   int j = 0 
+   int j = 0 $$
    int mode = 0
 
 SetAcc:
   pre True
   eff
-     if (pid == numBots - 1) :
+     if (pid == \NMAX - 1) :
         if (mode == 0):
             if j $\geq$ 100:
                  mode = 1
@@ -37,4 +37,5 @@ SetAcc:
         else:
             Motion.xacc = -1.0
     x[pid] = Motion.psn
+
 
