@@ -33,6 +33,7 @@ $\lgname$ combines distributed shared memory abstraction for coordination across
 Consider a simple line-formation program in which a set of $N$ robots form a equi-spaced line starting from arbitrary positions. The elementary algorithm is for each robot $i$ to repeatedly move towards the midpoint of the line joining the positions of $i-1$ and $i+1$. The extremal robots with ids $0$ and $N-1$ stay fixed. This is a archetypal protocol for synchronization, pattern formation, and consensus~\cite{Tsitsiklis:1986,Blondel,Magnusbook2010,Fax} in distributed robotics.
 %
 % \belowcaptionskip=-10pt
+\begin{figure}
 \begin{lstlisting}[label=lineform,caption=Lineform $\lgname$ program]
    using Motion:
       sensors pos psn
@@ -44,7 +45,7 @@ Consider a simple line-formation program in which a set of $N$ robots form a equ
          Motion.target = mid(<x[pid+1],x[pid-1]>)
          x[pid] = Motion.psn
 \end{lstlisting}
-
+\end{figure}
 The above $10$ line  $\lgname$ program implements this line formation algorithm and can be simulated or deployed (see Figure~\ref{fig:shapeformplots1}). Among these $10$ lines of code, lines 1-5 import the {\em controller module\/} called {\em Motion\/} that enables this program to access the sensor port with the agent's position $(\mathit{psn})$ and the actuator port $(\mathit{target})$. An implementation of  a {\em controller module\/} has platform-specific path planners and low-level controllers for moving specific types of robots in the physical world. {\em Thus, with different implementations of the {\em Motion\/} interface the $\mathit{Lineform}$ $\lgname$  program can be ported to different platforms\/}. 
 
 Another powerful feature of $\lgname$ used in the $\mathit{Lineform}$ program is the single-write multi-reader ({\bf allread}) shared array $x$, in which component $x[i]$ records the position of the $i^{th}$ robot in each round.  Shared variables allow the participating agents programs to coordinate without exposing the programmer to explicit message passing channels, buffers, and threads. This makes $\lgname$ programs succinct, readable, and often, as in the  above example, remarkably close to the textbook version of the algorithm. The $\lgname$ runtime system (discussed in more detail in Section~\ref{sec:software}) implements the propagation of  the shared variable write over messages. The formalization of the resulting semantics is discussed in Section~\ref{sec:K}.
@@ -84,17 +85,14 @@ Implementations of programming languages usually contain many bugs. One common t
 Our key innovation for achieving this formalization is to parameterize the semantics with a set of {\em environment functions\/} that model the behavior of the physical environment, the controller, and other operations that are external to the application program.  The environment functions are called by the  back-end of \K to update certain state components (e.g., sensor and actuator ports). Thus, the formal semantics of $\lgname$ is also modular and portable across  different environment models. }
 
 %ontroller behaviors with path-planners to the back-end of \K to specify rewrite rules for them, as the $\lgname$ language itself lets the user use predefined controller modules.
-In addition, the shared memory semantics of $\lgname$ is implemented over  message passing.. \sayan{So what is challenging interesting in what we have done here? Mention synchronous round-by-round execution. Events. Shared memory propagation. }
+
+$\lgname$ programs have a discrete event loop, which executes periodically to interact with the environment. We can view the semantics of  $\lgname$ as a nondeterministic, timed automaton~\cite{TIOAmon}: there is a {\em sampling parameter\/} $\delta > 0$; every $\delta$-time units {\em at most one event} of the agent's program executes. This execution takes zero logical time and corresponds to a transition of the timed automaton. $\lgname$ provides distributed shared variable abstraction for programming multiple agents, which can be written to during an event execution. The consistency semantics implemented here is that the writes to shared variables are propagated to all the agents, and become visible to other agents reading the variable after one round ($\delta$ time units). In the fault-free synchronous model considered here, any number of gossip-based algorithms can be used to implement this semantics in the $\lgname$ runtime system. 
 
 
-Our \K implementation of $\lgname$ enables us to execute  programs \emph{semantically accurately}. So we can to design test suites for any implementation of the language semantics. 
-\sayan{This is weak, as we have not done this.}
-\sayan{Mention nondeterminism?}
-To support formal analysis in case of non-specific initial states, we also implemented an interval arithmetic in \K, and support execution of $\lgname$ programs where the initial values of variables are provided in intervals. We implemented a explicit state bounded-model-checking  tool on top of the \K semantics to provide this additional feature. \sayan{What are the main conclusions of this part? Give pointer to section ahead.}
+Our \K implementation of $\lgname$ enables us to execute  programs \emph{semantically accurately}. One of the factors resulting in non-determinism is the order in which agents execute their events, and we can use the \K support for non-determinism to generate and search all possible non-deterministic behaviors in bounded executions for a given program. To further support formal analysis in case of non-specific initial states, we also implemented an interval arithmetic in \K, and support execution of $\lgname$ programs where the initial values of variables are provided in intervals. We implemented a explicit state bounded-model-checking  tool on top of the \K semantics to provide this additional feature. 
 
-\sayan{Demonstration of feasibility?} 
-\sayan{copied from before:
-Design and development of the $\lgname$ programming language and the supporting $\mathbb{K}$-based~\cite{Kpaper} verification tool \kbmc\, are discussed here for the sake of completeness; those details will appear elsewhere~\cite{koordreport}.}
+
+Design and development of the $\lgname$ programming language and the supporting $\mathbb{K}$-based~\cite{Kpaper} verification tool \kbmc\, are discussed here for the sake of completeness; those details will appear elsewhere~\cite{koordreport}.
 
 \subsubsection{$\lgname$ simulator and applications}
 
