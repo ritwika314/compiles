@@ -12,14 +12,13 @@ Every other car in the platoon with pid $i$ sets the actuator, namely, its accel
 
 \begin{figure}[ht!]
     \noindent
-    \begin{mdframed}
     \begin{center}
         \scriptsize
         \two{0.4}{0.6}
         {\lstinputlisting[language=xyzNums,firstline=1,lastline=21,frame=none]{code/platooning2.tex}}
-        {\lstinputlisting[language=xyzNums,firstline=22,frame=none,firstnumber=22]{code/platooning2.tex}}
+      
+       {\lstinputlisting[language=xyzNums,firstline=22,frame=none,firstnumber=22]{code/platooning2.tex}}
     \end{center}
-    \end{mdframed}
     \caption{$\lgname$ program for robot $i$ in a Platoon to adjust its $x$ acceleration accordingly .}
     \label{fig:platooningapp}
 \end{figure}
@@ -82,14 +81,12 @@ With the addition of an explicit neighbor relation, the \emph{Squareform} app as
 
 \begin{figure}[ht!]
     \noindent
-    \begin{mdframed}
     \begin{center}
         \scriptsize
         \two{0.4}{0.6}
         {\lstinputlisting[language=koordNums,firstline=1,lastline=10,frame=none]{code/shapeform.tex}}
         {\lstinputlisting[language=koordNums,firstline=11,frame=none,firstnumber=11]{code/shapeform.tex}}
     \end{center}
-    \end{mdframed}
     \caption{$\lgname$ program for robot $i$ to move to move to the mid point of all its neighbors, with all agents in the system eventually forming a rhombus.}
     \label{fig:squareform}
 \end{figure}
@@ -118,8 +115,8 @@ We used a Dubin's vehicle model for our agents, and RRT-based path planning in t
 
 \begin{figure}[h!]
 \begin{minipage}{0.5\textwidth}
-%\includegraphics[width=.5\textwidth]{figs/task1.png}\hfill
-%\includegraphics[width=.5\textwidth]{figs/task2.png}}\hfill%
+\includegraphics[width=.5\textwidth]{figs/task2.png}\hfill
+\includegraphics[width=.5\textwidth]{figs/task1.png}\hfill%
 %\includegraphics[width=.3\textwidth]{figs/Platooning_2.png}}\hfill%
 \end{minipage}%
 \caption{$x$ vs $y$ plots for Task App. The grey trails represent the positions of the agents in the last 150 time units, the blue dots represent the task locations of the incomplete tasks, and the green dots represent the task locations of the completed tasks. The black squares represent static obstacles. }
@@ -136,7 +133,7 @@ We can also easily replace the Motion automaton (consequently, the dynamical mod
 \label{fig:taskstats}
 \end{figure}
 
- For all agents operating with the same motion automaton and dynamics model, We observed that conflict resolution took more time with more agents, as expected (\reffig{completionstats}). The completion time remained relatively stable. The maximum and minimum distances travelled were relatively closer with more robots. However, all these results were affected by the non-determinism in choice of paths and tasks by the agents, and their previous relative positions at the moment of choosing the next task as well. These results demonstrate a capability of covering various scenarios in simulation without having to incur the cost of hardware deployment.  
+ For all agents operating with the same motion automaton and dynamics model, We observed that conflict resolution took more time with more agents, as expected (\reffig{completionstats}). The completion time remained relatively stable. The maximum and minimum distances travelled were relatively closer with more robots. However, all these results were affected by the non-determinism in choice of paths and tasks by the agents, and their previous relative positions at the moment of choosing the next task as well. These results demonstrate a capability of covering various scenarios with different levels of heterogeneity and coordination.
  
 \fTBD{placeholder plot}\begin{figure}[h!]
 \includegraphics[width=.5\textwidth]{figs/completion.png}\hfill
