@@ -6,6 +6,10 @@
 
 
 \subsection{Runtime system}
+The $\lgname$ front end takes as input a $\lgname$ program and generates a python program that runs on a python middle layer on the agents in the system (either in simulation or on actual hardware). We discuss the $\lgname$ middle layer in this section. Our implementation of the $\lgname$ language semantics. consists of the following major modules:\begin{inparaenum}
+\item a communication module implementing the shared memory semantics,\item a motion module implementing the dynamics of the environment, \item an agent thread module which implements the discrete event loop semantics of each agent.  
+\end{inparaenum}
+
 
 \paragraph{Addressing the gap between theory and implementation}
 
@@ -13,11 +17,11 @@ Usually cyber-physical system models are based on mathematical representations o
 
 
 \paragraph*{Periodic event execution semantics}
-Our semantics assumes periodic execution of agent programs, with minimum period defined by the sampling parameter $\delta>0$. This is a standard programming style in embedded and control systems. Several other languages, such as Giotto~\cite{henzinger2003giotto,benveniste2003synchronous}, use  similar semantics. The Giotto paper, shows how  interrupts can be emulated in this execution model. There is substantial work supporting analysis of such time-triggered systems~\cite{WMLM:TECS2010}. One of the other assumptions is that the program transitions in a round have  zero logical execution time. In reality, we assume that the participating agents run barrier synchronization algorithms, and we ensure that the controller only starts driving the physical plant after the maximum possible time to execute a program transition step for each agent has elapsed. 
+ assuOur semantics assumes periodic execution of agent programs, with minimum period defined by the sampling parameter $\delta>0$. This is a standard programming style in embedded and control systems. Several other languages, such as Giotto~\cite{henzinger2003giotto,benveniste2003synchronous}, use  similar semantics. The Giotto paper, shows how  interrupts can be emulated in this execution model. There is substantial work supporting analysis of such time-triggered systems~\cite{WMLM:TECS2010}. One of the other assumptions is that the program transitions in a round have  zero logical execution time. In our implementation, the participating agents run barrier synchronization algorithms, and we ensure that the controller only starts driving the physical plant after the maximum possible time to execute a program transition step for each agent has elapsed. 
 
 
 \paragraph*{Shared variable implementation through message passing}
-For the shared memory abstraction to be faithfully implemented on a message-passing wireless network, the message delays between agents should be less than the the sampling parameter $\delta$.
+For the shared memory abstraction to be faithfully implemented on a message-passing wireless network, the message delays between agents should be less than the the sampling parameter $\delta$. We use TCP/UDP to send agent shared variable update messages over Wifi in our implementation. The messages are propagated during the \emph{environment transition} in each round, and processed before the next round of program transitions starts.
 
 \paragraph*{Portability and heterogeneity}
 
