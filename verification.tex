@@ -7,12 +7,12 @@
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.48\textwidth]{figs/simulationengine.png}
-\caption{Simulation of an $\lgname$ program }
+\caption{Simulation of a $\lgname$ program }
 \label{fig:simfig}
 \end{figure}
 The python middle layer in our implementation of the $\lgname$ language consists of the following major modules:\begin{inparaenum}
 \item a communication module implementing the shared memory semantics,\item a motion module which in simulation implementing the dynamics of the environment, and in hardware, is responsible for publishing and subscribing to ROS messages between the program and the platform. \item an agent thread module which implements the discrete event loop semantics of each agent. 
-\end{inparaenum}. To run a $\lgname$ program (hardware or simulation), the user has to provide a configuration file, with \begin{inparaenum}\item the number of agents, \item in case of simulation, the initial positions of the agents and the length of the simulation and \item in case of hardware deployment their IP addresses, and the localization system.\end{inparaenum} Each agent in the system launches the agent thread, which has its own \emph{Motion automaton} thread, which implements the controller for the agent thread. Each agent thread also has a communication thread, which it uses to listen for and send messages for shared variable updates to other agent threads. In simulation, the $\lgname$ program launches $n$ threads, each with its own communication and motion automaton threads, and runs the execution as long as specified in the program.
+\end{inparaenum}. To run a $\lgname$ program (hardware or simulation), the user has to provide a configuration file, with \begin{inparaenum}\item the number of agents, \item in case of simulation, the initial positions of the agents and the length of the simulation and \item in case of hardware deployment their IP addresses, and the localization system.\end{inparaenum} Each agent in the system launches the agent thread, which has its own \emph{Motion automaton} thread, which implements the controller for the agent thread. Each agent thread also has a communication thread, which it uses to listen for and send messages for shared variable updates to other agent threads. In simulation, the $\lgname$ program launches $N$ threads, each with its own communication and motion automaton threads, and runs the execution as long as specified in the program.
 
 
 \paragraph{Addressing the gap between theory and implementation}
