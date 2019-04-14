@@ -1,10 +1,7 @@
-Platoon(pid)
-
+Platoon
 using Motion 
-    sensors:`
-       pos psn
-    actuators:
-       float xvel
+    sensors pos psn
+    actuators float xvel
        
 allread:
    pos mypos = Motion.psn
@@ -17,7 +14,7 @@ local:
 
 SetAcc:
   pre True
-  eff :
+  eff
      if (pid == numBots - 1) :
         if mode == 0:
             if j $\geq$ 100:
