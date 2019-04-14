@@ -21,7 +21,8 @@ local:
    int i = 0 
    path p $\label{pathvar}$
    task temp, new
-   enum Stage {ASGN,RCHD,CMPT} stage = ASGN
+   enum Stage {ASGN,RCHD,CMPT} stage
+                             = ASGN
    
 Assign:$\label{asgnevent}$
   pre stage == ASGN

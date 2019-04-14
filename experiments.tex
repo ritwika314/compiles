@@ -7,25 +7,28 @@ The $\lgname$ simulator provides the user a way to test, debug and demonstrate t
 \label{sec:platooning}
 Figure~\ref{fig:platooningapp} shows the $\lgname$ program for a simplified platooning protocol for vehicles on a single lane. The position of successive vehicles is communicated through  {\bf allread} shared variable $\mathit{x}$. The goal is to maintain a minimal  \emph{safe} separation  between any two consecutive cars. For the sake of simplicity, here the leading car  has a preprogrammed behavior (it sets its acceleration to $2$ or $-2$ every $10$ rounds); in a more realistic deployment this behavior could be based on speed limits or other traffic. 
 %The motion controller for the car has bounds on highest and lowest velocities allowed. 
-Every other car in the platoon with pid $i$ sets the actuator, namely, its acceleration \sayan{or velocity?} based on its distance from the car with pid $i+1$. 
+Every other car in the platoon with pid $i$ sets the actuator, namely, its acceleration based on its distance from the car with pid $i+1$; slowing down when the separation is less than the safe distance, accelerating otherwise. 
 %The cars communicate through the \emph{allread} variable $\mathit{pos}$, which they update every time they execute the event \emph{SetAcc}, or, as the semantics dictates, every $\delta$ time units.
 
 \begin{figure}[ht!]
     \noindent
+    \begin{mdframed}
     \begin{center}
         \scriptsize
         \two{0.4}{0.6}
         {\lstinputlisting[language=xyzNums,firstline=1,lastline=21,frame=none]{code/platooning2.tex}}
         {\lstinputlisting[language=xyzNums,firstline=22,frame=none,firstnumber=22]{code/platooning2.tex}}
     \end{center}
+    \end{mdframed}
     \caption{$\lgname$ program for robot $i$ in a Platoon to adjust its $x$ acceleration accordingly .}
     \label{fig:platooningapp}
 \end{figure}
-\sayan{Why some ifs have ( ) others do not? Let us use x as position like in lineform.}
+
+%\sayan{Why some ifs have ( ) others do not? Let us use x as position like in lineform.}
 
 \reffig{platoon} shows the resulting $x$ vs $\mathit{time}$ plots for different values of $\delta$, or the duration of the environment transition in \reffig{platoon}. These plots were saved directly from the simulator, and the blue progress bar on the top of the plot shows how far in the current simulation this plot is generated.
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \begin{minipage}{0.5\textwidth}
 \includegraphics[width=.5\textwidth]{figs/braking_acc.png}\hfill
 %\includegraphics[width=.3\textwidth]{figs/Platooning_2.png}}\hfill%
@@ -37,13 +40,13 @@ Every other car in the platoon with pid $i$ sets the actuator, namely, its accel
 
 %FIGURE OUT THE VERIFICATION. 
 % While the simulator enables quick cycles of development and testing, the verification component, as stated earlier, allows the user to tune the conditions under which the program exhibits desired behavior. 
- A \emph{correct} program should ensure that at no point, the separation along the $x$-axis between two of agents is less than the required safe distance.  Note, that the variable $\emph{safedist}$ needs to be set to higher than the actual required separation to account for reacting to the previous vehicle updating its $\mathit{pos}$ value, depending on how long the sampling parameter $\delta$ is. We verified using our bounded model checker, that \emph{Platoon} (\reffig{platooningapp}) was indeed safe (for four cars) frequent position sampling, i.e, when $\delta$ is small enough and the variable $\emph{pos}$ is updated frequently, and unsafe otherwise.  \reffig{platoon}(Right) shows the $x$ vs $\mathit{time}$ when the cars react too slowly. 
-\sayan{Last 2 sentences are not clear. What changed between the safe and the unsafe scenarios? Explain clearly. Put a box around the code.}
+ A \emph{correct} program should ensure that at no point, the separation along the $x$-axis between two of agents is less than the required safe distance.  Note, that the variable $\emph{safedist}$ needs to be set to higher than the actual required separation to account for reacting to the previous vehicle updating its $\mathit{x}$ value, depending on how long the sampling parameter $\delta$ is. Every car updates its $x$ value every $\delta$ time units. If $\delta$ is too long, then the cars will not slow down even when the separation between then might have become less than the safe distance. We verified using our bounded model checker, that \emph{Platoon} (\reffig{platooningapp}) was indeed safe (for four cars) when $\delta$ is small enough and has potential unsafe behaviors otherwise.\reffig{platoon}(Right) shows the $x$ vs $\mathit{time}$ when the $\delta$ is too long.
+%\sayan{Last 2 sentences are not clear. What changed between the safe and the unsafe scenarios? Explain clearly. Put a box around the code.}
 
 \subsection{Formation}
 %portability
 \label{sec:formation}
-We used $\lgname$ to implement some standard robotics \emph{formation} programs, with self-stabilizing behavior. The \emph{Lineform} (app\reffig{lineform}) uniformly lines up the positions of  agents between the robots with the minimum and maximum $pid$. For the non-extremal agents, it sets the target way-point as the mid-point of the position of its neighbors. This type of linear update rule of is an example of hundreds of textbook algorithms for distributed consensus, rendezvous, optimization, swarm flocking, pattern formation~\cite{Tsitsiklis:1986,Blondel,Magnusbook2010} that are directly translated to working implementations using $\lgname$. The mathematical description of the algorithm found in control theory textbooks is shown on the right. 
+We used $\lgname$ to implement some standard robotics \emph{formation} programs, with self-stabilizing behavior. The \emph{Lineform} app (\reffig{lineform}) uniformly lines up the positions of  agents between the robots with the minimum and maximum $pid$. For the non-extremal agents, it sets the target way-point as the mid-point of the position of its neighbors. This type of linear update rule of is an example of hundreds of textbook algorithms for distributed consensus, rendezvous, optimization, swarm flocking, pattern formation~\cite{Tsitsiklis:1986,Blondel,Magnusbook2010} that are directly translated to working implementations using $\lgname$. The mathematical description of the algorithm found in control theory textbooks is shown in the \reffig{lineform} (\emph{Right}). 
 
 %\begin{figure}[ht!]
 %	\label{fig:lineform}
@@ -79,12 +82,14 @@ With the addition of an explicit neighbor relation, the \emph{Squareform} app as
 
 \begin{figure}[ht!]
     \noindent
+    \begin{mdframed}
     \begin{center}
         \scriptsize
         \two{0.4}{0.6}
         {\lstinputlisting[language=koordNums,firstline=1,lastline=10,frame=none]{code/shapeform.tex}}
         {\lstinputlisting[language=koordNums,firstline=11,frame=none,firstnumber=11]{code/shapeform.tex}}
     \end{center}
+    \end{mdframed}
     \caption{$\lgname$ program for robot $i$ to move to move to the mid point of all its neighbors, with all agents in the system eventually forming a rhombus.}
     \label{fig:squareform}
 \end{figure}
@@ -95,11 +100,12 @@ With the addition of an explicit neighbor relation, the \emph{Squareform} app as
 \begin{figure}[h!]
 \begin{minipage}{0.5\textwidth}
 \includegraphics[width=.5\textwidth]{figs/formation1.png}\hfill
-\includegraphics[width=.5\textwidth]{figs/formation5.png}\hfill%
+\includegraphics[width=.5\textwidth]{figs/formation4.png}\hfill%
 %\includegraphics[width=.3\textwidth]{figs/Platooning_2.png}}\hfill%
 \end{minipage}%
 \caption{$x$ vs $y$ vs $z$ plots for shapeform. The grey trails represent the positions of the agents in the last 150 time steps.}
-\label{fig:shapeformplots}
+\label{fig:shapeplots}
+
 \end{figure}
 
 \subsection{Task}

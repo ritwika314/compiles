@@ -1,23 +1,23 @@
 \section{$\lgname$ Software Stack}
 \label{sec:verif}
-(1 page)
-
 \sayan{Download link, what it does, hardware. Mention IROS submission.}
 
 
 \subsection{Runtime system}
-The $\lgname$ front end takes as input a $\lgname$ program and generates a python program that runs on a python middle layer on the agents in the system (either in simulation or on actual hardware). We discuss the $\lgname$ middle layer in this section. Our implementation of the $\lgname$ language semantics. consists of the following major modules:\begin{inparaenum}
+The runtime system comprises of : $\lgname$ front-end, that takes as input a $\lgname$ program and generates a python program, that runs on a middle layer (written in python) on the agents in the system (either in simulation or on actual hardware), and. The python middle layer in our implementation of the $\lgname$ language consists of the following major modules:\begin{inparaenum}
 \item a communication module implementing the shared memory semantics,\item a motion module implementing the dynamics of the environment, \item an agent thread module which implements the discrete event loop semantics of each agent.  
 \end{inparaenum}
 
 
 \paragraph{Addressing the gap between theory and implementation}
 
-Usually cyber-physical system models are based on mathematical representations of the system without an emphasis on the implementability of said model. Our formal \emph{executable} semantics is intended to narrow that the gap between the theory and implementation of cyber-physical systems, as the translation of the mathematical rules into exact rewrite rules in the \K-semantic framework ensures that. Our python middleware, which is used to run the $\lgname$ programs in simulation as well as on hardware uses several modules to implement the semantics of each production in the $\lgname$ syntax. 
+Usually cyber-physical system models are based on mathematical representations of the system without an emphasis on the implementability of said model. Our formal \emph{executable} semantics is intended to narrow that the gap between the theory and implementation of cyber-physical systems, as the translation of the mathematical rules into exact rewrite rules in the \K-semantic framework ensures that. Our python middle layer, which is used to run the $\lgname$ programs in simulation as well as on hardware relies on several assumptions, which we discuss in the next subsection.
 
+
+\subsection{Key Assumptions} 
 
 \paragraph*{Periodic event execution semantics}
- assuOur semantics assumes periodic execution of agent programs, with minimum period defined by the sampling parameter $\delta>0$. This is a standard programming style in embedded and control systems. Several other languages, such as Giotto~\cite{henzinger2003giotto,benveniste2003synchronous}, use  similar semantics. The Giotto paper, shows how  interrupts can be emulated in this execution model. There is substantial work supporting analysis of such time-triggered systems~\cite{WMLM:TECS2010}. One of the other assumptions is that the program transitions in a round have  zero logical execution time. In our implementation, the participating agents run barrier synchronization algorithms, and we ensure that the controller only starts driving the physical plant after the maximum possible time to execute a program transition step for each agent has elapsed. 
+ Our semantics assumes periodic execution of agent programs, with minimum period defined by the sampling parameter $\delta>0$. This is a standard programming style in embedded and control systems. Several other languages, such as Giotto~\cite{henzinger2003giotto,benveniste2003synchronous}, use  similar semantics. The Giotto paper, shows how  interrupts can be emulated in this execution model. There is substantial work supporting analysis of such time-triggered systems~\cite{WMLM:TECS2010}. One of the other assumptions is that the program transitions in a round have  zero logical execution time. In our implementation, the participating agents run barrier synchronization algorithms, and we ensure that the controller only starts driving the physical plant after the maximum possible time to execute a program transition step for each agent has elapsed. 
 
 
 \paragraph*{Shared variable implementation through message passing}
@@ -32,11 +32,12 @@ The implementation of the $\lgname$ supports middle level path-planning module r
 \paragraph*{Known set of participants}
 Current design and implementation of $\lgname$ builds on the assumption that the number and identities of the participating agents $\UINS$ in known to each agent. In distributed systems with failures, computing the set of participants is a well-studied and foundational problem. problem~\cite{AlistarhAGG2011} and it is related to the active area of research on failure detectors~\cite{Chandra:1996,delporte2004weakest}. In the future, one could  relax this  assumption. For example, in our current hardware deployment, we are using the $\UINS$ as a sensor port that is informed of the identity of the live processes by periodic messages. 
 
+\subsection{Verification With Bounded Model Checking}
 Cyber-physical systems involve aspects of concurrency, distributed systems, and dynamical systems, and therefore, a formal semantics for any such system depends on several assumptions. In the design of $\lgname$, were both enforced by either the nature of the applications we wanted to be able to implement, or the observable constraints during hardware deployment. They were also guided by the eventual goal of being able to provide safety guarantees for such applications.
 
 
 %Eventual visibility of shared memory writes. Precise implementation and semantics.
-
+\paragraph*{Semantics driven bounded model checking }
 We built up on the capabilities of the \K semantic framework to provide a verification tool on top of the executable semantics of $\lgname$, which checks bounded invariants ($n$-invariants) for $\lgname$ applications using explicit-state reachability analysis. The input to the verification tool is 
 \begin{inparaenum}[(i)] 
     \item $P$: the program, 
@@ -48,7 +49,10 @@ We built up on the capabilities of the \K semantic framework to provide a verifi
 
 The tool outputs `safe' if the $\mathit{inv}$ is indeed an $n$-invariant, `unsafe' if it finds a counter-example execution of length $n$. In some cases, it can return `unknown' as the reachable set computed by the verification algorithm are an overapproximation of the actual reachable set of configurations.  
 
-The verification algorithm uses the $\lgname$ executable semantics to produce all configurations that the system reaches during program transitions. For this purpose, our semantics allows values of variables to be stored as intervals and propagated through program execution and environment transitions on explicit system models. If the dynamics of the system is a black box model then sensitivity analysis tools can be used to complement the reachable state computation. \fTBD{The actual verification algorithms are beyond the scope of this paper, and will be discussed in future submissions.+}  The applications whose verification results are shown in Table~\ref{tab:summary} are the following:
+The verification algorithm uses the $\lgname$ executable semantics to produce all configurations that the system reaches during program transitions. For this purpose, our semantics allows values of variables to be stored as intervals and propagated through program execution and environment transitions on explicit system models. If the dynamics of the system is a black box model then sensitivity analysis tools can be used to complement the reachable state computation. The actual verification algorithms are beyond the scope of this paper, and will be discussed in future submissions.
+
+\paragraph*{Benchmark Summary}
+The applications whose verification results are shown in Table~\ref{tab:summary} are the following:
 
 \begin{inparaenum}[(i)]
 \item a simple HVAC model that should ensure that the temperature of several rooms should remain above a  given temperature, 
@@ -56,9 +60,6 @@ The verification algorithm uses the $\lgname$ executable semantics to produce al
 \item Fischer's mutual exclusion protocol, 
 \item and a Platooning system, that should ensure that a platoon of cars maintains a separation between any consecutive cars. 
 \end{inparaenum}
-\fTBD{More detailed benchmark descriptions?}
-
-
 
 \begin{table}[!t]		
 \footnotesize
