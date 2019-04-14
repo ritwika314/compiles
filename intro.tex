@@ -9,7 +9,10 @@ This need for raising the level of abstraction and separating the \emph{platform
 Current programming languages do not natively support such abstractions for programming distributed cyberphysical systems.  The developer will have to keep track of communication between different sensors, actuators, and program variables. The {\em robotic operating system (ROS)}~\cite{rosbridge_suite,ros} does provide useful libraries and  publish-subscribe messaging standards, but these are not integrated in a programming abstraction. Similarly, coordination across multiple robots has to be built from the ground up using message passing threads. In order to simulate and test the application, one has to create different threads or instances for the developed code corresponding to different agents, and on top of that, the agent programs have to be harnessed in a physical world simulator with proper sensor and actuator models. In order to analyze correctness, one has to first define the semantics of the system. This  is again challenging  as  distributed cyber-physical systems have concurrency and data flows in multiple time-scales. 
 %A further source of concern is the gap between the system model with iand the executable code that is actually . 
 
-An ongoing, multi-year, project at our lab aims to address some of these challenges by designing, developing, and evaluating an open source programming system for distributed robotics. \footnote{Information about this project and the links to downloadable software will be made available to the reviewers upon request. We omit the information here for the sake of maintaining anonymity.} In this paper, we present the design and the implementation of the  {\em $\lgname$ language} and the supporting software tools, which form the  core of this programming system.
+An ongoing, multi-year, project at our lab aims to address some of these challenges by designing, developing, and evaluating an open source programming system for distributed robotics. \footnote{Information about this project and the links to downloadable software will be made available to the reviewers upon request. We omit the information here for the sake of maintaining anonymity.} In this paper, we present the design and the implementation of the  {\em $\lgname$ language} and the supporting software tools, namely the compiler, the \K executable semantics, and the simulator. This forms the  core of this programming system. $\lgname$ programs have been deployed on F1/10 vehicles, quadcopter, and roombas, and the hardware deployment will be presented in a future article. 
+
+
+
 
 
 %
@@ -47,8 +50,7 @@ The above $10$ line  $\lgname$ program implements this line formation algorithm 
 Another powerful feature of $\lgname$ used in the $\mathit{Lineform}$ program is the single-write multi-reader ({\bf allread}) shared array $x$, in which component $x[i]$ records the position of the $i^{th}$ robot in each round.  Shared variables allow the participating agents programs to coordinate without exposing the programmer to explicit message passing channels, buffers, and threads. This makes $\lgname$ programs succinct, readable, and often, as in the  above example, remarkably close to the textbook version of the algorithm. The $\lgname$ runtime system (discussed in more detail in Section~\ref{sec:software}) implements the propagation of  the shared variable write over messages. The formalization of the resulting semantics is discussed in Section~\ref{sec:K}.
 
 %
-The one and only event in the $\mathit{Lineform}$ program is $\mathit{TargetUpdate}$ (lines 5-9): it updates the target position of the agent  to be the midpoint of its neighbors.  Figure~\ref{fig:shapeformplots} shows the result of simulating a slightly modified version of $\mathit{Lineform}$ on the $\lgname$ simulator with $25$ robots forming a 3D-shape. The $\lgname$ compiler can also generate executables that can be deployed on several mobile robotic hardware platforms such as F1/10 cars~\cite{f1-10}, drones~\cite{}, and Roombas. We mention these capabilities briefly in Section~\ref{sec:intro:hardwaretc}, however, the platform-specific details for will be presented in a future article. 
-
+The one and only event in the $\mathit{Lineform}$ program is $\mathit{TargetUpdate}$ (lines 5-9): it updates the target position of the agent  to be the midpoint of its neighbors.  Figure~\ref{fig:shapeformplots} shows the result of simulating a slightly modified version of $\mathit{Lineform}$ on the $\lgname$ simulator with $25$ robots forming a 3D-shape. The $\lgname$ compiler can also generate executables that can be deployed on several mobile robotic hardware platforms such as F1/10 cars~\cite{f1-10}, drones~\cite{}, and Roombas. 
 %\renewcommand{\lstinputlisting}[1][]{\oldlstinputlisting[frame=lines,#1]}
  
 %\begin{figure}[ht!]
@@ -117,12 +119,11 @@ The simulator enables the user to test their discrete event loop with simple mot
 
 
 
-\subsubsection{Other by-products}
+%\subsubsection{Other by-products}
 
 
 %Design and development of the CyPhyHouse open source software system. This includes a discrete event simulator for distributed robotic systems, the application launcher, the run-time logging and monitoring system, and an integrated indoor positioning system. All of these software tools are integrated with our new robot programming language called $\lgname$ and its compiler. 
 
- First demonstration of the feasibility of end-to-end high-level application development and deployment on a distributed, heterogeneous, platform involving quadcopters and ground vehicles. 
 
 
 
