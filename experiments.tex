@@ -122,15 +122,6 @@ We used a Dubin's vehicle model for our agents, and RRT-based path planning in t
 \label{fig:taskplots}
 \end{figure}
 We can also easily replace the Motion automaton (consequently, the dynamical model) of any of the agents in the program, and run the same code on them for coordinating the tasks. Using different control parameters, and path planning parameters for the same motion automaton we obtain different statistics for task completion and distance traversal as depicted in in \reffig{tasksstats}. This heterogeneity and portability can be useful for coordinating the same application between different hardware platforms.   
-\begin{figure}[h!]
-\begin{minipage}{0.5\textwidth}
-%\includegraphics[width=.5\textwidth]{figs/taskplot1.png}\hfill
-%\includegraphics[width=.5\textwidth]{figs/taskplot2.png}}\hfill%
-%\includegraphics[width=.3\textwidth]{figs/Platooning_2.png}}\hfill%
-\end{minipage}%
-\caption{\small \emph{Left:} Task completion times with different configurations of agents. \emph{Right:}Min, Max and average distances travelled by each agent in different configurations.}. 
-\label{fig:taskstats}
-\end{figure}
 
  For all agents operating with the same motion automaton and dynamics model, We observed that conflict resolution took more time with more agents, as expected (\reffig{completionstats}). The completion time remained relatively stable. The maximum and minimum distances travelled were relatively closer with more robots. However, all these results were affected by the non-determinism in choice of paths and tasks by the agents, and their previous relative positions at the moment of choosing the next task as well. These results demonstrate a capability of covering various scenarios with different levels of heterogeneity and coordination.
  
