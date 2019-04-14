@@ -38,7 +38,7 @@ Several distributed applications for cyber physical systems require coordination
 \subsection{Formation}
 %portability
 \label{sec:formation}
-We used $\lgname$ to do implement some standard robotics \emph{formation} programs. The \emph{Lineform} app uniformly lines up the positions of  agents between the robots with the minimum and maximum $pid$. For the non-extremal agents, it sets the target way-point as the mid-point of the position of its neighbors. This type of linear update rule of is an example of hundreds of textbook algorithms for distributed consensus, rendezvous, optimization, swarm flocking, pattern formation~\cite{Tsitsiklis:1986,Blondel,Magnusbook2010} that are directly translated to working implementations using $\lgname$. The mathematical description of the algorithm found in control theory textbooks is shown on the right. 
+We used $\lgname$ to implement some standard robotics \emph{formation} programs, with self-stabilizing behavior. The \emph{Lineform} (app\reffig{lineform}) uniformly lines up the positions of  agents between the robots with the minimum and maximum $pid$. For the non-extremal agents, it sets the target way-point as the mid-point of the position of its neighbors. This type of linear update rule of is an example of hundreds of textbook algorithms for distributed consensus, rendezvous, optimization, swarm flocking, pattern formation~\cite{Tsitsiklis:1986,Blondel,Magnusbook2010} that are directly translated to working implementations using $\lgname$. The mathematical description of the algorithm found in control theory textbooks is shown on the right. 
 
 \begin{figure}[ht!]
 	\label{fig:lineform}
@@ -67,8 +67,10 @@ We used $\lgname$ to do implement some standard robotics \emph{formation} progra
 	\caption{\small $\lgname$ program for line formation ({\em Left}) and its mathematical counterpart in robotics and control textbooks ({\em Right}).}
 \end{figure}
 
-The shared \emph{allread} variable $p$ (Line\ref{lineformp}) is used by the agents to communicate their position to the other robots. The function \emph{midpoint} is a part of the library functions provided for the data type \emph{pos}; where $$\mathit{midpoint}(p_1,p_2,\ldots,p_n) = pos(\frac{\Sigma_n p_i.x}{n},\frac{\Sigma_n p_i.y}{n},\frac{\Sigma_n p_i.z}{n}) $ \rg{We provide the $\lgname$ definitions of all auxiliary library functions used in the code in the appendix \ref{auxfuncs}.}
+The shared \emph{allread} variable $p$ (Line\ref{lineformp}) is used by the agents to communicate their position to the other robots. The function \emph{midpoint} is a part of the library functions provided for the data type \emph{pos}; where $$\mathit{midpoint}(p_1,p_2,\ldots,p_n) = pos(\frac{\Sigma_n p_i.x}{n},\frac{\Sigma_n p_i.y}{n},\frac{\Sigma_n p_i.z}{n}) $.
+
 \iffalse
+\rg{We provide the $\lgname$ definitions of all auxiliary library functions used in the code in the appendix \ref{auxfuncs}.}
 
 \reffig{lineformplots} shows two screenshots of the simulation of this appp with 5 robots forming a line. 
 
@@ -83,7 +85,7 @@ The shared \emph{allread} variable $p$ (Line\ref{lineformp}) is used by the agen
 \label{fig:lineformplots}
 \end{figure}
 \fi
-We updated the Lineform app with a neighbor relation, to create the \emph{Squareform} app as shown in \reffig{squareform}. The code defines a local variables $nbrs$ which is a static list of list of integers, where the $i$th element is a list of the $\mathid{pid}$s of the neighbors of the agent with $\mathit{pid}$ $i$. It also defines a list of integers called $\mathit{corners}$ which contains the $\mathit{pid}$s of agents which should be at the corners of the square. If the agent $pid$ is not in the list, then it moves to the mid point of all its neighbors. 
+With the addition of an explicit neighbor relation, the \emph{{Squareform} app as shown in \reffig{squareform} can be used to generate a rhombus shape in the plane formed by four extremal points. The code defines a local variables $nbrs$ which is a static list of list of integers, where the $i$th element is a list of the $\mathid{pid}$s of the neighbors of the agent with $\mathit{pid}$ $i$. The list of $\mathit{pid}$s of the extremal points is stored in a list of integers called $\mathit{corners}$. If the agent $\mathit{pid}$ is not in $\mathit{corners}$ , then it moves to the mid point of all its neighbors.
 
 \begin{figure}[ht!]
     \noindent
@@ -93,11 +95,11 @@ We updated the Lineform app with a neighbor relation, to create the \emph{Square
         {\lstinputlisting[language=xyzNums,firstline=1,lastline=10,frame=none]{code/shapeform.tex}}
         {\lstinputlisting[language=xyzNums,firstline=11,frame=none,firstnumber=11]{code/shapeform.tex}}
     \end{center}
-    \caption{$\lgname$ program for robot $i$ in a Platoon to adjust its $x$ acceleration accordingly .}
+    \caption{$\lgname$ program for robot $i$ to move to move to the mid point of all its neighbors, with all agents in the system eventually forming a rhombus.}
     \label{fig:platooningapp}
 \end{figure}
 
-\reffig{shapeplots} shows two screenshots of the 3d-simulation for the \emph{Shapeform} app with 25 agents. The agents eventually form a square along the plane specified by the four fixed end agents. 
+\reffig{shapeplots} shows two screenshots of the 3d-simulation for the \emph{Shapeform} app with 25 agents. . 
 
 \begin{figure}[h!]
 \begin{minipage}{0.5\textwidth}
@@ -111,9 +113,9 @@ We updated the Lineform app with a neighbor relation, to create the \emph{Square
 
 \subsection{Task}
 
- \reffig{taskapp} shows the distributed task allocation application written in $\lgname$. Distributed task allocation is challenging as it involves mutual exclusion as well as construction of de-conflicted  paths. Tasks can be abstractions for real location-based objectives like package delivery, surveillance, or fire-fighting. $\lgname$ enables implementation of simple task allocation strategies using shared variables.
+ \reffig{taskapp} shows the distributed task allocation application written in $\lgname$. Distributed task allocation is challenging as it involves mutual exclusion as well as construction of de-conflicted paths to task locations. Tasks can be abstractions for real location-based objectives like package delivery, surveillance, or fire-fighting. 
 
-Mutual exclusion is always an essential feature when shared variables are involved. $\lgname$ provides a locking mechanism using the keyword $\mathit{atomic}$, which the $\mathit{Assign}$ event uses to update the shared list of tasks $\mathit{taskList}$ safely. 
+We implement a simple task allocation strategy using shared variables for coordination. Mutual exclusion is always an essential feature when shared variables are involved. $\lgname$ provides a locking mechanism using the keyword $\mathit{atomic}$, which the $\mathit{Assign}$ event uses to update the shared list of tasks $\mathit{taskList}$ safely. 
 
 We used a Dubin's vehicle model for our agents, and RRT-based path planning in this application, to avoid static obstacles specified in the initial configuration file. 
 
