@@ -6,17 +6,11 @@
 
 
 \subsection{Runtime system}
-Statement about the gap between artifacts and models 
+Usually cyber-physical system models are based on mathematical representations of the system without an emphasis on the implementability of said model. Our formal \emph{executable} semantics is intended to narrow that the gap between the theory and implementation of cyber-physical systems, as the translation of the mathematical rules into exact rewrite rules in the K-system ensures that. Our python middleware, which is used to run the $\lgname$ programs in simulation as well as on hardware uses several modules to implement the semantics of each production in the $\lgname$ syntax. 
 
-\paragraph{Shared mem via message passing}
-Timing assumptions
+One of the assumptions is that the program transitions in a round have  zero logical execution time. In reality, we assume that the participating agents run clock synchronization algorithms, and with negligible drift as compared to $\delta$, we can ensure that the controller only starts driving the physical plant after the maximum possible time to execute a program transition step for each agent has elapsed. Table~\ref{fig:elapsetime} shows that the time taken to complete a program transition step for the task application implemented in $\lgname$ which we deployed on the physical platforms, is negligible compared to $\delta$.
 
-\paragraph{Threads}
-Event
-Motion
-Messages
-
-\paragraph{Path planner and motion model}
+The design of the $\lgname $ supports middle level path-planning module  replacement  in  addition.  The  choice  of  path planner  used  can  be  platform-specific  and/or  application-specific. In the current version of the software, we have implemented  two  different  path-planning  algorithms:  a  simple path-planner,  which  generates  a  straight  path  between  the current agent position and the destination; and a RRT-based planner,  which  accounts  for  possible  obstacles  in  the  field and the robot dynamics. Due to the modular structure of the $\lgname$ system, it is easy for a user to implement a new path planner if a different behavior is desired.
 
 \subsection{Verification}
 
@@ -47,13 +41,9 @@ We built up on the capabilities of the \K semantic framework to provide a verifi
     \item $n$: number of rounds of the execution to check.
 \end{inparaenum}
 
-The tool outputs `safe' if the $\mathit{inv}$ is indeed an $n$-invariant, `unsafe' if it finds a counter-example execution of length $n$. In some cases, it can return `unknown' as the reachable set computed by the verification algorithm are an overapproximation of the actual reachable set of configurations.  will be discussed in the following section.  
-%
-The verification algorithm uses the $\lgname$ executable semantics to produce all configurations that the system reaches during program transitions. For this purpose, our semantics allows values of variables to be stored as intervals and propagated through program execution and environment transitions on explicit system models. If the dynamics of the system is a black box model then sensitivity analysis tools can be used to complement the reachable state computation. \fTBD{The actual verification algorithms are beyond the scope of this paper, and will be discussed in future submissions.+} 
+The tool outputs `safe' if the $\mathit{inv}$ is indeed an $n$-invariant, `unsafe' if it finds a counter-example execution of length $n$. In some cases, it can return `unknown' as the reachable set computed by the verification algorithm are an overapproximation of the actual reachable set of configurations.  
 
- Although, this verification method currently only scales to small problem instances, in context, this is a promising tool connecting a high-level language to actual implementations. The \emph{Agents} column in the table refers to the number of agents in the system. 
- 
- The applications are 
+The verification algorithm uses the $\lgname$ executable semantics to produce all configurations that the system reaches during program transitions. For this purpose, our semantics allows values of variables to be stored as intervals and propagated through program execution and environment transitions on explicit system models. If the dynamics of the system is a black box model then sensitivity analysis tools can be used to complement the reachable state computation. \fTBD{The actual verification algorithms are beyond the scope of this paper, and will be discussed in future submissions.+}  The applications whose verification results are shown in Table~\ref{tab:summary} are the following:
 \begin{inparaenum}[(i)]
 \item a simple HVAC model that should ensure that the temperature of several rooms should remain above a  given temperature, 
 \item  the above $\mathit{Task}$ app, that should ensure that there are no collisions, 
@@ -61,6 +51,8 @@ The verification algorithm uses the $\lgname$ executable semantics to produce al
 \item and a Platooning system, that should ensure that a platoon of cars maintains a separation between any consecutive cars. 
 \end{inparaenum}
 \fTBD{More detailed benchmark descriptions?}
+
+
 
 \begin{table}[!t]		
 \footnotesize
@@ -94,6 +86,11 @@ HVAC           & 4           &10    & 43s    &    Unsafe    \\
  \end{tabular}		
  \end{table}
  
+ The state space of a distributed system of agents with this level of non-determinism increases exponentially in size with the number of agents and the number of rounds. Although, this verification method currently only scales to small problem instances, in context, this is a promising tool connecting a high-level language to actual implementations. The \emph{Agents} column in the table refers to the number of agents in the system. The purpose of our verification module is to support a semantics driven design of reliable and safe distributed system i.e. assumptions that were required to make correctness guarantees about a program with well-defined \emph{safe} behaviors were used to make design decisions about the language semantics. 
+ 
+
+
+
 
 
 
@@ -101,4 +98,3 @@ HVAC           & 4           &10    & 43s    &    Unsafe    \\
 
 
 
-\subsection{Verification results}
