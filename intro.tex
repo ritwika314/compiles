@@ -68,22 +68,24 @@ The one and only event in this program $\mathit{TargetUpdate}$ (lines 5-9) is qu
 
 \subsubsection{\K semantics for $\lgname$}
 % motivation
-Implementation of programming languages usually have many bugs. One common source of bug is the gap between the formal semantics of the language and the its implementation as embodied in a compiler. The \K framework~\cite{} closes this gap by \sayan{fill in..}. \sayan{Two senteces introducing K .How and why it works. 2 sentences describing the impact of K.}
+Implementation of programming languages usually have many bugs. One common source of bug is the gap between the formal semantics of the language and the its implementation as embodied in a compiler. The \K framework~\cite{} closes this gap by allowing the specification of \emph{executable} semantics, which is essentially an interpreter that uses the formal semantics as rewrite rules. 
 
-We have \sayan{developed ...}
-This involved ... 
+\K is an executable semantic framework in which programming languages  can be defined using computations over states or configurations, and rewrite rules for said configurations. \K has several additional features including non deterministic execution, underspecification and explicit read-only and write only specifications for rewrite rules which makes \K suitable for defining concurrent and control intensive languages. 
+\K has been used in the past to provide most complete and thoroughly tested formal definition of the C language to date; being executable, the semantics was  tested against the GCC torture test suite and successfully passed 99.2\% of 776 test programs~\cite{chuckythesis}. More recently, it has been used to provide a formal semantics of x86-64~\cite{rusuadvepaper}, and its formal analysis capabilities have been used to verify the Ethereum Virtual Machine (EVM) bytecode. 
 
-Our \K implementation of $\lgname$ enables us to ... 
+\K, as a well established and fast growing language semantics framework was a natural choice to develop the formal $\lgname$ executable semantics to be able to narrow the gap between intended semantics and actual implementation. Some of the main challenges presented during this were designing the shared memory semantics keeping in mind that it would be eventually implemented through message passing, and adding the controller behaviors with path-planners to the back-end of \K to specify rewrite rules for them, as the $\lgname$ language itself lets the user use predefined controller modules. \fTBD{THIS STATEMENT IS NOT CLEAR, HOW DO I PHRASE THIS?}
 
-Verification.
+Our intent with this language is to provide a way of programming \emph{safe} distributed cyber-physical applications. Our \K implementation of $\lgname$ enables us to execute \emph{semantically accurate} programs automatically, so we can to design test suites for any implementation of the language semantics. To support formal analysis in case of non-specific initial states, we also implemented an interval arithmetic in \K, and support execution of $\lgname$ programs where the initial values of variables are provided in intervals. We implemented a explicit state bounded-model-checking verification tool on top of the \K semantics to provide this additional feature. 
+
 
 \subsubsection{Simulator and applications}
 
-Challenges: 
+We developed a simulator \reffig{simulator} for $\lgname$ applications within the CyPhyHouse framework. 
 
-Discrete event .. threads, motion. 
+The major challenges involved in designing a simulator were to create a simulation engine that exactly simulates the behavior expected on hardware deployment. To that end, the simulator uses motion automata, which can be provided any programmable dynamics to simulate the robot dynamics. The simulated sensed data can also be also provided realistic noises and dynamics to mimic actual system dynamics. The communication protocols to propagate shared memory messages between agents are also a part of the simulator communication module. The time between two computational steps (or discrete event loop iterations) is used to propagate messages to implement shared memory as in the actual hardware stack.
 
-What it enables. 
+The simulator enables the user to test their discrete event loop with simple motion models to test and debug the application program logic without incurring the cost of hardware deployment in case of buggy programs. The simulator also serves as a visualization tool as it can be used to plot the behavior of any program variables, or controller variables. For instance, we implemented a robot \emph{formation} app in $\lgname$, where several robots form a shape in which they are evenly distributed.
+
 
 \begin{figure}[h!]
 \begin{minipage}{0.5\textwidth}
@@ -91,12 +93,12 @@ What it enables.
 \includegraphics[width=.5\textwidth]{figs/formation5.png}\hfill%
 %\includegraphics[width=.3\textwidth]{figs/Platooning_2.png}}\hfill%
 \end{minipage}%
-\caption{$x$ vs $y$ vs $z$ plots for shapeform. The grey trails represent the positions of the agents in the last 150 time steps.}
-\label{fig:shapeformplots}
+\caption{$x$ vs $y$ vs $z$ plots for a robot formation application. The grey trails represent the positions of the agents in the last 150 time steps.}
+\label{fig:shapeformplots1}
 \end{figure}
 
 
-\subsubsection{Other by-producsts}
+\subsubsection{Other by-products}
 
 
 Design and development of the CyPhyHouse open source software system. This includes a discrete event simulator for distributed robotic systems, the application launcher, the run-time logging and monitoring system, and an integrated indoor positioning system. All of these software tools are integrated with our new robot programming language called $\lgname$ and its compiler. 
