@@ -67,25 +67,10 @@ We used $\lgname$ to implement some standard robotics \emph{formation} programs,
 	\caption{\small $\lgname$ program for line formation ({\em Left}) and its mathematical counterpart in robotics and control textbooks ({\em Right}).}
 \end{figure}
 
-The shared \emph{allread} variable $p$ (Line\ref{lineformp}) is used by the agents to communicate their position to the other robots. The function \emph{midpoint} is a part of the library functions provided for the data type \emph{pos}; where $$\mathit{midpoint}(p_1,p_2,\ldots,p_n) = pos(\frac{\Sigma_n p_i.x}{n},\frac{\Sigma_n p_i.y}{n},\frac{\Sigma_n p_i.z}{n}) $.
+The shared \emph{allread} variable $p$ (Line\ref{lineformp}) is used by the agents to communicate their position to the other robots. The function \emph{midpoint} is a part of the library functions provided for the data type \emph{pos}; where $$\mathit{midpoint}(p_1,p_2,\ldots,p_n) = pos(\frac{\Sigma_n p_i.x}{n},\frac{\Sigma_n p_i.y}{n},\frac{\Sigma_n p_i.z}{n}) $$.
 
-\iffalse
-\rg{We provide the $\lgname$ definitions of all auxiliary library functions used in the code in the appendix \ref{auxfuncs}.}
 
-\reffig{lineformplots} shows two screenshots of the simulation of this appp with 5 robots forming a line. 
-
-\begin{figure}[h!]
-\begin{minipage}{0.5\textwidth}
-%\includegraphics[width=.3\textwidth]{figs/Platooning_2.png}}\hfill%
-\includegraphics[width=.5\textwidth]{figs/lineform2.png}\hfill
-\includegraphics[width=.5\textwidth]{figs/lineform3.png}}\hfill%
-%\includegraphics[width=.3\textwidth]{figs/Platooning_2.png}}\hfill%
-\end{minipage}%
-\caption{$x$ vs $y$ plots for Lineform. The grey trails represent the positions of the agents in the last 150 time steps.}
-\label{fig:lineformplots}
-\end{figure}
-\fi
-With the addition of an explicit neighbor relation, the \emph{{Squareform} app as shown in \reffig{squareform} can be used to generate a rhombus shape in the plane formed by four extremal points. The code defines a local variables $nbrs$ which is a static list of list of integers, where the $i$th element is a list of the $\mathid{pid}$s of the neighbors of the agent with $\mathit{pid}$ $i$. The list of $\mathit{pid}$s of the extremal points is stored in a list of integers called $\mathit{corners}$. If the agent $\mathit{pid}$ is not in $\mathit{corners}$ , then it moves to the mid point of all its neighbors.
+With the addition of an explicit neighbor relation, the \emph{Squareform} app as shown in \reffig{squareform} can be used to generate a rhombus shape in the plane formed by four extremal points. The code defines a local variables $nbrs$ which is a static list of list of integers, where the $i$th element is a list of the $\mathid{pid}$s of the neighbors of the agent with $\mathit{pid}$ $i$. The list of $\mathit{pid}$s of the extremal points is stored in a list of integers called $\mathit{corners}$. If the agent $\mathit{pid}$ is not in $\mathit{corners}$ , then it moves to the mid point of all its neighbors.
 
 \begin{figure}[ht!]
     \noindent
@@ -96,7 +81,7 @@ With the addition of an explicit neighbor relation, the \emph{{Squareform} app a
         {\lstinputlisting[language=xyzNums,firstline=11,frame=none,firstnumber=11]{code/shapeform.tex}}
     \end{center}
     \caption{$\lgname$ program for robot $i$ to move to move to the mid point of all its neighbors, with all agents in the system eventually forming a rhombus.}
-    \label{fig:platooningapp}
+    \label{fig:squareform}
 \end{figure}
 
 \reffig{shapeplots} shows two screenshots of the 3d-simulation for the \emph{Shapeform} app with 25 agents. . 
