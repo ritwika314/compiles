@@ -104,16 +104,17 @@ To that end, the simulator uses motion automata, which can be provided any progr
 
 The simulator enables the user to test their discrete event loop with simple motion models to test and debug the application program logic without incurring the cost of hardware deployment in case of buggy programs. The simulator also serves as a visualization tool as it can be used to plot the behavior of any program variables, or controller variables. For instance, we implemented a robot \emph{formation} app in $\lgname$, where several robots form a shape in which they are evenly distributed.
 
-
 \begin{figure}[h!]
 \begin{minipage}{0.5\textwidth}
 \includegraphics[width=.5\textwidth]{figs/formation1.png}\hfill
-\includegraphics[width=.5\textwidth]{figs/formation5.png}\hfill%
+\includegraphics[width=.5\textwidth]{figs/formation4.png}\hfill%
 %\includegraphics[width=.3\textwidth]{figs/Platooning_2.png}}\hfill%
 \end{minipage}%
-\caption{$x$ vs $y$ vs $z$ plots for a robot formation application. The grey trails represent the positions of the agents in the last 150 time steps.}
-\label{fig:shapeformplots1}
+\caption{Screenshot of $\lgname$ simulator visualizing positions of a swarm of $25$ agents running a slightly modified version of $\mathit{Lineform}$ application forming a 3D-shape in space.}
+\label{fig:shapeplots}
 \end{figure}
+
+
 
 
 \subsubsection{Other by-products}
