@@ -15,7 +15,7 @@ Updatepos:
   pre True
   eff :
      if not(pid in corners) :
-        Motion.target = midpoint(get(nbrs,pid))
+        Motion.target = mid(get(nbrs,pid))
     p[pid] = Motion.psn
 
     

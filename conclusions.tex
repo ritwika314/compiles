@@ -1,0 +1,12 @@
+\subsection{Conclusion}
+\label{sec:conclusion}
+
+
+The divide between theory and implementation concerns of cyber physical systems is an obstacle in development of portable, reusable and safe applicaton design for these systems. Although the methods for formal analysis of the models for these systems have been highly researched and developed, pushing in programming language research in this area can present a unified approach to bridging the aforementioned divide. 
+To take a step forward in this direction we designed an event driven language for coordination and control, and implemented its formal executable semantics. The shared memory based communication model we used enables us to naturally model several known benchmarks in robotics and distributed systems. Our work is a move in the direction of providing users without programming expertise in domains like controller theory, robotics motion control, or network protocols, with an ability to safely program distributed applications which may or may not have dynamic components. 
+
+ $\lgname$ allows a user to encode a variety of relevant and interesting applications with or without interactions with the environment. The $\lgname$ language uses abstractions for components like path planning, localization, and shared memory, to simplify code. We also discussed how varying relevant parameters of the applications (such as the value of $\delta$: time elapse between two program transitions) affects their analysis.
+
+The $\lgname$ semantics model is realistic by design to deploy on hardware. Our shared memory semantics are informed by the actual implementation using message passing protocols, the language and platform interfaces are used to define the configuration elements on which rewrite rules are specified. Conversely, the formal analysis driven by the semantics guides the requirements enforced upon the hardware and simulation implementations as well, narrowing the gap between theory and implementation of the language semantics. 
+
+ $\lgname$ and the $\lgname$ compiler can indeed enable users to develop and run distributed robotics applications in a platform independent fashion; $\lgname$ programs can be ported across platforms automatically by linking with the right platform dependent libraries; and the \emph{Simulator} and \kbmc\ tools can be used to simulate and verify the same application code. 

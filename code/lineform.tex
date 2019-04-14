@@ -5,7 +5,7 @@ Lineform(pid)
    allread: pos x $\label{lineformp}$
    Update:
       pre True
-      eff if not(pid == MAX - 1 or pid == 0):
+      eff if not(pid == \NMAX - 1 or pid == 0):
          Motion.target = mid(<x[pid+1],x[pid-1]>)
          x[pid] = Motion.psn
 
