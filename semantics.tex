@@ -155,7 +155,7 @@ Given the control flow statements, rule \textsc{event} states that only the effe
 \begin{mathpar}
 \hspace{-.5in}
     \inferrule*[Right=\sc{prog-to-env}]
-    {\begin{array}{l} {\agnt= (\mathit{pc},{M},\mathit{sm},\mathtt{prog}) \wedge\cr \agnt^\prime =  (\mathit{pc}^\prime,{M},\mathit{sm},\mathtt{env}) \wedge \mathit{pc} = \mathit{endEvent} \rightsquigarrow \mathit{pc}^\prime}\end{array}} 
+    {\begin{array}{l} \agnt= (\mathit{pc},{M},\mathit{sm},\mathtt{prog}) \wedge\cr \agnt^\prime =  (\mathit{pc}^\prime,{M},\mathit{sm},\mathtt{env}) \wedge \mathit{pc} = \mathit{endEvent} \rightsquigarrow \mathit{pc}^\prime\end{array}} 
     {\langle{S},\agnt, \mathit{endEvent} \rangle {\stmtrule}  \langle{S},\agnt^\prime, \cdot \rangle }\and \qquad \qquad \label{e1}
     \end{mathpar}
 \end{mdframed}
@@ -192,8 +192,10 @@ Now that we have the semantics for system to finish the program transition, we p
 \begin{mdframed}
     	\scriptsize
     \begin{mathpar}
-    \inferrule*[Right =\sc{envtrans}]{ \begin{array} \forall i \in \UINS,\lconfig{i}^\prime.\mathit{sm} = \mathit{f}(\lconfig{i}.M,\lconfig{i}.\mathit{sm},\delta) \wedge\cr \forall x \in \mathit{Keys}({S}),\lconfig{i}'.{M}[x \mapsto S[x]] \wedge \lconfig{i}.\turn = \mathtt{env} \end{array}}
-    { (L, {S}, \tau,\mathtt{prog})\rightarrow_G ({L}^\prime, {S}, \tau + \delta,\mathtt{env}) \label{env}     }
+    \inferrule*[Right =\sc{envtrans}]{ \begin{array} {l}
+    \forall i \in \UINS,\lconfig{i}^\prime.\mathit{sm} = \mathit{f}(\lconfig{i}.M,\lconfig{i}.\mathit{sm},\delta) \wedge\cr \forall x \in \mathit{Keys}({S}),\lconfig{i}'.{M}[x \mapsto S[x]] \wedge \lconfig{i}.\turn = \mathtt{env} \end{array}}    { (L, {S}, \tau,\mathtt{prog})\rightarrow_G ({L}^\prime, {S}, \tau + \delta,\mathtt{env}) \label{env}     }
+    
+    
     \\
   \hspace{-2in}  
  \inferrule*[Right=\sc{agent-env-to-prog}]

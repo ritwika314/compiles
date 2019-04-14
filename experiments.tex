@@ -23,7 +23,7 @@ Several distributed applications for cyber physical systems require coordination
 
 \begin{figure}[h!]
 \begin{minipage}{0.5\textwidth}
-\includegraphics[width=.5\textwidth]{figs/braking_acc.png}}\hfill%
+\includegraphics[width=.5\textwidth]{figs/braking_acc.png}\hfill
 %\includegraphics[width=.3\textwidth]{figs/Platooning_2.png}}\hfill%
 \includegraphics[width=.5\textwidth]{figs/braking_bad.png}
 \end{minipage}%
@@ -70,7 +70,7 @@ We used $\lgname$ to implement some standard robotics \emph{formation} programs,
 The shared \emph{allread} variable $p$ (Line\ref{lineformp}) is used by the agents to communicate their position to the other robots. The function \emph{midpoint} is a part of the library functions provided for the data type \emph{pos}; where $$\mathit{midpoint}(p_1,p_2,\ldots,p_n) = pos(\frac{\Sigma_n p_i.x}{n},\frac{\Sigma_n p_i.y}{n},\frac{\Sigma_n p_i.z}{n}) $$.
 
 
-With the addition of an explicit neighbor relation, the \emph{Squareform} app as shown in \reffig{squareform} can be used to generate a rhombus shape in the plane formed by four extremal points. The code defines a local variables $nbrs$ which is a static list of list of integers, where the $i$th element is a list of the $\mathid{pid}$s of the neighbors of the agent with $\mathit{pid}$ $i$. The list of $\mathit{pid}$s of the extremal points is stored in a list of integers called $\mathit{corners}$. If the agent $\mathit{pid}$ is not in $\mathit{corners}$ , then it moves to the mid point of all its neighbors.
+With the addition of an explicit neighbor relation, the \emph{Squareform} app as shown in \reffig{squareform} can be used to generate a rhombus shape in the plane formed by four extremal points. The code defines a local variables $nbrs$ which is a static list of list of integers, where the $i$th element is a list of the $\mathit{pid}$s of the neighbors of the agent with $\mathit{pid}$ $i$. The list of $\mathit{pid}$s of the extremal points is stored in a list of integers called $\mathit{corners}$. If the agent $\mathit{pid}$ is not in $\mathit{corners}$ , then it moves to the mid point of all its neighbors.
 
 \begin{figure}[ht!]
     \noindent
@@ -89,7 +89,7 @@ With the addition of an explicit neighbor relation, the \emph{Squareform} app as
 \begin{figure}[h!]
 \begin{minipage}{0.5\textwidth}
 \includegraphics[width=.5\textwidth]{figs/formation1.png}\hfill
-\includegraphics[width=.5\textwidth]{figs/formation5.png}}\hfill%
+\includegraphics[width=.5\textwidth]{figs/formation5.png}\hfill%
 %\includegraphics[width=.3\textwidth]{figs/Platooning_2.png}}\hfill%
 \end{minipage}%
 \caption{$x$ vs $y$ vs $z$ plots for shapeform. The grey trails represent the positions of the agents in the last 150 time steps.}
@@ -106,8 +106,8 @@ We used a Dubin's vehicle model for our agents, and RRT-based path planning in t
 
 \begin{figure}[h!]
 \begin{minipage}{0.5\textwidth}
-\includegraphics[width=.5\textwidth]{figs/task1.png}\hfill
-\includegraphics[width=.5\textwidth]{figs/task2.png}}\hfill%
+%\includegraphics[width=.5\textwidth]{figs/task1.png}\hfill
+%\includegraphics[width=.5\textwidth]{figs/task2.png}}\hfill%
 %\includegraphics[width=.3\textwidth]{figs/Platooning_2.png}}\hfill%
 \end{minipage}%
 \caption{$x$ vs $y$ plots for Task App. The grey trails represent the positions of the agents in the last 150 time units, the blue dots represent the task locations of the incomplete tasks, and the green dots represent the task locations of the completed tasks. The black squares represent static obstacles. }
@@ -116,8 +116,8 @@ We used a Dubin's vehicle model for our agents, and RRT-based path planning in t
 We can also easily replace the Motion automaton (consequently, the dynamical model) of any of the agents in the program, and run the same code on them for coordinating the tasks. Using different control parameters, and path planning parameters for the same motion automaton we obtain different statistics for task completion and distance traversal as depicted in in \reffig{tasksstats}. This heterogeneity and portability can be useful for coordinating the same application between different hardware platforms.   
 \begin{figure}[h!]
 \begin{minipage}{0.5\textwidth}
-\includegraphics[width=.5\textwidth]{figs/taskplot1.png}\hfill
-\includegraphics[width=.5\textwidth]{figs/taskplot2.png}}\hfill%
+%\includegraphics[width=.5\textwidth]{figs/taskplot1.png}\hfill
+%\includegraphics[width=.5\textwidth]{figs/taskplot2.png}}\hfill%
 %\includegraphics[width=.3\textwidth]{figs/Platooning_2.png}}\hfill%
 \end{minipage}%
 \caption{\small \emph{Left:} Task completion times with different configurations of agents. \emph{Right:}Min, Max and average distances travelled by each agent in different configurations.}. 
@@ -129,5 +129,5 @@ We can also easily replace the Motion automaton (consequently, the dynamical mod
 \fTBD{placeholder plot}\begin{figure}[h!]
 \includegraphics[width=.5\textwidth]{figs/completion.png}\hfill
 \caption{\small  Blue-  total completion time and orange- time taken for conflict resolution in seconds}. 
-\label{fig:taskstats}
+\label{fig:completionstats}
 \end{figure}
