@@ -119,7 +119,7 @@ where $\mathit{Stmts}$ refers to the set of all possible statements allowed by $
 
 \subsubsection{Program variable updates}
 Rule \textsc{Lvar-assign} describes the semantics of how an assignment for a local variable $x$ updates the agent configuration $L$ to $L'$ by modifying $M$. Specifically, $x\notin \mathit{Keys}(S) \wedge x \in \mathit{Keys(M)}$ represents the fact that there is no mapping from $x$ in the global context $S$, but there is one in the local context $M$. The notation $\mathit{pc} = x = c \rightsquigarrow \mathit{pc}^\prime$ represents that syntactic production $\mathit{pc}^\prime$ is the one following the statement $x = c$ from the production $\mathit{pc}$. $M[x\mapsto v]$ refers to the fact that in the map $M$, the key $x$ maps to the value $v$. 
-
+\vspace{2pt}
 \begin{mdframed}
 \scriptsize
 \begin{mathpar}
@@ -137,7 +137,8 @@ Rule \textsc{Lvar-assign} describes the semantics of how an assignment for a loc
 Similar to the rule \textsc{lvar-assign}, rule \textsc{Svar-assign} describes how the semantics of assignment to a shared variable $x$ updates the current configuration. 
 %
 When an agent writes to a shared variable, it updates both its local copy in the local context $M$, as well as the global context $S$. The implementation of the runtime system for $\lgname$ message passing to send the updates to local variables to other agents. 
-% 
+%
+\vspace{2pt} 
 \begin{mdframed}
 \scriptsize
 \begin{mathpar}
@@ -155,7 +156,7 @@ When an agent writes to a shared variable, it updates both its local copy in the
 \subsection{Event semantics}
 
 The statement processing rules in \refsect{stmt} are applicable only when the turn of the agent is set to \texttt{prog}. As a result, statements in a program can only be executed during the program transition. We first present some rules for control flow in the program. The rule \textsc{stmt-seq-1} ensures that a statement are processed completely before moving on to processing the next statement, and \textsc{stmt-seq-2} ensures that once a statement that has been processed completely, the next statement comes up for processing. 
-
+\vspace{2pt}
 \begin{mdframed}
 	\scriptsize
 \begin{mathpar}
@@ -175,7 +176,7 @@ The statement processing rules in \refsect{stmt} are applicable only when the tu
 
 
 Given the control flow statements, rule \textsc{event} states that only the effect of an an enabled event may be executed. The predicate $\mathit{eval}(\mathit{pre},M)$ evaluates to $\verb|True|$ when the precondition $\mathit{pre}$ of an event evaluates to $\mathit{True}$ in the local context $M$ of a given state. A marker(statement) \emph{endEvent} is added after the effect of that event to indicate that the event has executed. 
-
+\vspace{2pt}
 \begin{mdframed}
 \scriptsize
 \begin{mathpar}
@@ -198,7 +199,7 @@ $$\rightarrow_G\ \subseteq (\mathbb{L}\times \pws \times \mathbb{R}^+\times \{\m
 
 First, we present the semantics of executing the events for all agents. A $\lgname$ program can be seen as sequences of $\stmtrule$ rules, which determine event executions followed by an environment transition. To express this, we define a rule that shows the the changes in the configuration of the overall system due to all the agents executing their program just before an environment transition is applicable.  
 
-
+\vspace{2pt}
 \begin{mdframed}
 \scriptsize
 \begin{mathpar}
@@ -215,6 +216,7 @@ First, we present the semantics of executing the events for all agents. A $\lgna
 
 %\fTBD{Agent local states and propagation over messages.}
 Now that we have the semantics for system to finish the program transition, we present the semantics for environment transitions, and how the \emph{turn} resets to \verb|prog|. Suppose the function $f:\mathit{Var}\times \mathit{Sens} \times Val \times \mathbb{R} \mapsto \Val$ captures the behavior of the controller, and can be used to update the sensor ports after time $\delta$. The rule \textsc{envtrans} shows the semantics of the system configuration after the rule \ref{runsys}.
+\vspace{2pt}
 \begin{mdframed}
     	\scriptsize
     \begin{mathpar}
@@ -241,8 +243,6 @@ Rule \textsc{agnt-env-to-prog} is the semantic rule for setting the $\mathit{tur
     
     
 Rule \textsc{envtrans} captures the fact that the global context $S$ is copied into local context of each agent $i \ (\lconfig{i}.M)$, thus ensuring that all agents have consistent shared variable values before the next program transition. After that, rule \textsc{env-to-prog} changes the turn of each agent back to program. In an actual execution, the controller  would run the program on hardware, whose sensor ports evolve for $\delta$ time between program transitions. 
-
-\fTBD{Relate this to assumptions}
 \subsection{Implementation in K}
 
 The language syntax is first parsed using a standard indentation parser implemented in python. We implemented $\lgname$ semantics in \K, which a rewriting-based executable framework for defining language semantics. One can view a language semantics naturally as a set of reduction rules over configurations. Components of a configuration are called {\em cells} in \K. To implement the semantics discussed in \refsect{semantics}, the configuration in \K includes several bookkeeping variables as well. 
@@ -252,6 +252,7 @@ Semantics in \K is expressed using configurations, which organize the components
 
 
 We use a top level {\em system} cell with nested cells corresponding to the elements discussed in \refsect{semantics}, as well as other cells which are used to store information like number of agents in the system, simulation parameters of the program, and other bookkeeping information we used to implement the semantics. There is a special cell called the {\em k} cell, which is used to store the current computation in the program. Each agent has a {\em k} cell to store its computation. Recall that a local variable is updated only in the local memory. The rule for this checks whether the variable is not in the keys of the map {\em sysLoc} from shared variables to their locations. The following rule in \K that corresponds to our \textsc{lvar-assign} rule in the semantics. 
+
 \vspace{2pt}
 \begin{mdframed}
 \begin{Verbatim}[fontsize=\tiny]
@@ -264,6 +265,7 @@ We use a top level {\em system} cell with nested cells corresponding to the elem
 \end{mdframed}
 
 We use bookkeeping variables in the \K configuration to ensure that all agents have their turn set to \texttt{env} before the system environment transition.We also  ensure that an agent has updated its sensor ports after the environment transition, to implement the rule \textsc{agent-env-to-prog}. Once all the agents in the system are ready to perform the next program transition, the rule \textsc{env-to-prog} is implemented as follows. If the number of agents which have set their $\mathit{turn}$ to $\mathit{env}$ (indicated by the cell {\em envToProg}) is the same as the number of all agents in the system, then the system sets its turn from $\mathit{Env}$ to $\mathit{Prog}$. 
+
 \vspace{2pt}
 \begin{mdframed}
 \begin{Verbatim}[fontsize=\tiny]
