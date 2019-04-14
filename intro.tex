@@ -9,7 +9,7 @@ This need for raising the level of abstraction and separating the \emph{platform
 Current programming languages do not natively support such abstractions for programming distributed cyberphysical systems.  The developer will have to keep track of communication between different sensors, actuators, and program variables. The {\em robotic operating system (ROS)}~\cite{rosbridge_suite,ros} does provide useful libraries and  publish-subscribe messaging standards, but these are not integrated in a programming abstraction. Similarly, coordination across multiple robots has to be built from the ground up using message passing threads. In order to simulate and test the application, one has to create different threads or instances for the developed code corresponding to different agents, and on top of that, the agent programs have to be harnessed in a physical world simulator with proper sensor and actuator models. In order to analyze correctness, one has to first define the semantics of the system. This  is again challenging  as  distributed cyber-physical systems have concurrency and data flows in multiple time-scales. 
 %A further source of concern is the gap between the system model with iand the executable code that is actually . 
 
-An ongoing, multi-year, project at our lab aims to address some of these challenges by designing, developing, and evaluating a programming system for distributed robotics. \footnote{Information about this project and the links to downloadable software will be made available to the reviewers upon request. We omit the information here for the sake of maintaining anonymity.} In this paper, we present the design and the implementation of the  {\em $\lgname$ language} and the supporting software tools, which form the  core of this programming system.
+An ongoing, multi-year, project at our lab aims to address some of these challenges by designing, developing, and evaluating an open source programming system for distributed robotics. \footnote{Information about this project and the links to downloadable software will be made available to the reviewers upon request. We omit the information here for the sake of maintaining anonymity.} In this paper, we present the design and the implementation of the  {\em $\lgname$ language} and the supporting software tools, which form the  core of this programming system.
 
 
 %
@@ -68,26 +68,39 @@ The one and only event in the $\mathit{Lineform}$ program is $\mathit{TargetUpda
 
 %We have implemented a compiler for $\lgname$ that generates executable Python programs that can be either simulated in a discrete event simulator (discussed below) or 
 
-\subsubsection{\K semantics for $\lgname$}
+\subsubsection{First formalization of a robotics or CPS language in \K}
 % motivation
-Implementation of programming languages usually have many bugs. One common source of bugs is the gap between the formal semantics of the language and the its implementation as embodied in a compiler. The \K framework~\cite{Kf} closes this gap by allowing the specification of {\em  formal executable semantics of any programming language} in terms of  rewrite rules. These rewrite rules define how each and every possible statement in the  language changes, possibly nondeterministically, the state of the machine executing the program. 
+Implementations of programming languages usually contain many bugs. One common type of bugs creeps in from the gap between the official semantics of the language (as in a user manual) and the its implementation as embodied in a compiler. The \K framework~\cite{Kf} closes this gap by allowing the specification of {\em  formal executable semantics of any programming language} in terms of rewrite rules. These rewrite rules define how each and every possible statement in the  language changes, possibly nondeterministically, the ``state of the machine'' executing the program. 
 %
-\K  provided the most-complete-to-date formal definition of the C language~\cite{KC}. As the \K semantics is executable, \sayan{this semantics was tested against the GCC torture test suite and successfully passed 99.2\% of 776 test programs~\cite{chuckythesis}. What does this mean?} More recently, \K  was used to provide a formal semantics of x86-64~\cite{rusuadvepaper} and its formal analysis capabilities were used to verify the Ethereum Virtual Machine (EVM) bytecode. 
+\K  provided the most-complete-to-date formalization  of the C language~\cite{KC}. This semantics was tested against the GCC torture test suite and it successfully passed 99.2\% of 776 test programs~\cite{chuckythesis}. Recently, \K  was used to provide a formal semantics of x86-64~\cite{rusuadvepaper} and the Ethereum Virtual Machine (EVM) bytecode. 
 
 
 %\K  using computations over states or configurations, and rewrite rules for said configurations. \K has several additional features including non deterministic execution, underspecification and explicit read-only and write only specifications for rewrite rules which makes \K suitable for defining concurrent and control intensive languages. 
-{\em In order to close the above-mentioned gap, we have developed the complete executable formal semantics of $\lgname$ in \K.} 
-\sayan{This is the first formalization of a language for distributed systems in \K.} 
-Some of the main challenges presented during this were designing the shared memory semantics keeping in mind that it would be eventually implemented through message passing, and adding the controller behaviors with path-planners to the back-end of \K to specify rewrite rules for them, as the $\lgname$ language itself lets the user use predefined controller modules. \fTBD{THIS STATEMENT IS NOT CLEAR, HOW DO I PHRASE THIS?}
+{\em In order to close the above-mentioned gap, we have developed the complete executable formal semantics of $\lgname$ in \K.} This is the first formalization of a robotics or CPS language in \K;  and the first multi-agent language. \sayan{One challenge here is to define the ``state of the machine'' executing $\lgname$ programs. This state now has to include not only the states of the program variables of the different agents, but also the sensor and actuator ports, and the shared variables.}
 
-Our intent with this language is to provide a way of programming \emph{safe} distributed cyber-physical applications. Our \K implementation of $\lgname$ enables us to execute \emph{semantically accurate} programs automatically, so we can to design test suites for any implementation of the language semantics. To support formal analysis in case of non-specific initial states, we also implemented an interval arithmetic in \K, and support execution of $\lgname$ programs where the initial values of variables are provided in intervals. We implemented a explicit state bounded-model-checking verification tool on top of the \K semantics to provide this additional feature. 
+\sayan{
+Our key innovation for achieving this formalization is to parameterize the semantics with a set of {\em environment functions\/} that model the behavior of the physical environment, the controller, and other operations that are external to the application program.  The environment functions are called by the  back-end of \K to update certain state components (e.g., sensor and actuator ports). Thus, the formal semantics of $\lgname$ is also modular and portable across  different environment models. }
+
+%ontroller behaviors with path-planners to the back-end of \K to specify rewrite rules for them, as the $\lgname$ language itself lets the user use predefined controller modules.
+In addition, the shared memory semantics of $\lgname$ is implemented over  message passing.. \sayan{So what is challenging interesting in what we have done here? Mention synchronous round-by-round execution. Events. Shared memory propagation. }
 
 
-\subsubsection{Simulator and applications}
+Our \K implementation of $\lgname$ enables us to execute  programs \emph{semantically accurately}. So we can to design test suites for any implementation of the language semantics. 
+\sayan{This is weak, as we have not done this.}
+\sayan{Mention nondeterminism?}
+To support formal analysis in case of non-specific initial states, we also implemented an interval arithmetic in \K, and support execution of $\lgname$ programs where the initial values of variables are provided in intervals. We implemented a explicit state bounded-model-checking  tool on top of the \K semantics to provide this additional feature. \sayan{What are the main conclusions of this part? Give pointer to section ahead.}
 
-We developed a simulator \reffig{simulator} for $\lgname$ applications within the CyPhyHouse framework. 
+\sayan{Demonstration of feasibility?} 
+\sayan{copied from before:
+Design and development of the $\lgname$ programming language and the supporting $\mathbb{K}$-based~\cite{Kpaper} verification tool \kbmc\, are discussed here for the sake of completeness; those details will appear elsewhere~\cite{koordreport}.}
 
-The major challenges involved in designing a simulator were to create a simulation engine that exactly simulates the behavior expected on hardware deployment. To that end, the simulator uses motion automata, which can be provided any programmable dynamics to simulate the robot dynamics. The simulated sensed data can also be also provided realistic noises and dynamics to mimic actual system dynamics. The communication protocols to propagate shared memory messages between agents are also a part of the simulator communication module. The time between two computational steps (or discrete event loop iterations) is used to propagate messages to implement shared memory as in the actual hardware stack.
+\subsubsection{$\lgname$ simulator and applications}
+
+{\em We have developed a high-fidelity, multi-threaded simulator for $\lgname$ applications (\reffig{simulator}). } The simulator can execute instances with 50+ agents with heterogeneous dynamics, executing $\lgname$ applications, and therefore, is a powerful tool for debugging and performance analysis.  
+
+The major challenges involved in designing a simulator were to create a simulation engine that exactly simulates the behavior expected on hardware deployment. 
+\sayan{But this is on the surface an impossible task.}
+To that end, the simulator uses motion automata, which can be provided any programmable dynamics to simulate the robot dynamics. The simulated sensed data can also be also provided realistic noises and dynamics to mimic actual system dynamics. The communication protocols to propagate shared memory messages between agents are also a part of the simulator communication module. The time between two computational steps (or discrete event loop iterations) is used to propagate messages to implement shared memory as in the actual hardware stack.
 
 The simulator enables the user to test their discrete event loop with simple motion models to test and debug the application program logic without incurring the cost of hardware deployment in case of buggy programs. The simulator also serves as a visualization tool as it can be used to plot the behavior of any program variables, or controller variables. For instance, we implemented a robot \emph{formation} app in $\lgname$, where several robots form a shape in which they are evenly distributed.
 
@@ -106,13 +119,12 @@ The simulator enables the user to test their discrete event loop with simple mot
 \subsubsection{Other by-products}
 
 
-Design and development of the CyPhyHouse open source software system. This includes a discrete event simulator for distributed robotic systems, the application launcher, the run-time logging and monitoring system, and an integrated indoor positioning system. All of these software tools are integrated with our new robot programming language called $\lgname$ and its compiler. 
+%Design and development of the CyPhyHouse open source software system. This includes a discrete event simulator for distributed robotic systems, the application launcher, the run-time logging and monitoring system, and an integrated indoor positioning system. All of these software tools are integrated with our new robot programming language called $\lgname$ and its compiler. 
 
  First demonstration of the feasibility of end-to-end high-level application development and deployment on a distributed, heterogeneous, platform involving quadcopters and ground vehicles. 
 
- Demonstration of the feasibility of system-level verification of applications written in $\lgname$. 
 
-Design and development of the $\lgname$ programming language and the supporting $\mathbb{K}$-based~\cite{Kpaper} verification tool \kbmc\, are discussed here for the sake of completeness; those details will appear elsewhere~\cite{koordreport}.
+
 
 %Design and development of the Koord programming language and the supporting verification tool KoordBMC~\cite{koordreport}--- significant, related but separate efforts---are not contributions of the current paper; we discuss their usage for the sake of completeness. 
 % completely describing the framework. 
@@ -131,20 +143,13 @@ Design and development of the $\lgname$ programming language and the supporting 
 %\label{fig:exp_traces}
 %\end{figure}
 
+%
+%%\footnote{\href{https://cyphyhouse.github.io/index.html}{https://cyphyhouse.github.io}}: an open source software framework for programming, rapid deployment, and testing of distributed robotics applications. 
+%\sayan{The high-level $\lgname$ language enables users to write succinct distributed coordination applications without getting bogged down by messaging and thread management issues (See Examples in \reffig{lineform} and \reffig{taskapp}).}
+%Using the CyPhyHouse framework around $\lgname$, a user can code, compile, launch, and run applications in a highly-automated fashion (\reffig{arch}). 
+%\sayan{The framework has been built over three years and has more than 100k lines of source code.}
 
-\footnote{\href{https://cyphyhouse.github.io/index.html}{https://cyphyhouse.github.io}}: an open source software framework for programming, rapid deployment, and testing of distributed robotics applications. 
-\sayan{The high-level $\lgname$ language enables users to write succinct distributed coordination applications without getting bogged down by messaging and thread management issues (See Examples in \reffig{lineform} and \reffig{taskapp}).}
-Using the CyPhyHouse framework around $\lgname$, a user can code, compile, launch, and run applications in a highly-automated fashion (\reffig{arch}). 
-\sayan{The framework has been built over three years and has more than 100k lines of source code.}
 
-
-    - problems in the space of (distributed) CPS, robotics, automation .
-    - Coordination and Control issues. 
-    - why we need something like Koord /why something like koord helps computer scientists (non roboticists) work with robotics. 
-    - what is koord and how Koord specifically accommodates users
-    - how we built koord. 
-    - what is this paper
-    - Related work
     
     \section{Related work}
     \label{sec:related}
