@@ -77,13 +77,13 @@ We used $\lgname$ to implement several standard pattern formation protocols like
 %	\caption{\small $\lgname$ program for line formation ({\em Left}) and its mathematical counterpart in robotics and control textbooks ({\em Right}).}
 %\end{figure}
 %
-The shared \emph{allread} variable $x$ is used by the agents to communicate their position to the other robots. The function \emph{mid} computes the centroid of a list of vectors; $\mathit{nbrs}$ is a function that returns the topological neighbors of an agent based on its $\mathit{pid}$.
+The shared \emph{allread} variable $x$ is used by the agents to communicate their position to the other robots. The function \emph{mid} computes the centroid of a list of vectors.
 % In the case of 3D shape formation,  
 %is a part of the library functions provided for the data type \emph{pos}; where 
 %$$\mathit{midpoint}(p_1,p_2,\ldots,p_n) = pos(\frac{\Sigma_n p_i.x}{n},\frac{\Sigma_n p_i.y}{n},\frac{\Sigma_n p_i.z}{n}) $$.
 
 
-With the addition of an explicit neighbor relation, the \emph{Squareform} app as shown in \reffig{squareform} can be used to generate a rhombus shape in the plane formed by four extremal points. The code defines a local variables $nbrs$ which is a static list of list of integers, where the $i$th element is a list of the $\mathit{pid}$s of the neighbors of the agent with $\mathit{pid}$ $i$. The list of $\mathit{pid}$s of the extremal points is stored in a list of integers called $\mathit{corners}$. If the agent $\mathit{pid}$ is not in $\mathit{corners}$ , then it moves to the mid point of all its neighbors. \footnote{We omit the actual initialization of the variables $\mathit{nbrs}$ and $\mathit{corner}$, as it depends on the simulation parameters.}
+With the addition of an explicit neighbor relation, the \emph{Squareform} app as shown in \reffig{squareform} can be used to generate a rhombus shape in the plane formed by four extremal points. The code defines a local variable $nbrs$ which is a static list of list of integers, where the $i$th element is a list of the $\mathit{pid}$s of the neighbors of the agent with $\mathit{pid}$ $i$. The list of $\mathit{pid}$s of the extremal points is stored in a list of integers called $\mathit{corners}$. If the agent $\mathit{pid}$ is not in $\mathit{corners}$, then it moves to the mid point of all its neighbors. \footnote{We omit the actual initialization of the variables $\mathit{nbrs}$ and $\mathit{corner}$, as it depends on the simulation parameters.}
 
 \begin{figure}[ht!]
 \begin{mdframed}
@@ -94,17 +94,15 @@ With the addition of an explicit neighbor relation, the \emph{Squareform} app as
 {\lstinputlisting[language=koordNums,firstline=11,frame=none,firstnumber=11]{code/shapeform.tex}}
     \end{center}
 \end{mdframed}
-    \caption{$\lgname$ program for robot $i$ to move to move to the mid point of all its neighbors, with all agents in the system eventually forming a rhombus.}
+    \caption{$\lgname$ application forming a shape in 3D defined by the static corners.}
     \label{fig:squareform}
 \end{figure}
 
-\reffig{shapeplots} shows two screenshots of the 3d-simulation for the \emph{Shapeform} app with 25 agents. 
+\reffig{shapeplots} shows two screenshots of the 3d-simulation for the \emph{Shapeform} app with 25 agents. Here the $\mathit{Motion}$ controller used is a simple drone model. Instead of the $\mathit{mid}$ function, other operators on the positions of the neighboring agents could be applied to create different swarming protocols. In addition, using the scripting technique for the leading vehicle in $\mathit{Platoon}$, the swarming robots can be guided to move in formation.
 
 
-
-
-\subsection{Task}
-
+\subsection{Distributed task allocation}
+\label{sec:task}
  \reffig{taskapp} shows the distributed task allocation application written in $\lgname$. Distributed task allocation is challenging as it involves mutual exclusion as well as construction of de-conflicted paths to task locations. Tasks can be abstractions for real location-based objectives like package delivery, surveillance, or fire-fighting. 
 
 We implement a simple task allocation strategy using shared variables for coordination. Mutual exclusion is always an essential feature when shared variables are involved. $\lgname$ provides a locking mechanism using the keyword $\mathit{atomic}$, which the $\mathit{Assign}$ event uses to update the shared list of tasks $\mathit{taskList}$ safely. 

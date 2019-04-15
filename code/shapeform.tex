@@ -11,7 +11,7 @@ Squareform
   TargetUpdate:
     pre True
     eff if not(pid in corners):
-      Motion.target = mid(x in nbrs(pid))
+      Motion.target = mid(x in nbrs)
       x[pid] = Motion.psn
 
     
