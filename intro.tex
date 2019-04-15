@@ -74,7 +74,7 @@ The one and only event in the $\mathit{Lineform}$ program is $\mathit{TargetUpda
 
 \subsubsection{First formalization of a robotics or CPS language in \K}
 % motivation
-Implementations of programming languages usually contain many bugs. One common type of bugs creeps in from the gap between the official semantics of the language (as in a user manual) and the its implementation as embodied in a compiler. The \K framework~\cite{Kf} closes this gap by allowing the specification of {\em  formal executable semantics of any programming language} in terms of rewrite rules. These rewrite rules define how each and every possible statement in the  language changes, possibly nondeterministically, the ``state of the machine'' executing the program. 
+Implementations of programming languages usually contain many bugs. One common type of bugs creeps in from the gap between the official semantics of the language (as in a user manual) and the its implementation as embodied in a compiler. The \K framework~\cite{rosu-serbanuta-2013-k} closes this gap by allowing the specification of {\em  formal executable semantics of any programming language} in terms of rewrite rules. These rewrite rules define how each and every possible statement in the  language changes, possibly nondeterministically, the ``state of the machine'' executing the program. 
 %
 \K  provided the most complete to-date formalization  of the C language~\cite{KC}. This semantics was tested against the GCC torture test suite and it successfully passed 99.2\% of 776 test programs. Recently, \K  was used to provide a formal semantics of x86-64~\cite{rosuadvepaper} and the Ethereum Virtual Machine (EVM) bytecode. 
 
@@ -114,7 +114,7 @@ The simulator uses a {\em motion automaton\/}, which can be instantiated to simu
 The versatile nature of the $\lgname$ and the simulator are illustrated further with three examples---platooning,  swarm formations, and distributed task allocation---in Section~\ref{sec:experims}.
 
 The rest of the paper is organized as follows:
-In Section~\ref{sec:related}, we resent a brief discussion of related research. In Section~\ref{sec:semantics}, we present the detailed semantics of $\lgname$ including the executable semantics in \K. In section \refsect{software}, we give an overview of the supporting software we have developed including the runtime system for executing $\lgname$ programs and $\kbmc$. We present the applications in \refsect{sec:experims} and conclude in Section~\ref{sec:conclusion}.
+In Section~\ref{sec:related}, we resent a brief discussion of related research. In Section~\ref{sec:semantics}, we present the detailed semantics of $\lgname$ including the executable semantics in \K. In section \refsect{software}, we give an overview of the supporting software we have developed including the runtime system for executing $\lgname$ programs and $\kbmc$. We present the applications in \refsect{experims} and conclude in Section~\ref{sec:conclusion}.
 
 %The simulator enables the user to test their discrete event loop with simple motion models to test and debug the application program logic without incurring the cost of hardware deployment in case of buggy programs. 
 %The simulator also serves as a visualization tool as it can be used to plot the behavior of any program variables, or controller variables. For instance, we implemented a robot \emph{formation} app in $\lgname$, where several robots form a shape in which they are evenly distributed.
