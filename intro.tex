@@ -168,7 +168,6 @@ Buzz~\cite{Buzzlanguage} and React~\cite{reactlang} fall in this category as doe
 The Live Robot Programming language~\cite{campusanofabry:lrp2016} not only provides a higher-level programming abstraction in terms of nested state machines, but also allows the program to be changed while running, hence reducing the feedback loop across writing, compiling, and testing of robot programs. 
 %The goals of React language for robotics aligns with our goals~\cite{react-lang}
 Buzz currently does not  connect with  verification tools, and the verification approach implemented with React uses precise models of the environment and performs model checking using dReal~\cite{Gao2013}. 
-In contrast, our environment implementations allow for imprecise models, with a verification approach using sensitivity analysis~\cite{DryVR2017}.
 %Our approach is also similar in spirit to the Reactive Model-based Programming Language (RMPL)
 %~\cite{williams2003model}.
 %
@@ -180,10 +179,6 @@ In contrast, our environment implementations allow for imprecise models, with a 
 %
 %%React reactive robot programming language~\cite{DogmusEP15}.
 %% 
-The Robotarium project provides remote end-to-end access to a  multi-robot research facility, but not languages and development tools~\cite{robotarium}. 
-The  VeriPhy project~\cite{Bohrer:2018:VVC:3192366.3192406} shares a similar goal to CyPhyHouse; however, instead of a programming language, the starting point is differential dynamic logic~\cite{Bohrer:2017:FVD:3018610.3018616},  and there are significant differences  in the underlying verification engines used (KeYmaera X, HOL instead of K, Z3, DryVR).
-%
-
 ``Correct-by-construction'' synthesis from high-level temporal logic specifications has been applied to mobile robotic systems (see, for example~\cite{kress2009temporal,kloetzer2008fully,wongpiromsarn2010receding,wongpiromsarn2011tulip,ulusoy2013optimality}).
 % Many of these approaches have been applied to mobile robotic systems. 
 \sayan{Our point of view on automating robot programming is different in that we expect that the programmer's creativity and efforts will be necessary well beyond writing high-level specs in solving distributed robotics problems; consequently only the tedious and standard steps in coordination and control are automated using the $\lgname$ compiler.}
@@ -198,10 +193,8 @@ Programming systems using the  shared memory paradigm have been developed for se
 Specifically, P~\cite{Planguage}  and PSync~\cite{PSyncLanguage} are DSLs for  asynchronous partially  distributed systems, but cyberphysical interactions are not supported. 
 %DSM has also been proposed as a programming model in the context of wireless networks~\cite{hcs,rs}. 
 %These  programming models are defined mathematically in terms of state machines or in terms of APIs, and are  typically not embodied in a programming language with carefully designed syntax and semantics to enforce the models. 
-$\lgname$  provides a distributed shared variable abstraction for coordinating multiple agents. 
-%\sayan{This enables users to write succinct, textbook-like programs without struggling with messy code for message handling and thread management}. 
-The consistency semantics implemented here are that the writes to shared variables are propagated to all the agents, and become visible to other agents reading the variable after one round ($\delta$ time units).
-In the fault-free synchronous model considered here a gossip algorithm-based is used to implement this semantics in the $\lgname$ runtime system. 
+
+
 % The framework of~\cite{Hotline_CPS_srivastava} supports shared memory over multi-hop wireless networks, with a consistency model analogous to {\em release} consistency.  
 %
 

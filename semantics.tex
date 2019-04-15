@@ -209,8 +209,7 @@ First, we present the semantics of executing the events for all agents. A $\lgna
 \end{mathpar}
 \end{mdframed}
 
-
-\fTBD{FIXING Rule REFERENCES}The rule \textsc{run}  expresses that starting from a global configuration $c = ({L}, S, \tau, \mathtt{env})$, each agent $i$ with local configuration $\lconfig{i}$ processes its program $p$ using a sequence of $\stmtrule$ rewrites, until its event is executed, and its $\turn$ set to $\mathtt{env}$ at the end of the event execution. Overall, the system goes from a configuration $c$ to $c^{\prime\prime}= ({L^{\prime\prime}}, S^{\prime\prime}, \tau, \mathtt{env})$, with possibly different agent configurations and global context depending on whether any of the events executed resulted in writes to shared variables.
+The rule \textsc{run}  expresses that starting from a global configuration $c = ({L}, S, \tau, \mathtt{env})$, each agent $i$ with local configuration $\lconfig{i}$ processes its program $p$ using a sequence of $\stmtrule$ rewrites, until its event is executed, and its $\turn$ set to $\mathtt{env}$ at the end of the event execution. Overall, the system goes from a configuration $c$ to $c^{\prime\prime}= ({L^{\prime\prime}}, S^{\prime\prime}, \tau, \mathtt{env})$, with possibly different agent configurations and global context depending on whether any of the events executed resulted in writes to shared variables.
 
 
 
@@ -241,8 +240,8 @@ Now that we have the semantics for system to finish the program transition, we p
 
 Rule \textsc{agnt-env-to-prog} is the semantic rule for setting the $\mathit{turn}$ of each agent back to $\mathtt{prog}$ from $\mathtt{env}$ after the environment transition has been completed. The semantics synchronizes the program transitions of each agent, ensuring that an event execution for each agent happens every $\delta$ time.
     
-    
 Rule \textsc{envtrans} captures the fact that the global context $S$ is copied into local context of each agent $i \ (\lconfig{i}.M)$, thus ensuring that all agents have consistent shared variable values before the next program transition. After that, rule \textsc{env-to-prog} changes the turn of each agent back to program. In an actual execution, the controller  would run the program on hardware, whose sensor ports evolve for $\delta$ time between program transitions. 
+
 \subsection{Implementation in K}
 
 The language syntax is first parsed using a standard indentation parser implemented in python. We implemented $\lgname$ semantics in \K, which a rewriting-based executable framework for defining language semantics. One can view a language semantics naturally as a set of reduction rules over configurations. Components of a configuration are called {\em cells} in \K. To implement the semantics discussed in \refsect{semantics}, the configuration in \K includes several bookkeeping variables as well. 
