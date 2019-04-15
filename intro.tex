@@ -35,17 +35,9 @@ Consider a simple line-formation program in which a set of $\NMAX$ robots form a
 %
 % \belowcaptionskip=-10pt
 \begin{figure}
-\begin{lstlisting}[label=lineform,caption=Lineform $\lgname$ program]
-   using Motion:
-      sensors pos psn
-      actuators target
-   allread: pos x $\label{lineformp}$
-   TargetUpdate:
-      pre True
-      eff if not(pid == $\NMAX$ - 1 or pid == 0):
-         Motion.target = mid(<x[pid+1],x[pid-1]>)
-         x[pid] = Motion.psn
-\end{lstlisting}
+\label{fig:lineform}
+        {\lstinputlisting[language=koordnums]{code/lineform.tex}}
+\caption{Lineform $\lgname$ program}
 \end{figure}
 The above $10$ line  $\lgname$ program implements this line formation algorithm and can be simulated or deployed (see Figure~\ref{fig:shapeplots}). Among these $10$ lines of code, lines 1-5 import the {\em controller module\/} called {\em Motion\/} that enables this program to access the sensor port with the agent's position $(\mathit{psn})$ and the actuator port $(\mathit{target})$. An implementation of  a {\em controller module\/} has platform-specific path planners and low-level controllers for moving specific types of robots in the physical world. {\em Thus, with different implementations of the {\em Motion\/} interface the $\mathit{Lineform}$ $\lgname$  program can be ported to different platforms\/}. 
 
