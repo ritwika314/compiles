@@ -47,7 +47,7 @@ $$
 
 %Collectively, the (distributed) \emph{system} of all the agents executing this program itself can be captured by an alternating semantics of discrete computational and dynamic behavior.
 
- In the rest of this section, we present the formal semantics of the $\lgname$ programming language. The complete formalization of the semantics in \K is available from~\cite{} \sayan{webpage/github}. The syntax of the language is defined using a BNF grammar, provided in full for the interested reader in \rg{the appendix}.
+ In the rest of this section, we present the formal semantics of the $\lgname$ programming language. The syntax of the language is defined using a BNF grammar, provided in full for the interested reader in \rg{the appendix}.
  
 \subsection{Program (cyber) variables and physical variables}
 \label{sec:variables}
@@ -190,7 +190,7 @@ Given the control flow statements, rule \textsc{event} states that only the effe
 Rule \textsc{prog-to-env} states that
 after the event is executed, the $\turn$ of the agent is set to $\mathtt{env}$ indicating that after this execution, an environment transition occurs. The semantics doesn't specify an order of execution for the program transition (in other words, execution of an enabled event) by the agents in the system. We will demonstrate in \refsect{experiments} that the system can display non deterministic behaviors which arises from the agents in a system executing their events in different orders.
 
-\subsection{Alternating synchronous cyber-physical semantics} 
+\subsection{Alternating synchronous cyberphysical semantics} 
 
 
 \noindent The advancement of time and environment transitions govern the changes in the system configuration. The system level program transition rewrite rule is a mapping from an initial system configuration to a set of configurations. It has the type
@@ -203,8 +203,8 @@ First, we present the semantics of executing the events for all agents. A $\lgna
 \begin{mdframed}
 \scriptsize
 \begin{mathpar}
-\hspace{0.2in}\inferrule*[Right=\sc{run},Left={$\forall i\in\UINS$}]
-{ (S,\lconfig{i},\lconfig{i}.p)\stmtrule(S^\prime,\lconfig{i}^\prime,p^\prime)\stmtrule\ldots\stmtrule (S^{\prime\prime},\lconfig{i}^{\prime\prime},\ \cdot\ )\wedge \lconfig{i}^{\prime\prime}.\turn=\mathtt{env}}
+\hspace{0.2in}\inferrule*[Right=\sc{run},Left={\scriptsize$\forall i\in\UINS$}]
+{ (S,\lconfig{i},\lconfig{i}.p)\stmtrule(S^\prime,\lconfig{i}^\prime,p^\prime)\stmtrule \ldots\stmtrule \qquad\qquad\qquad \\ \qquad\qquad \qquad \qquad \qquad \qquad \qquad \qquad (S^{\prime\prime},\lconfig{i}^{\prime\prime},\ \cdot\ )\wedge \lconfig{i}^{\prime\prime}.\turn=\mathtt{env}}
 {({L}, S, \tau,  \mathtt{prog})\rightarrow_G ({L^{\prime\prime}}, S^{\prime\prime}, \tau, \mathtt{env})}\label{runsys}
 \end{mathpar}
 \end{mdframed}
