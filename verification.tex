@@ -11,8 +11,19 @@
 \label{fig:simfig}
 \end{figure}
 The Python middle layer in our implementation of the $\lgname$ language consists of the following major modules:\begin{inparaenum}
-\item a communication module implementing the shared memory semantics,\item a motion module which in simulation implementing the dynamics of the environment, and in hardware, is responsible for publishing and subscribing to ROS messages between the program and the platform. \item an agent thread module which implements the discrete event loop semantics of each agent. 
-\end{inparaenum}. To run a $\lgname$ program (hardware or simulation), the user has to provide a configuration file, with \begin{inparaenum}\item the number of agents, \item in case of simulation, the initial positions of the agents and the length of the simulation and \item in case of hardware deployment their IP addresses, and the localization system.\end{inparaenum} Each agent in the system launches the agent thread, which has its own \emph{Motion automaton} thread, which implements the controller for the agent thread. Each agent thread also has a communication thread, which it uses to listen for and send messages for shared variable updates to other agent threads. In simulation, the $\lgname$ program launches $N$ threads, each with its own communication and motion automaton threads, and runs the execution as long as specified in the program.
+\item a communication module implementing the shared memory semantics,
+\item a motion module which in simulation implementing the dynamics of the environment, and in hardware, is responsible for publishing and subscribing to ROS messages between the program and the platform. 
+\item an agent thread module which implements the discrete event loop semantics of each agent. 
+\end{inparaenum}. 
+
+To run a $\lgname$ program (hardware or simulation), the user has to provide a configuration file, with 
+\begin{inparaenum}
+\item the number of agents, 
+\item in case of simulation, the initial positions of the agents and the length of the simulation and 
+\item in case of hardware deployment their IP addresses, 
+and the localization system.
+\end{inparaenum} 
+Each agent in the system launches the agent thread, which has its own \emph{Motion automaton} thread, which implements the controller for the agent thread. Each agent thread also has a communication thread, which it uses to listen for and send messages for shared variable updates to other agent threads. In simulation, the $\lgname$ program launches $\NMAX$ threads, each with its own communication and motion automaton threads, and runs the execution as long as specified in the program.
 
 
 \paragraph{Addressing the gap between theory and implementation}
@@ -20,11 +31,9 @@ The Python middle layer in our implementation of the $\lgname$ language consists
 Usually cyberphysical system models are based on mathematical representations of the system without an emphasis on the implementability of said model. Our formal \emph{executable} semantics is intended to narrow that the gap between the theory and implementation of cyberphysical systems, as the translation of the mathematical rules into exact rewrite rules in the \K-semantic framework ensures that.
 
 
-In the design of $\lgname$, these assumptions were both enforced by either the nature of the applications we wanted to be able to implement, or the observable constraints during hardware deployment. These were also guided by the eventual goal of being able to provide safety guarantees for such applications, which we narrowed down using our bounded model checking verification tool built on top of the formal semantics, discussed in \refsect{bmc}. Our Python middle layer, which is used to run the $\lgname$ programs in simulation as well as on hardware relies on several of these assumptions, which we discuss in the next subsection.
+\subsection{Key environment assumptions} 
+In the designing the formal semantics of $\lgname$, the following assumptions are made. Our eventual goal is to be able to  provide safety guarantees for $\lgname$ applications under these assumptions and also ensure that hardware platforms can meet these assumptions. 
 
-
-
-\subsection{Key Assumptions} 
 
 \paragraph*{Periodic event execution semantics}
  Our semantics assumes periodic execution of agent programs, with minimum period defined by the sampling parameter $\delta>0$. This is a standard programming style in embedded and control systems. Several other languages, such as Giotto~\cite{henzinger2003giotto}, use similar semantics. The Giotto paper shows how interrupts can be emulated in this execution model. One of the other assumptions is that the program transitions in a round have  zero logical execution time. In our implementation, the participating agents run barrier synchronization algorithms, and we ensure that the controller only starts driving the physical plant after the maximum possible time to execute a program transition step for each agent has elapsed. 
