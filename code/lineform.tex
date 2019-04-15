@@ -1,7 +1,9 @@
    using Motion:
       sensors pos psn
       actuators target
+      
    allread: pos x $\label{lineformp}$
+   
    TargetUpdate:
       pre True
       eff if not(pid == $\NMAX$ - 1 or pid == 0):

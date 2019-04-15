@@ -4,17 +4,18 @@
 \subsection{Runtime system}
  The $\lgname$ runtime system comprises of a program which interacts with the controller plane through sensor and actuator ports, which in turn communicates with the physical plant through ROS messages. The software stack implementing this uses the $\lgname$ front-end, that takes as input a $\lgname$ program and generates a Python program, that runs on a middle layer (written in Python) on the agents in the system (either in simulation or on actual hardware). In actual deployment, Python middle layer communicates through ROS messages with the ROS interfaces for the low level hardware controls. 
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.48\textwidth]{figs/simulationengine.png}
-\caption{Simulation of a $\lgname$ program }
-\label{fig:simfig}
-\end{figure}
+
 The Python middle layer in our implementation of the $\lgname$ language consists of the following major modules:\begin{inparaenum}
 \item a communication module implementing the shared memory semantics,
 \item a motion module which in simulation implementing the dynamics of the environment, and in hardware, is responsible for publishing and subscribing to ROS messages between the program and the platform. 
 \item an agent thread module which implements the discrete event loop semantics of each agent. 
 \end{inparaenum}. 
+
+\begin{wrapfigure}{r}{0.3\textwidth}
+\includegraphics[scale=0.26]{figs/simulationengine.png}\hfill
+\caption{\small Simulation of a $\lgname$ program }
+\label{fig:completionstats}
+\end{wrapfigure}
 
 To run a $\lgname$ program (hardware or simulation), the user has to provide a configuration file, with 
 \begin{inparaenum}

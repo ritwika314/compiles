@@ -120,15 +120,16 @@ Here the motion module implements Dubin-like vehicle models for the agents, and 
 \end{figure}
 
 We could  easily replace the $\mathit{Motion}$ automaton (consequently, the dynamical model) of any of the agents, and run the same code. Using different control parameters, and path planning parameters for the same motion automaton we obtain different statistics for task completion and distance traversal as depicted in in \reffig{completionstats}. This heterogeneity and portability can be useful for coordinating the same application between different hardware platforms. We ran the task application for various configurations of cars (moving in 2d) and quadcopters (moving in 3d) for the task application, and present some completion statistics below. The agents performed 25 tasks, with three obstacles. An agent (car or quadcopter) is considered to have reached a task location if the $x$ and $y$ coordinates of the task are within a specified minimum distance of the current $x$ and $y$ coordinates of the agent.
-
- For all agents operating with the same motion automaton and dynamics model, we observed that conflict resolution took more time with more agents, as expected (\reffig{completionstats}). The completion time remained relatively stable. The maximum and minimum distances travelled were relatively closer with more robots. However, all these results were affected by the non-determinism in choice of paths and tasks by the agents, and their previous relative positions at the moment of choosing the next task as well. 
- 
  
 \begin{wrapfigure}{r}{0.26\textwidth}
 \includegraphics[scale=0.3]{figs/completion.png}\hfill
 \caption{\small Completion time (orange) and conflict resolution time (blue)  for different agent configurations (quadcopters, cars). }
 \label{fig:completionstats}
 \end{wrapfigure}
+
+ For all agents operating with the same motion automaton and dynamics model, we observed that conflict resolution took more time with more agents, as expected (\reffig{completionstats}). The completion time remained relatively stable. The maximum and minimum distances travelled were relatively closer with more robots. However, all these results were affected by the non-determinism in choice of paths and tasks by the agents, and their previous relative positions at the moment of choosing the next task as well. 
+ 
+
 
 These results demonstrate a capability of covering various scenarios with different levels of heterogeneity and coordination.
  
