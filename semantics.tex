@@ -8,7 +8,7 @@ The interaction model of an agent executing a $\lgname$ program is shown in \ref
 \caption{\small An agent executing a $\lgname$ application and interacting with the physical environment through sensor and actuator ports ({\em left}). Interaction across multiple agents happens through shared variables implmented over message passing ({\em right}).}
 \label{fig:arch}
 \end{figure}
-The program and the controller interact with each other through {\em sensor} and {\em actuator} ports (\reffig{arch}).  The program reads the sensor ports, reads and writes to program variables, and writes to actuator ports---represented in $\lgname$ as \emph{events} which may occur if their preconditions hold true. The controller drives the underlying physical plant. The \emph{environment} of a  $\lgname$ program is the combination of the controller and the plant. The set of agents in the system may interact with each other using {\em shared variables\/}. Each agent in the system runs an instance of the \emph{same} $\lgname$ program. 
+The program and the controller interact with each other through {\em sensor} and {\em actuator} ports.  The program reads the sensor ports, reads and writes to program variables, and writes to actuator ports. The controller drives the underlying physical plant. The \emph{environment} of a  $\lgname$ program is the combination of the controller and the plant. The set of agents in the system may interact with each other using {\em shared variables\/}. Each agent in the system runs an instance of the \emph{same} $\lgname$ program. 
 % exmaple code snippet
 \begin{figure}[ht!]
     \noindent
@@ -26,28 +26,31 @@ The program and the controller interact with each other through {\em sensor} and
     \label{fig:taskapp}
 \end{figure}
     
-\paragraph* {A  Task Coordination Application} \reffig{taskapp} shows a distributed task allocation application written in $\lgname$. Distributed task allocation is challenging as it involves mutual exclusion as well as construction of de-conflicted  paths. Tasks are abstractions for real location-based objectives like package delivery, surveillance, or fire-fighting.  Koord enables implementation of simple task allocation strategies using shared variables. Throughout the rest of this section, we refer to the $\mathit{Task}$ application as an example.
-In $\mathit{Task}$ app, the agents maintain a shared list of tasks ({\em taskList}) to complete, and each agent is uniquely assigned a task from this list in the event {\em Assign}. Once an agent reaches the task location (event {\em Reached}), it does whatever the task entails (event {\em Complete}), and continues this process.
+\paragraph* {A distributed $\mathit{Task}$ allocation application} \reffig{taskapp} shows a distributed task allocation application written in $\lgname$. This app involves mutual exclusion as well as construction of de-conflicted  paths. Tasks are abstractions for real location-based objectives like package delivery, surveillance, or fire-fighting.  Koord enables implementation of simple task allocation strategies using shared variables. In $\mathit{Task}$ app, the agents maintain a shared list of tasks ({\em taskList}) to complete, and each agent is uniquely assigned a task from this list in the event {\em Assign}. Once an agent reaches the task location (event {\em Reached}), it does whatever the task entails (event {\em Complete}), and continues this process.
 % language features - what main "issue" each feature addresses . 
 
 \subsection{Koord model for distributed CPS}
-$\lgname$ design comprises of a \emph{turn}-based alternating semantics of discrete and dynamic behavior of each agent in the distributed system. The agents can be viewed as performing \emph{rounds} of execution, where each round consists of a \begin{inparaenum} \item \emph{A program transition} which is a discrete computational step, and \item \emph{An environment transition} which is the dynamic behavior of the agents specified by the controllers \end{inparaenum}. In our semantics, we represent whether it is the turn of a program transition or an environment transition to be executed on each agent by a $\mathit{turn}$ variable.  
+$\lgname$ design comprises of a \emph{turn}-based alternating semantics of discrete and dynamic behavior of each agent in the distributed system. The agents can be viewed as performing \emph{rounds} of execution, where each round consists of a \begin{inparaenum} 
+\item \emph{a program transition} which is a discrete computational step, and 
+\item \item \emph{an environment transition} which is the dynamic behavior of the controller, environment, and their effect on the sensors and actuators
+\end{inparaenum}. 
+In our semantics, we record whether it is the turn for a program transition or an environment transition  by a special $\mathit{turn}$ variable.  
 
 In a program transition in a round, each agent first nondeterministically chooses an \emph{enabled} event, or an event whose precondition evaluates to \verb|True|. It then executes the statements in the effect of that event. %This may involve reading sensor ports, performing computations using local and shared variables, and writing to actuator ports. 
 Then, the agent performs the environment transition in the round, during which it interacts with the physical environment and behaves as dictated by the actuator ports on the controller for $\delta$ amount of time.  \footnote{ $\delta>0$ is a constant \emph{sampling period} parameter. The sampling parameter can be provided by the user, and each controller that $\lgname$ supports has a default sampling parameter which has been set based on the experiments using the controller. See \refsect{experims} for more details.}  %During this time, the program variables and the actuator port values remain constant, the state of the environment (controller and plant) and the values of the sensor ports change according to the dynamics of the environment.
 
-\sayan{
-The agent program specifies the controller which determines the dynamic behavior of each agent and its interaction with the environment. \reffig{arch} shows how  each controller has sensor ports and actuator ports which the agent programs use to interact with the controller and consequently, with the physical environment. The agent program can read from the sensor ports read and write to the actuator ports during the program transition. The sensor ports are updated during the environment transition according to the controller dynamics. 
-}
+The controller which determines the dynamic behavior of each agent and its interaction with the environment. The agent program can read from the sensor ports read and write to the actuator ports during the program transition. The sensor ports are updated during the environment transition according to the controller dynamics. 
 
-Compared to $\delta$, the time taken by the agent to execute the computational step is negligible, and in our formalization we treat it as zero logical time. Because each program transition takes zero logical time, we can assume all the agents start and finish executing their program transitions at the same time, and their environment transitions at the same time respectively. As our design choices impose this synchronicity on all agent executions, the system can also be seen to be executing program and environment transitions by \emph{turns}, where all the agents execute the environment transitions in a round only after all of them have finished executing the program transitions in that round. Intuitively, the agents in the system execute the statements in their events as part of the program transition of the system in a round, and then the system makes the environment transition as shown below. 
+
+Compared to $\delta$, the time taken by the agent to execute the computational step is negligible, and in our formalization we treat it as zero logical time. Because each program transition takes zero logical time, we can assume all the agents start and finish executing their program transitions at the same logical time. As our design choices impose this synchronicity on all agent executions, the system can also be seen to be executing program and environment transitions by \emph{turns}, where all the agents execute the environment transitions in a round only after all of them have finished executing the program transitions in that round (in some order). 
+%Intuitively, the agents in the system execute the statements in their events as part of the program transition of the system in a round, and then the system makes the environment transition as shown below. 
 $$
 \underbrace{C_1\rightarrow_{stmt} C_2\rightarrow_\mathit{stmt}\ldots \rightarrow_{stmt}C_n}_{\mbox{program transition}}\rightarrow_\mathit{env} C^\prime_n
 $$
 
 %Collectively, the (distributed) \emph{system} of all the agents executing this program itself can be captured by an alternating semantics of discrete computational and dynamic behavior.
 
- In the rest of this section, we present the formal semantics of the $\lgname$ programming language. The syntax of the language is defined using a BNF grammar, provided in full for the interested reader in \rg{the appendix}.
+We proceed to discuss the the formal semantics of the $\lgname$. The BNF grammar for the language is given in the appendix.
  
 \subsection{Program (cyber) variables and physical variables}
 \label{sec:variables}
