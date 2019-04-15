@@ -1,5 +1,5 @@
 \section{$\lgname$ Software Stack}
-\label{sec:verif}
+\label{sec:software}
 
 \subsection{Runtime system}
  The $\lgname$ runtime system comprises of a program which interacts with the controller plane through sensor and actuator ports, which in turn communicates with the physical plant through ROS messages. The software stack implementing this uses the $\lgname$ front-end, that takes as input a $\lgname$ program and generates a python program, that runs on a middle layer (written in python) on the agents in the system (either in simulation or on actual hardware). In actual deployment, python middle layer communicates through ROS messages with the ROS interfaces for the low level hardware controls. 
