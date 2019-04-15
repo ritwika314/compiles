@@ -36,11 +36,11 @@ In the designing the formal semantics of $\lgname$, the following assumptions ar
 
 
 \paragraph*{Periodic event execution semantics}
- Our semantics assumes periodic execution of agent programs, with minimum period defined by the sampling parameter $\delta>0$. This is a standard programming style in embedded and control systems. Several other languages, such as Giotto~\cite{henzinger2003giotto}, use similar semantics. The Giotto paper shows how interrupts can be emulated in this execution model. One of the other assumptions is that the program transitions in a round have  zero logical execution time. In our implementation, the participating agents run barrier synchronization algorithms, and we ensure that the controller only starts driving the physical plant after the maximum possible time to execute a program transition step for each agent has elapsed. 
+ Our semantics assumes periodic execution of agent programs, with minimum period defined by the sampling parameter $\delta>0$. This is a standard programming style in embedded and control systems~\cite{henzinger2003giotto}.  A related assumption is that the program transitions in a round have  zero logical execution time. To this end, our implementation runs barrier synchronization across agents in each round, and we ensure that agent controllers only starts driving the physical plant after the maximum possible time to execute a program transition step has elapsed. 
 
 
-\paragraph*{Shared variable implementation through message passing}
-For the shared memory abstraction to be faithfully implemented on a message-passing wireless network, the message delays between agents should be less than the the sampling parameter $\delta$. We use TCP/UDP to send agent shared variable update messages over Wifi in our implementation. The messages are propagated during the \emph{environment transition} in each round, and processed before the next round of program transitions starts.
+\paragraph*{Shared variable implementation over message passing}
+For the shared memory abstraction to be faithfully implemented on a message-passing  network, the message delays between agents should at least be less than the the sampling parameter $\delta$. We use TCP/UDP to send agent shared variable update messages over wifi in our implementation. The messages are propagated during the \emph{environment transition} in each round, and processed before the next round of program transitions starts.
 
 \paragraph*{Portability and heterogeneity}
 
