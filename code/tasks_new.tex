@@ -28,7 +28,7 @@ Assign:$\label{asgnevent}$
   pre stage == ASGN
   eff atomic:
     for (i = 0,i < length(taskList),i = i+1):
-        temp = get(taskList,i)
+        temp = taskList(i)
         p = getPath(temp.loc)
         if temp.asgnid == 0 and notNull(p,routes):
            new = new Task(temp.loc,pid,temp.taskId)
