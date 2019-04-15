@@ -105,9 +105,9 @@ With the addition of an explicit neighbor relation, the \emph{Squareform} app as
 \label{sec:task}
  \reffig{taskapp} shows the distributed task allocation application written in $\lgname$. Distributed task allocation is challenging as it involves mutual exclusion as well as construction of de-conflicted paths to task locations. Tasks can be abstractions for real location-based objectives like package delivery, surveillance, or fire-fighting. 
 
-We implement a simple task allocation strategy using shared variables for coordination. Mutual exclusion is always an essential feature when shared variables are involved. $\lgname$ provides a locking mechanism using the keyword $\mathit{atomic}$, which the $\mathit{Assign}$ event uses to update the shared list of tasks $\mathit{taskList}$ safely. 
+We implement a  task allocation strategy using shared variables for coordination. Mutual exclusion is always an essential feature when shared variables are involved. $\lgname$ provides a locking mechanism using the keyword $\mathit{atomic}$, which the $\mathit{Assign}$ event uses to update the shared list of tasks $\mathit{taskList}$ safely. 
 
-We used a Dubin's vehicle model for our agents, and RRT-based path planning in this application, to avoid static obstacles specified in the initial configuration file. \reffig{taskplots} shows two screenshots of a Task application simulation. 
+Here the motion module implements Dubin-like vehicle models for the agents, and RRT-based path planning to avoid static obstacles specified in map. \reffig{taskplots} shows two screenshots of a $\mathit{Task}$ application simulations. 
 
 \begin{figure}[h!]
 \begin{minipage}{0.5\textwidth}
@@ -115,19 +115,19 @@ We used a Dubin's vehicle model for our agents, and RRT-based path planning in t
 \includegraphics[width=.5\textwidth]{figs/task1.png}\hfill%
 %\includegraphics[width=.3\textwidth]{figs/Platooning_2.png}}\hfill%
 \end{minipage}%
-\caption{\small $x$ vs $y$ plots for Task App. The grey trails represent the positions of the agents in the last 150 time units, the blue dots represent the task locations of the incomplete tasks, and the green dots represent the task locations of the completed tasks. The black squares represent static obstacles. The red dashed line is a currently computed infeasible path.}
+\caption{\small The grey trails represent the positions of the five agents in the last $150$ time units; task locations of the incomplete tasks (blue), completed tasks (green), static obstacles (black), currently computed infeasible path (dashed red).}
 \label{fig:taskplots}
 \end{figure}
 
-We can also easily replace the Motion automaton (consequently, the dynamical model) of any of the agents in the program, and run the same code on them for coordinating the tasks. Using different control parameters, and path planning parameters for the same motion automaton we obtain different statistics for task completion and distance traversal as depicted in in \reffig{tasksstats}. This heterogeneity and portability can be useful for coordinating the same application between different hardware platforms. We ran the task application for various configurations of cars (moving in 2d) and quadcopters (moving in 3d) for the task application, and present some completion statistics below. The agents performed 25 tasks, with three obstacles. An agent (car or quadcopter) is considered to have reached a task location if the $x$ and $y$ coordinates of the task are within a specified minimum distance of the current $x$ and $y$ coordinates of the agent.
+We could  easily replace the $\mathit{Motion}$ automaton (consequently, the dynamical model) of any of the agents, and run the same code. Using different control parameters, and path planning parameters for the same motion automaton we obtain different statistics for task completion and distance traversal as depicted in in \reffig{tasksstats}. This heterogeneity and portability can be useful for coordinating the same application between different hardware platforms. We ran the task application for various configurations of cars (moving in 2d) and quadcopters (moving in 3d) for the task application, and present some completion statistics below. The agents performed 25 tasks, with three obstacles. An agent (car or quadcopter) is considered to have reached a task location if the $x$ and $y$ coordinates of the task are within a specified minimum distance of the current $x$ and $y$ coordinates of the agent.
 
-\begin{wrapfigure}{r}{0.3\textwidth}
+\begin{wrapfigure}{r}{0.26\textwidth}
 \includegraphics[scale=0.3]{figs/completion.png}\hfill
-\caption{\small  $x$ axis:  (a,b) refers to a quadcopters and b cars. $y$ axis: time in \emph{simulation} time units. Orange-  total completion time and blue- time taken for conflict resolution in seconds}. 
+\caption{\small Completion time (orange) and conflict resolution time (blue)  for different agent configurations (quadcopters, cars). }
 \label{fig:completionstats}
 \end{wrapfigure}
 
 
 
- For all agents operating with the same motion automaton and dynamics model, We observed that conflict resolution took more time with more agents, as expected (\reffig{completionstats}). The completion time remained relatively stable. The maximum and minimum distances travelled were relatively closer with more robots. However, all these results were affected by the non-determinism in choice of paths and tasks by the agents, and their previous relative positions at the moment of choosing the next task as well. These results demonstrate a capability of covering various scenarios with different levels of heterogeneity and coordination.
+ For all agents operating with the same motion automaton and dynamics model, we observed that conflict resolution took more time with more agents, as expected (\reffig{completionstats}). The completion time remained relatively stable. The maximum and minimum distances travelled were relatively closer with more robots. However, all these results were affected by the non-determinism in choice of paths and tasks by the agents, and their previous relative positions at the moment of choosing the next task as well. These results demonstrate a capability of covering various scenarios with different levels of heterogeneity and coordination.
  
