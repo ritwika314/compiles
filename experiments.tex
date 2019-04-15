@@ -41,8 +41,7 @@ Recall that the synchronous semantics of $\lgname$ implies that in each round th
 
 %FIGURE OUT THE VERIFICATION. 
 % While the simulator enables quick cycles of development and testing, the verification component, as stated earlier, allows the user to tune the conditions under which the program exhibits desired behavior. 
- A \emph{correct} program should ensure that at no point, the separation along the $x$-axis between two of agents is less than the required safe distance ($8$ m).  Note, that the variable $\emph{threshold}$ needs to be set to be higher for larger values of the round duration $\delta$. If $\delta$ is too long, then the cars will not slow down even when the separation between then might have become less than the $\mathit{threshold}$. We verified using the $\lgname$ BMC tool that \emph{Platoon} is safe for four cars when $\delta$ is small enough and has potential unsafe behaviors otherwise. \reffig{platoon}(Right) shows the $x$ vs $\mathit{time}$ for a counterexample with  $\delta$ is too long.
- \sayan{Still too vague... for what value was it verified and what value led to a counter example!?}
+ A \emph{correct} program should ensure that at no point, the separation along the $x$-axis between two of agents is less than the required safe distance ($8$ m).  Note, that the variable $\emph{threshold}$ needs to be set to be higher for larger values of the round duration $\delta$. If $\delta$ is too long, then the cars will not slow down even when the separation between then might have become less than the $\mathit{threshold}$. We verified using the $\lgname$ BMC tool that \emph{Platoon} is safe for four cars when $\delta$ is small enough and has potential unsafe behaviors otherwise. \reffig{platoon}(Right) shows the $x$ vs $\mathit{time}$ for a counterexample with  $\delta$ is too long. For a threshhold value of $8.0$, required minimum separation of $5.0$, for $\delta = 0.01$ the bounded model checker was showed that the program was safe for 10 rounds starting at an initial configuration where each car $i$ is at a distrance of 6.0 from the car $\mathit{i}+1$, For $\delta = 0.1$ the bounded model checker showed that the program was unsafe. 
  
 %\sayan{Last 2 sentences are not clear. What changed between the safe and the unsafe scenarios? Explain clearly. Put a box around the code.}
 
@@ -84,6 +83,7 @@ The shared \emph{allread} variable $p$ (Line\ref{lineformp}) is used by the agen
 With the addition of an explicit neighbor relation, the \emph{Squareform} app as shown in \reffig{squareform} can be used to generate a rhombus shape in the plane formed by four extremal points. The code defines a local variables $nbrs$ which is a static list of list of integers, where the $i$th element is a list of the $\mathit{pid}$s of the neighbors of the agent with $\mathit{pid}$ $i$. The list of $\mathit{pid}$s of the extremal points is stored in a list of integers called $\mathit{corners}$. If the agent $\mathit{pid}$ is not in $\mathit{corners}$ , then it moves to the mid point of all its neighbors. \footnote{We omit the actual initialization of the variables $\mathit{nbrs}$ and $\mathit{corner}$, as it depends on the simulation parameters.}
 
 \begin{figure}[ht!]
+\begin{mdframed}
     \noindent
     \begin{center}
         \scriptsize
@@ -91,6 +91,7 @@ With the addition of an explicit neighbor relation, the \emph{Squareform} app as
         {\lstinputlisting[language=koordNums,firstline=1,lastline=10,frame=none]{code/shapeform.tex}}
         {\lstinputlisting[language=koordNums,firstline=11,frame=none,firstnumber=11]{code/shapeform.tex}}
     \end{center}
+\end{mdframed}
     \caption{$\lgname$ program for robot $i$ to move to move to the mid point of all its neighbors, with all agents in the system eventually forming a rhombus.}
     \label{fig:squareform}
 \end{figure}
