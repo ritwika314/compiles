@@ -6,7 +6,7 @@ Programming systems that interact with physical processes are central in  roboti
 
 This need for raising the level of abstraction and separating the \emph{platform-independent} from the \emph{platform-dependent} concerns motivates our work. For example, consider an application for distributed package delivery with mobile robots in a building. The higher-level coordination has to deal with assigning robots to visit way-points in different rooms, load-balancing, and handling failures.  For all of the reasons mentioned above, these coordination tasks {\em should be\/} separated from the  steering control of the individual vehicles, indoor positioning, and message-level communication protocols tied to the specific hardware platforms. 
 
-Current programming languages do not natively support such abstractions for programming distributed cyberphysical systems.  The developer will have to keep track of communication between different sensors, actuators, and program variables. The {\em robotic operating system (ROS)}~\cite{rosbridge_suite,ros} does provide useful libraries and  publish-subscribe messaging standards, but these are not integrated in a programming abstraction. Similarly, coordination across multiple robots has to be built from the ground up using message passing threads. In order to simulate and test the application, one has to create different threads or instances for the developed code corresponding to different agents, and on top of that, the agent programs have to be harnessed in a physical world simulator with proper sensor and actuator models. In order to analyze correctness, one has to first define the semantics of the system. This  is again challenging  as  distributed cyber-physical systems have concurrency and data flows in multiple time-scales. 
+Current programming languages do not natively support such abstractions for programming distributed cyberphysical systems.  The developer will have to keep track of communication between different sensors, actuators, and program variables. The {\em robotic operating system (ROS)}~\cite{rosbridge_suite,ros} does provide useful libraries and  publish-subscribe messaging standards, but these are not integrated in a programming abstraction. Similarly, coordination across multiple robots has to be built from the ground up using message passing threads. In order to simulate and test the application, one has to create different threads or instances for the developed code corresponding to different agents, and on top of that, the agent programs have to be harnessed in a physical world simulator with proper sensor and actuator models. In order to analyze correctness, one has to first define the semantics of the system. This  is again challenging  as  distributed cyberphysical systems have concurrency and data flows in multiple time-scales. 
 %A further source of concern is the gap between the system model with iand the executable code that is actually . 
 
 An ongoing, multi-year, project at our lab aims to address some of these challenges by designing, developing, and evaluating an open source programming system for distributed robotics. \footnote{Information about this project and the links to downloadable software will be made available to the reviewers upon request. We omit the information here for the sake of maintaining anonymity.} In this paper, we present the design and the implementation of the  {\em $\lgname$ language} and the supporting software tools, namely the compiler, the \K executable semantics, and the simulator. This forms the  core of this programming system. $\lgname$ programs have been deployed on F1/10 vehicles, quadcopter, and roombas, and the hardware deployment will be presented in a future article. 
@@ -25,7 +25,7 @@ An ongoing, multi-year, project at our lab aims to address some of these challen
 %
 \subsection{Contributions}
 \subsubsection{Design and implementation of $\lgname$ language}
-{\em We present a clean-slate design and implementation of an event-driven programming language, for distributed cyber-physical systems, namely $\lgname$.} 
+{\em We present a clean-slate design and implementation of an event-triggered programming language, for distributed cyberphysical systems, namely $\lgname$.} 
 %
 $\lgname$ combines distributed shared memory abstraction for coordination across agents and a synchronous model of communication with the physical environment through sensors and actuators, all packed in a familiar precondition-effect style language.
 %
@@ -164,7 +164,7 @@ In contrast, our environment implementations allow for imprecise models, with a 
 %Our approach is also similar in spirit to the Reactive Model-based Programming Language (RMPL)
 %~\cite{williams2003model}.
 %
-%There is been more recent development of domain specific languages for general cyber-physical systems (CPS)~\cite{pradhan2015chariot}. The main challenge addressed in this line of work is in supporting reconfiguration of complex, heterogeneous software components, for handling failures. 
+%There is been more recent development of domain specific languages for general cyberphysical systems (CPS)~\cite{pradhan2015chariot}. The main challenge addressed in this line of work is in supporting reconfiguration of complex, heterogeneous software components, for handling failures. 
 %
 %There has also been work on programming abstractions for coordinating CPS~\cite{distCPSSri,Bundle}. 
 %A group-based abstraction that facilitates dynamic creation of logical collections of sensors and actuators is presented in~\cite{Bundle}. 
@@ -187,7 +187,7 @@ The  VeriPhy project~\cite{Bohrer:2018:VVC:3192366.3192406} shares a similar goa
 %\paragraph*{Languages for distributed shared memory systems}
 %
 Programming systems using the  shared memory paradigm have been developed for several distributed computing systems~\cite{dsm1991,Adve96sharedmemory,Azure,Cassandra,Dynamo}.
-Specifically, P~\cite{Planguage}  and PSync~\cite{PSyncLanguage} are DSLs for  asynchronous partially  distributed systems, but cyber-physical interactions are not supported. 
+Specifically, P~\cite{Planguage}  and PSync~\cite{PSyncLanguage} are DSLs for  asynchronous partially  distributed systems, but cyberphysical interactions are not supported. 
 %DSM has also been proposed as a programming model in the context of wireless networks~\cite{hcs,rs}. 
 %These  programming models are defined mathematically in terms of state machines or in terms of APIs, and are  typically not embodied in a programming language with carefully designed syntax and semantics to enforce the models. 
 $\lgname$  provides a distributed shared variable abstraction for coordinating multiple agents. 

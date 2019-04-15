@@ -9,13 +9,13 @@ using Motion $\label{moddef}$
     sensors:`
        pos psn,bool done
     actuators:
-       pos[] route
+       List<pos> route
 
 allwrite:$\label{awvar}$
    list<task> taskList
  
 allread:$\label{arvar}$
-   pos[] routes[pid] = Motion.psn
+   List<pos> routes[pid] = Motion.psn
 
 local:
    int i = 0 
