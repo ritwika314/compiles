@@ -43,16 +43,18 @@ In the designing the formal semantics of $\lgname$, the following assumptions ar
 \paragraph*{Shared variable implementation over message passing}
 For the shared memory abstraction to be faithfully implemented on a message-passing  network, the message delays between agents should at least be less than the the sampling parameter $\delta$. We use TCP/UDP to send agent shared variable update messages over wifi in our implementation. The messages are propagated during the \emph{environment transition} in each round, and processed before the next round of program transitions starts.
 
-\paragraph*{Portability and heterogeneity}
-
-$\lgname$ programs are portable in the sense that the same application code, can be executed with different controller and plant (environment) executables that provide the same ports. We can execute most application with an environment which is either a model of a different type of wheeled robot or a quadcopter, or even the actual hardware platforms. 
-
-The implementation of the $\lgname$ supports middle level path-planning module replacement in addition to lower level vehicle dynamics. The  choice of path planner  used  can  be  platform-specific  and/or  application-specific. We designed the $\lgname$ software stack in a modular fashion, to allow a user to implement any path planning strategies if a different motion behavior is desired. This allows for deployment of the same $\lgname$ program on different platforms as long as they support the same sensor and actuator ports. 
-
 \paragraph*{Known set of participants}
-Current design and implementation of $\lgname$ builds on the assumption that the number and identities of the participating agents $\UINS$ in known to each agent. In distributed systems with failures, computing the set of participants is a well-studied and foundational problem. problem~\cite{AlistarhAGG2011} and it is related to the active area of research on failure detectors~\cite{Chandra:1996,delporte2004weakest}. In the future, one could  relax this  assumption. For example, in our current hardware deployment, we are using the $\UINS$ as a sensor port that is informed of the identity of the live processes by periodic messages. 
+The number and identities of the participating agents $\UINS$ is known to each agent. In distributed systems with failures, computing the set of participants is a well-studied and foundational problem. problem~\cite{AlistarhAGG2011} and it is related to the active area of research on failure detectors~\cite{Chandra:1996,delporte2004weakest}. In the future, one could  relax this  assumption. For example, in our current hardware deployment, we are using the $\UINS$ as a sensor port that is informed of the identity of the live processes by periodic messages. 
 
-\subsection{Verification With Bounded Model Checking}
+%\paragraph*{Portability and heterogeneity}
+%
+%$\lgname$ programs are portable in the sense that the same application code, can be executed with different controller and plant (environment) executables that provide the same ports. We can execute most application with an environment which is either a model of a different type of wheeled robot or a quadcopter, or even the actual hardware platforms. 
+%
+%The implementation of the $\lgname$ supports middle level path-planning module replacement in addition to lower level vehicle dynamics. The  choice of path planner  used  can  be  platform-specific  and/or  application-specific. We designed the $\lgname$ software stack in a modular fashion, to allow a user to implement any path planning strategies if a different motion behavior is desired. This allows for deployment of the same $\lgname$ program on different platforms as long as they support the same sensor and actuator ports. 
+%
+
+
+\subsection{Verification with Bounded Model Checking}
 \label{sec:bmc}
 %A formal semantics for any cyberphysical system depends on several assumptions. In the design of $\lgname$, these assumptions were both enforced by either the nature of the applications we wanted to be able to implement, or the observable constraints during hardware deployment. They were also guided by the eventual goal of being able to provide safety guarantees for such applications.
 
@@ -72,7 +74,7 @@ The tool outputs `safe' if the $\mathit{inv}$ is indeed an $n$-invariant, `unsaf
 
 The verification algorithm uses the $\lgname$ executable semantics to produce all configurations that the system reaches during program transitions. For this purpose, our semantics allows values of variables to be stored as intervals and propagated through program execution and environment transitions on explicit system models. If the dynamics of the system is a black box model then sensitivity analysis tools can be used to complement the reachable state computation. The actual verification algorithms are beyond the scope of this paper, and will be discussed in future submissions.
 
-\paragraph*{Benchmark Summary}
+\paragraph*{Benchmarks}
 The applications whose verification results are shown in Table~\ref{tab:summary} are the following:
 
 \begin{inparaenum}[(i)]
