@@ -41,7 +41,7 @@ In the designing the formal semantics of $\lgname$, the following assumptions ar
 
 
 \paragraph*{Shared variable implementation over message passing}
-For the shared memory abstraction to be faithfully implemented on a message-passing  network, the message delays between agents should at least be less than the the sampling parameter $\delta$. We use TCP/UDP to send agent shared variable update messages over wifi in our implementation. The messages are propagated during the \emph{environment transition} in each round, and processed before the next round of program transitions starts.
+For the shared memory abstraction to be faithfully implemented on a message-passing  network, the message delays between agents should at least be less than the the sampling parameter $\delta$. We use TCP/UDP to send agent shared variable update messages over wifi in our implementation. The messages are propagated during the environment transition in each round, and processed before the next round of program transitions starts.
 
 \paragraph*{Known set of participants}
 The number and identities of the participating agents $\UINS$ is known to each agent. In distributed systems with failures, computing the set of participants is a well-studied and foundational problem. problem~\cite{AlistarhAGG2011} and it is related to the active area of research on failure detectors~\cite{Chandra:1996,delporte2004weakest}. In the future, one could  relax this  assumption. For example, in our current hardware deployment, we are using the $\UINS$ as a sensor port that is informed of the identity of the live processes by periodic messages. 
@@ -72,13 +72,13 @@ We built up on the capabilities of the \K semantic framework to provide a verifi
 
 The tool outputs `safe' if the $\mathit{inv}$ is indeed an $n$-invariant, `unsafe' if it finds a counter-example execution of length $n$. In some cases, it can return `unknown' as the reachable set computed by the verification algorithm are an overapproximation of the actual reachable set of configurations.  
 
-The verification algorithm uses the $\lgname$ executable semantics to produce all configurations that the system reaches during program transitions. For this purpose, our semantics allows values of variables to be stored as intervals and propagated through program execution and environment transitions on explicit system models. If the dynamics of the system is a black box model then sensitivity analysis tools can be used to complement the reachable state computation. The actual verification algorithms are beyond the scope of this paper, and will be discussed in future submissions.
+The verification algorithm uses the $\lgname$ executable semantics to produce all configurations that the system reaches during program transitions. For this purpose, our semantics allows values of variables to be stored as intervals and propagated through program execution and environment transitions on explicit system models. If the dynamics of the system is a black box model then sensitivity analysis tools can be used to complement the reachable state computation. The actual verification algorithms are beyond the scope of this paper, and will be discussed in future submissions. We only present the verification results which have explicit state models, i.e. the update rule for all the sensor values during an environment transition can be approximated by arithmetic operations on the input sensor values. 
 
 \paragraph*{Benchmarks}
 The applications whose verification results are shown in Table~\ref{tab:summary} are the following:
 
 \begin{inparaenum}[(i)]
-\item a simple HVAC model that should ensure that the temperature of several rooms should remain above a  given temperature, 
+\item a simple HVAC model that should ensure that the temperature (of a room/several rooms with a heater) should remain above a  given temperature, 
 \item  the above $\mathit{Task}$ app, that should ensure that there are no collisions, 
 \item Fischer's mutual exclusion protocol, 
 \item and a Platooning system, that should ensure that a platoon of cars maintains a separation between any consecutive cars. 
@@ -119,7 +119,7 @@ HVAC           & 4           &10    & 43s    &    Unsafe    \\
  
   The \emph{Agents} column in the table refers to the number of agents in the system. The purpose of our verification module is to support a semantics driven design of reliable and safe distributed system i.e. assumptions that were required to make correctness guarantees about a program with well-defined \emph{safe} behaviors were used to make design decisions about the language semantics. 
   
-  The state space of a distributed system of agents with this level of non-determinism increases exponentially in size with the number of agents and the number of rounds. Although, this verification method currently only scales to small problem instances, in context,this is a promising tool connecting a high-level language to actual implementations.
+  The state space of a distributed system of agents with this level of non-determinism increases exponentially in size with the number of agents and the number of rounds. Although, this verification method currently only scales to small problem instances, in context,this is a promising tool connecting a high-level language to actual implementation.
 
 
 
