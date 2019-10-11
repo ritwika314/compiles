@@ -1,47 +1,48 @@
-Task(pid)
-
-def task : $\label{taskdef}$
-    pos loc
-    int asgnid
-    int taskId
+using Lidar $\label{lidardef}$
+    sensors:
+       tscan[] ldata 
+       float maxdist
 
 using Motion $\label{moddef}$
-    sensors:`
-       pos psn,bool done
+    sensors:
+        tPos[] trace, pos psn,
+        bool reached
     actuators:
-       List<pos> route
+       pos target
 
 allwrite:$\label{awvar}$
-   list<task> taskList
- 
-allread:$\label{arvar}$
-   List<pos> routes[pid] = Motion.psn
+    int[][] gmap 
+    
+#$\mathit{omitting\ initialization}$
 
 local:
-   int i = 0 
-   path p $\label{pathvar}$
-   task temp, new
-   enum Stage {ASGN,RCHD,CMPT} stage
-                             = ASGN
+   int dim
+   int[][] lmap 
+   posScan[] pscan
+   pos[] obstacles
+   int x,y
+   bool newpoint $=$ True
    
-Assign:$\label{asgnevent}$
-  pre stage == ASGN
-  eff atomic:
-    for (i = 0,i < length(taskList),i = i+1):
-        temp = taskList(i)
-        p = getPath(temp.loc)
-        if temp.asgnid == 0 and notNull(p,routes):
-           new = new Task(temp.loc,pid,temp.taskId)
-           put(taskList,i,new)
-           routes[pid] = p
-           Motion.route = p 
-           stage = RCHD          
-   
-Reached: $\label{rchevent}$
-  pre stage = RCHD and Motion.done
-  eff routes[pid] = temp.loc
-      stage = CMPLT
+NewPoint:$\label{newpt}$
+  pre newpoint
+  eff : lmap $=$ max(gmap, lmap)
+        Motion.target $=$ pickMaxFree(lmap)
+        newpoint $=$ False
 
-Complete:$\label{cmpltevent}$
-  pre stage == CMPLT
-  eff stage = ASGN
+LUpdate:$\label{lup}$
+   pre !(newpoint $\mid\mid$ Motion.reached )
+   eff : pscan $=$ tSync(Motion.tPos, Lidar.ldata)
+         for i in pldata:
+            setAll(getSquares(i.pos,i.scan,dim),0)
+             obstacles $=$ getObs(i.pos, i.scan)
+             for ob in obstacles:
+                 x,y $=$ gridx(ob), gridy(ob)
+                 lmap[x][y] $=$ 1
+    
+GUpdate: $\label{gup}$
+  pre Motion.reached
+  eff : atomic:
+           max(lmap,gmap)
+        newpoint $=$ True
+      
+
