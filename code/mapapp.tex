@@ -11,13 +11,13 @@ using Motion $\label{moddef}$
        pos target
 
 allwrite:$\label{awvar}$
-    int[][] gmap 
+    int[][] globalMap 
     
 #$\mathit{omitting\ initialization}$
 
 local:
    int dim
-   int[][] lmap 
+   int[][] localMap 
    posScan[] pscan
    pos[] obstacles
    int x,y
@@ -25,24 +25,24 @@ local:
    
 NewPoint:$\label{newpt}$
   pre newpoint
-  eff : lmap $=$ max(gmap, lmap)
-        Motion.target $=$ pickMaxFree(lmap)
+  eff : localMap $=$ max(globalMap, localMap)
+        Motion.target $=$ pickMaxFree(localMap)
         newpoint $=$ False
 
 LUpdate:$\label{lup}$
-   pre !(newpoint $\mid\mid$ Motion.reached )
+   pre !(newpoint || Motion.reached )
    eff : pscan $=$ tSync(Motion.tPos, Lidar.ldata)
          for i in pldata:
-            setAll(getSquares(i.pos,i.scan,dim),0)
+           setAll(getSquares(i.pos,i.scan,dim),0)
              obstacles $=$ getObs(i.pos, i.scan)
              for ob in obstacles:
                  x,y $=$ gridx(ob), gridy(ob)
-                 lmap[x][y] $=$ 1
+                 localMap[x][y] $=$ 1
     
 GUpdate: $\label{gup}$
   pre Motion.reached
   eff : atomic:
-           max(lmap,gmap)
+           max(localMap,globalMap)
         newpoint $=$ True
       
 
