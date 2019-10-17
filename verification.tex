@@ -39,11 +39,24 @@ and the localization system.
  
 \subsection{The Distributed Mapping Algorithm}
 \subsubsection{Motivation}
+In this section, we introduce the distributed mapping problem that the $\lgname$ program shown in \reffig{mapapp} aims to solve.
+Informally, the problem requires a set of robots to collaboratively agree on positioning of static \emph{obstacles} within a given area $D$, which any robot should avoid while moving in $D$. 
 
 
-\subsubsection{Formal Problem statement}
-\rg{Initialize local map to be 0 at current position, and 0 for a surrounding ball. No lidar required to start with. Then move to max explored map. }
-\rg{define inputs, outputs, assumptions here. }
+\rg{Domain definition}
+The mapping problem is defined over a (\emph{finite}) domain $D$, where $$D  = \left\{ (x,y) \mid \exists  x_1, x_2 ,y_1, y_2 \in \mathbb{R} , x_1 \leq x \leq x_2 \wedge y_1 \leq y \leq y_2\}\right$$
+
+\rg{grid partitioning definition}
+\rg{Needs to be refined:} One can define a \emph{grid} partitioning $G:D \mapsto \mathbb{Z}\times\mathbb{Z}$ which maps each point $(x,y)$ in $D$, to a \emph{square} $(i,j), i \in Z, j\in Z$. Given a domain $D\mathbb{R}^2$, $G(D)$ refers to the set of $(i,j)$ squares that comprise all $(x,y)\in D$. This can be viewed as an embedding of a 2D-lattice in $\mathbb{R}^2$. Consider also, that there is a set of robots $S$ in which each robot can can detect obstacles at a minimum distance $d$, within a range of angles $\left[-\phi,\phi\right]$ from the current heading of the robot. We can then state the 2-d distributed mapping problem as follows. 
+
+\rg{problem statement}
+\begin{center}
+\emph{
+ Given a set of robots $S$, grid partitioning $G$ of a 2-d domain $D\subset \mathbb{R^2}$, construct a mapping $F: G(D) \mapsto \left\{-1,0,1\right\}$ where $F(i,j) = -1$ represents that a grid square $(i,j)\in G(D)$ is at least partially occupied by an obstacle, $F(i,j) =0$ represents $(i,j)$ is completely free of any obstacles, and $F(i,j) = -1$ represents that it is unknown whether an obstacle occupies the grid square $(i,j)$.} 
+\end{center}
+We also assume that initially, each robot starts at a position such that the 8 surrounding squares are all unoccupied by obstacles. 
+
+
 \subsection{Library Functions}
 
 
