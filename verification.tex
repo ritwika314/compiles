@@ -44,33 +44,40 @@ We first set up the terminology and assumptions to discuss our approach to this 
 The mapping problem is defined over a (\emph{bounded}) domain $D$. In our problem setup, we assume $D$ is a rectangle in $\mathbb{R}^2$ given by $[x_1,x_2]\times [y_1,y_2]$.
 
 \begin{definition}
-A \emph{grid} partitioning $G$ of a bounded domain $D$ is defined as $G:D \mapsto \mathbb{Z}\times\mathbb{Z}$, and it maps each point $(x,y)$ in $D$, to a \emph{square} $(i,j), i \in Z, j\in Z$.
+A \emph{grid quantization} of a bounded domain $D$ is defined as a mapping $\qfunc:D \mapsto \qdom$, where $\qdom$ is a discrete set . If $\qdom$ is, for instance, $\mathbb{Z}\times \mathbb{Z}$, this can be viewed as an embedding of a 2D-lattice in $\mathbb{R}^2$. \rg{Consider also, that there is a set of ground robots $[N]$ in which each robot can can detect obstacles within radius $r$ of the current position of the robot.} 
 \end{definition}
 
-Given a domain $D\subset\mathbb{R}^2$, $G(D)$ refers to the set of $(i,j)$ squares that comprise all $(x,y)\in D$. This can be viewed as an embedding of a 2D-lattice in $\mathbb{R}^2$. Consider also, that there is a set of ground robots $S$ in which each robot can can detect obstacles at a minimum distance $d$, within a range of angles $\left[-\phi,\phi\right]$ from the current heading of the robot. We can then state the 2-d distributed mapping problem as follows. \begin{quote}
- {\em Given a set of robots $S$, a grid partitioning $G$ of a 2-d domain $D\subset \mathbb{R^2}$, construct an occupancy grid mapping $F: G(D) \mapsto \left\{1,0\right\}$ where $F(i,j) = 1$ represents that a grid square $(i,j)\in G(D)$ is at least partially occupied by an obstacle, $F(i,j) = 0$ represents $(i,j)$ is completely free of any obstacles.}
+In theory, we can assume the existence of a \emph{ground truth} function $\world : D\mapsto \left\{0,1\right\}$, where $$\world(\Vec{x}) = \begin{cases}
+1\ \mbox{if there is an obstacle at }\Vec{x}\\
+0\ \mbox{otherwise}
+\end{cases}
+$$
+
+This function then naturally extends to the quantization $Q$ of the domain $D$ as 
+$\world_Q : Q \mapsto \left\{0,1\right\}$, where $$\world_Q(q) = \begin{cases}
+1\ \Leftrightarrow \exists \Vec{x}\in D, \qfunc(\Vec{x}) = q \wedge \world(\Vec{x}) = 1 \\
+0\ \mbox{otherwise}
+\end{cases}
+$$
+We can then state the 2-d distributed mapping problem as follows. \begin{quote}
+ {\em Given a grid quantization $\qfunc$ of a 2-d domain $D\subset \mathbb{R}^2$, a ground truth function $\world_Q$, construct a grid occupancy mapping, $\map: Q \mapsto \left\{1,0,-1\right\}$, where:
+ \begin{flalign*}
+ \map(q) = 1 &\Rightarrow \world_Q = 1\\
+ \map(q) = 0 &\Rightarrow \world_Q = 0\\
+ \world_q = 0 &\Rightarrow \map(q) = 0 \mbox{ or } \map(q) = -1\\
+  \world_q = 1 &\Rightarrow \map(q) = 1 \mbox{ or } \map(q) = -1\\
+ \end{flalign*}
+ 
+ }
 \end{quote}
-\begin{definition}
-Given a square $(i,j) \in G(D)$, its \emph{adjacent squares} are given by
-$\mathit{Adj}_{(i,j)} = \left\{(i^\prime, j^\prime) \mid i^\prime \in \left\{i - 1, i +1\right\}, j^\prime in \left\{j-1,j+1\right\} \right\} \cap G(D)$ .\end{definition} 
-We assume that initially, each robot starts from a grid square $(i,j)$ such that $\forall p \in \mathit{Adj}_{(i,j)}, F(p) = 0$ for any occupancy grid mapping $F$.  
+%\begin{definition}
+%Given a square $(i,j) \in G(D)$, its \emph{adjacent squares} are given by
+%$\mathit{Adj}_{(i,j)} = \left\{(i^\prime, j^\prime) \mid i^\prime \in \left\{i - 1, i +1\right\}, j^\prime in \left\{j-1,j+1\right\} \right\} \cap G(D)$ .
+%\end{definition} 
 
-\begin{definition}
-A grid square $(i,j)\in G(D)$ is \emph{reachable} if  and $(i,j)$ doesn't contain an obstacle and either \begin{inparaenum}[(a)]
-\item it is an initial position of a robot, or 
-\item $\exists (i^\prime,j^\prime \in \mathit{Adj}_{(i,j)} $, such that $(i^\prime, j^\prime)$ is reachable. 
-\end{inparaenum}
+A robot partially constructs a grid occupancy function by assigning values to the grid squares in its \emph{sensed} area.
 
-\end{definition}
-Each robot has a \emph{heading angle}, which is the angle it is facing while having traversed to a reachable square. This heading angle determines the LIDAR scan area of the robot.  
-\begin{definition}
-A square $(i,j)$ is \emph{visible} from a reachable square if it is within the sensed LIDAR scan area of the heading angle of the robot from the current square.  
-\end{definition}
-A robot partially constructs a grid occupancy function by assigning values to visible squares.
-\rg{We assume that {\em if an obstacle is sensed in a visible square, then the square does contain an obstacle}. The point of this presentation isn't dealing with the issue of potentially false positives while identifying an obstacle.} 
-
-We first discuss a modified version of the 2-d distributed mapping problem, where we construct a grid occupancy function $F: G(D) \mapsto \left\{1,0,-1\right\}$, where $F(i,j) = -1$ means that $(i,j)$ hasn't been visited or is visible from a reachable square. There may be various properties of the obstacles, and the initial conditions of the robots under which it may not be possible to construct a known grid occupancy (0 or 1) for certain grid squares. We propose the following notion of soundness for an algorithm which aims to the 2-d mapping problem:
-l{\em If there is an obstacle in a square that can be visible from a reachable square given any heading angle, then it will be detected. }
+\rg{We assume that {\em if an obstacle is sensed in a grid square within the sensing area of the robot, then the square does contain an obstacle}. The point of this presentation isn't dealing with the issue of potentially false positives while identifying an obstacle.} 
 
 
 \subsection{External (Library) Functions}
