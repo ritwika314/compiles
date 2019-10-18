@@ -1,7 +1,7 @@
 \section{Koord Language and Overview}
 \label{sec:semantics}
 The interaction model of an agent executing a $\lgname$ program is shown in \reffig{arch}. 
-\begin{figure}[h!]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.23\textwidth]{figs/arch.png}
 \includegraphics[width=0.24\textwidth]{figs/agents2.png}
@@ -10,7 +10,7 @@ The interaction model of an agent executing a $\lgname$ program is shown in \ref
 \end{figure}
 The program and the controller interact with each other through {\em sensor} and {\em actuator} ports.  The program reads the sensor ports, reads and writes to program variables, and writes to actuator ports. The controller drives the underlying physical plant. The \emph{environment} of a  $\lgname$ program is the combination of the controller and the plant. The set of agents in the system may interact with each other using {\em shared variables\/}. Each agent in the system runs an instance of the \emph{same} $\lgname$ program. 
 % exmaple code snippet
-\begin{figure}[ht!]
+\begin{figure}[!htbp]
     \noindent
     \begin{mdframed}
 
@@ -61,7 +61,7 @@ We first introduce the types of variables used by the $\lgname$ programs.
 An agent's $\lgname$ program can access three types of variables. 
 %
 \begin{itemize}
-	\item {\em Local program variables\/} record the state of the program. For example, the variable $p$ of type $\mathit{path}$ (Line~\ref{pathvar}) stores a path for the agent. 
+	\item {\em Local program variables\/} record the state of the program. 
 \item {\em Distributed shared variables\/} are used for communication across agents.  For example, {\bf allwrite} $\mathit{taskList}$ (Line~\ref{awvar}) is a multi-writer list of tasks which can be written-to and read-from by all participating agents. Shared variables can also be single-writer multi-reader ({\bf allread}). For each shared variable, an agent maintains a {\em local copy\/}  of the variable. 
 
 \item {\em Port variables\/} are used to read from and write to sensor and actuator ports of the agent. For example, the $\mathit{Motion}$ controller for the $\mathit{Mapping}$ app  drives the agent  to a point, as directed by value set at the actuator port $\mathit{Motion.target}$. The sensor port $\mathit{Motion.psn}$ gives the position of the agent (in a fixed coordinate system) and $\mathit{Motion.reached}$ indicates  whether the $\mathit{Motion}$ controller is active or inactive.
