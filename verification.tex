@@ -59,7 +59,7 @@ $\world_Q : Q \mapsto \left\{0,1\right\}$, where $$\world_Q(q) = \begin{cases}
 0\ \mbox{otherwise}
 \end{cases}
 $$
-\rg{Consider also, that there is a set of ground robots $[N]$ in which each robot can can detect obstacles within a certain \emph{sensing area} (which we shall presently define) of the current position of the robot.} 
+\rg{Consider also, that there is a set of ground robots $[N]$ in which each robot can reliably detect obstacles within a certain \emph{sensing area} (which we shall presently define) of the current position of the robot.} 
 We can then state the 2-d distributed mapping problem, $\mapprob (D, \qfunc, \world) $ as follows. \begin{quote}
  {\em Given a grid quantization $\qfunc$ of a 2-d domain $D\subset \mathbb{R}^2$, a ground truth function $\world$ (extended to $\world_Q$ through $\qfunc$), construct a grid occupancy mapping, $\map: Q \mapsto \left\{1,0,-1\right\}$, where:
  \begin{flalign*}
@@ -72,17 +72,18 @@ We can then state the 2-d distributed mapping problem, $\mapprob (D, \qfunc, \wo
  }
 \end{quote}
 
- A vacuously correct solution to $\mapprob(D, \qfunc, \world)$ is $F : Q \mapsto \left\{0,1,-1\right\}, \forall  q \in Q , F(q)= -1$. For a robot $i\in [N]$, let $\pos_{0}(i)$ denote its initial position. To allow for other solutions than the vacuous one stated above, we make certain other assumptions, including the following: 
- $\forall i \in [N], \world_Q(\qfunc(\pos_{0}(i))) = 0$. 
+ A vacuously correct solution to $\mapprob(D, \qfunc, \world)$ is $F : Q \mapsto \left\{0,1,-1\right\}, \forall  q \in Q , F(q)= -1$. For a robot $i\in [N]$, let $\pos_{0}(i)$ denote its initial position. To allow for other solutions than the vacuous one stated above, we assume that we are given that initially, each robot starts at a grid square with no obstacle, and the grid occupancy function $\map$ is initialized as such:
+ $\forall i \in [N], \world_Q(\qfunc(\pos_{0}(i))) = 0$ and 
+ $\forall i \in [N], \map(\qfunc(\pos_{0}(i))) = 0$.
+
+ Let $\pos_t(i)$ denote the position of robot $i$ at time $t$. Let $\map_i:Q\mapsto \left\{-1,0,1\right\}$ denote a \emph{proposed} map function from the perspective of robot $i$,: where $\map_i(q) = 0$ when robot $i$ doesn't sense an obstacle in $q$, $\map_i(q) = 1$ when it does, and $\map_i(q) = -1$ otherwise. 
+ \begin{definition} The \emph{sensing area} of a robot $i$ at time $t$ is defined by $\sensarea: Q \mapsto 2^{Q}$, where given $\qfunc(\pos_t(i)) = Q \Rightarrow \map_i(Q) = 0$, and  $\map_i(\sensarea(q)) = 0$ or $\map_i(\sensarea(q)) = 1$. 
+  \end{definition}
+  
+  
+We assume that at time $t$, if robot $i$ detects an obstacle in $q \in \sensarea(\qfunc(\pos_t(i)))$ , then the $q$ does contain an obstacle, otherwise it does not. The point of this presentation isn't dealing with the issue of potentially false positives while identifying an obstacle. A robot partially constructs a grid occupancy function by assigning values to the grid squares in its \emph{sensed} area.
+
  
-%\begin{definition}
-%Given a square $(i,j) \in G(D)$, its \emph{adjacent squares} are given by
-%$\mathit{Adj}_{(i,j)} = \left\{(i^\prime, j^\prime) \mid i^\prime \in \left\{i - 1, i +1\right\}, j^\prime in \left\{j-1,j+1\right\} \right\} \cap G(D)$ .
-%\end{definition} 
-
-A robot partially constructs a grid occupancy function by assigning values to the grid squares in its \emph{sensed} area.
-
-\rg{We assume that {\em if an obstacle is sensed in a grid square within the sensing area of the robot, then the square does contain an obstacle}. The point of this presentation isn't dealing with the issue of potentially false positives while identifying an obstacle.} 
 
 
 \subsection{External (Library) Functions}
