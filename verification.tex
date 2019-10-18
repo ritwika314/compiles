@@ -35,9 +35,11 @@ and the localization system.
 \subsubsection{synchronization issues}
  
 \subsection{The Distributed Mapping Problem}
-\subsubsection{Motivation}
 In this section, we introduce the distributed mapping problem that the $\lgname$ program shown in \reffig{mapapp} aims to solve. The key difference between distributed SLAM and this application is that we assume that the robots know their \emph{global coordinates} within the area of deployment. They are only attempting to map it. 
-Informally, the problem requires a set of robots to collaboratively agree on positioning of static \emph{obstacles} within a given area $D$, which any robot should avoid while moving in $D$. We currently assume that the only sensors available for sensing obstacle are LIDAR based, and the robots are constrained to move in a 2-D space.
+Informally, the problem requires a set of robots to collaboratively agree on positioning of static \emph{obstacles} within a given area $D$, which any robot should avoid while moving in $D$.
+
+\subsubsection{Preliminaries}
+We first set up the terminology and assumptions to discuss our approach to this problem. We currently assume that the only sensors available for sensing obstacle are LIDAR based, and the robots are constrained to move in a 2-D space.
 
 The mapping problem is defined over a (\emph{finite}) domain $D$, where $$D  = \left\{ (x,y) \mid \exists  x_1, x_2 ,y_1, y_2 \in \mathbb{R} , x_1 \leq x \leq x_2 \wedge y_1 \leq y \leq y_2 \right\}$$
 
