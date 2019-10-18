@@ -39,12 +39,12 @@ In this section, we introduce the distributed mapping problem that the $\lgname$
 Informally, the problem requires a set of robots to collaboratively agree on positioning of static \emph{obstacles} within a given area $D$, which any robot should avoid while moving in $D$.
 
 \subsubsection{Preliminaries}
-We first set up the terminology and assumptions to discuss our approach to this problem. We currently assume that the only sensors available for sensing obstacle are LIDAR based, and the robots are constrained to move in a 2-D space.
+We first set up the terminology and assumptions to discuss our approach to this problem. We currently assume that the only sensors available for sensing obstacles are LIDAR based, and the robots are constrained to move in a 2-D space.
 
 The mapping problem is defined over a (\emph{bounded}) domain $D$. In our problem setup, we assume $D$ is a rectangle in $\mathbb{R}^2$ given by $[x_1,x_2]\times [y_1,y_2]$.
 
 \begin{definition}
-A \emph{grid quantization} of a bounded domain $D$ is defined as a mapping $\qfunc:D \mapsto \qdom$, where $\qdom$ is a discrete set . If $\qdom$ is, for instance, $\mathbb{Z}\times \mathbb{Z}$, this can be viewed as an embedding of a 2D-lattice in $\mathbb{R}^2$. \rg{Consider also, that there is a set of ground robots $[N]$ in which each robot can can detect obstacles within radius $r$ of the current position of the robot.} 
+A \emph{grid quantization} of a bounded domain $D$ is defined as a mapping $\qfunc:D \mapsto \qdom$, where $\qdom$ is a discrete set . If $\qdom$ is, for instance, $\mathbb{Z}\times \mathbb{Z}$, this can be viewed as an embedding of a 2D-lattice in $\mathbb{R}^2$. 
 \end{definition}
 
 In theory, we can assume the existence of a \emph{ground truth} function $\world : D\mapsto \left\{0,1\right\}$, where $$\world(\Vec{x}) = \begin{cases}
@@ -53,14 +53,15 @@ In theory, we can assume the existence of a \emph{ground truth} function $\world
 \end{cases}
 $$
 
-This function then naturally extends to the quantization $Q$ of the domain $D$ as 
+This function then naturally extends to any quantization $Q$ of the domain $D$ as 
 $\world_Q : Q \mapsto \left\{0,1\right\}$, where $$\world_Q(q) = \begin{cases}
 1\ \Leftrightarrow \exists \Vec{x}\in D, \qfunc(\Vec{x}) = q \wedge \world(\Vec{x}) = 1 \\
 0\ \mbox{otherwise}
 \end{cases}
 $$
-We can then state the 2-d distributed mapping problem as follows. \begin{quote}
- {\em Given a grid quantization $\qfunc$ of a 2-d domain $D\subset \mathbb{R}^2$, a ground truth function $\world_Q$, construct a grid occupancy mapping, $\map: Q \mapsto \left\{1,0,-1\right\}$, where:
+\rg{Consider also, that there is a set of ground robots $[N]$ in which each robot can can detect obstacles within a certain \emph{sensing area} (which we shall presently define) of the current position of the robot.} 
+We can then state the 2-d distributed mapping problem, $\mapprob (D, \qfunc, \world) $ as follows. \begin{quote}
+ {\em Given a grid quantization $\qfunc$ of a 2-d domain $D\subset \mathbb{R}^2$, a ground truth function $\world$ (extended to $\world_Q$ through $\qfunc$), construct a grid occupancy mapping, $\map: Q \mapsto \left\{1,0,-1\right\}$, where:
  \begin{flalign*}
  \map(q) = 1 &\Rightarrow \world_Q = 1\\
  \map(q) = 0 &\Rightarrow \world_Q = 0\\
@@ -70,6 +71,10 @@ We can then state the 2-d distributed mapping problem as follows. \begin{quote}
  
  }
 \end{quote}
+
+ A vacuously correct solution to $\mapprob(D, \qfunc, \world)$ is $F : Q \mapsto \left\{0,1,-1\right\}, \forall  q \in Q , F(q)= -1$. For a robot $i\in [N]$, let $\pos_{0}(i)$ denote its initial position. To allow for other solutions than the vacuous one stated above, we make certain other assumptions, including the following: 
+ $\forall i \in [N], \world_Q(\qfunc(\pos_{0}(i))) = 0$. 
+ 
 %\begin{definition}
 %Given a square $(i,j) \in G(D)$, its \emph{adjacent squares} are given by
 %$\mathit{Adj}_{(i,j)} = \left\{(i^\prime, j^\prime) \mid i^\prime \in \left\{i - 1, i +1\right\}, j^\prime in \left\{j-1,j+1\right\} \right\} \cap G(D)$ .
