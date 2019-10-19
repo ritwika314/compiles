@@ -64,7 +64,7 @@ $\world_Q : Q \mapsto \left\{0,1\right\}$, where $$\world_Q(q) = \begin{cases}
 $$
 \rg{Consider also, that there is a set of ground robots $[N]$ in which each robot can reliably detect obstacles within a certain \emph{sensing area} (which we shall presently define) of the current position of the robot.} 
 We can then state the 2-d distributed mapping problem, $\mapprob (D, \qfunc, \world) $ as follows. \begin{quote}
- {\em Given a grid quantization $\qfunc$ of a 2-d domain $D\subset \mathbb{R}^2$, a ground truth function $\world$ (extended to $\world_Q$ through $\qfunc$), construct a grid occupancy mapping, $\map: Q \mapsto \left\{1,0,-1\right\}$, where:
+ {\em Given a grid quantization $\qfunc$ of a 2-d domain $D\subset \mathbb{R}^2$, a ground truth function $\world$ (extended to $\world_Q$ through $\qfunc$), a set of robots $[N]$, construct a grid occupancy mapping, $\map: Q \mapsto \left\{1,0,-1\right\}$, where:
  \begin{flalign*}
  \map(q) = 1 &\Rightarrow \world_Q = 1\\
  \map(q) = 0 &\Rightarrow \world_Q = 0\\
@@ -83,18 +83,16 @@ We can then state the 2-d distributed mapping problem, $\mapprob (D, \qfunc, \wo
   \end{definition}
   
   
-We assume that at time $t$, if robot $i$ detects an obstacle in $q \in \sensarea(\qfunc(\pos_t(i)))$ , then the $q$ does contain an obstacle, otherwise it does not. The point of this presentation isn't dealing with the issue of potentially false positives while identifying an obstacle. A robot partially constructs a grid occupancy function by assigning values to the grid squares in its \emph{sensed} area.
+We assume that at time $t$, if robot $i$ detects an obstacle in $q \in \sensarea(\qfunc(\pos_t(i)))$ , then $q$ does contain an obstacle, otherwise it does not. The point of this presentation isn't dealing with the issue of potentially false positives while identifying an obstacle. A robot partially constructs a grid occupancy function by assigning values to the grid squares in its \emph{sensed} area.
 
 \subsubsection{Approach}
-We discuss now discuss how our algorithm implemented $\lgname$ shown in \reffig{mapapp} tackles $\mapprob$. \reffig{flowmap} shows each agent's approach towards solving $\mapprob$. The variable $\lmap$ refers to each agent's current \emph{view} of $\map$ being constructed by the algorithm. The function $\mathit{MaxExp}$ informally, determines whether the maximum exploration of the map required by the algorithm (in the agent's view) has been completed. 
+We discuss now discuss how our algorithm implemented $\lgname$ shown in \reffig{mapapp} tackles $\mapprob$. \reffig{flowmap} shows each agent's approach towards solving $\mapprob$. The variable $\lmap$ refers to each agent's current \emph{view} of $\map$ being constructed by the algorithm. The function $\mathit{MaxExp}$ informally, determines whether the maximum exploration of the map required by the algorithm (in the agent's view) has been completed. If not, the agent first updates its $\lmap$ from $\gmap$, which contains the map of obstacles and unoccupied squares created collaboratively from $\lmap$s of all agents so far. The agent then picks a new point in a square known to be unoccupied in its $\lmap$ and sets $\mathit{Motion.Path}$ to a path moving only over squares known to be unoccupied by its $\lmap$. While the agent hasn't reached the target square, it keeps updating its $\lmap$ with sensed data (occupied and unoccupied squares). When it reaches the target square, it updates the $\gmap$ with its $\lmap$ information, letting all other agents know the map discovered by it. In terms of our formalization presented in \refsect{prelims}, the final value of $\gmap$ corresponds to the constructed grid occupancy mapping, $\map$. 
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=\linewidth]{figs/map_flowchart.png}
-    \caption{Flowchart for a simple solution to 2D distributed mapping problem\vspace{-1mm}}
+    \caption{Flowchart for a simple solution to 2D distributed mapping problem\vspace{-2mm}}
     \label{fig:flowmap}
 \end{figure}
-If not, the agent first updates its $\lmap$ from $\gmap$, which contains the map of obstacles and unoccupied squares created collaboratively from $\lmap$s of all agents so far. The agent then picks a new point in a square known to be unoccupied in its $\lmap$ and sets $\mathit{Motion.Path}$ to a path moving only over squares known to be unoccupied by its $\lmap$. While the agent hasn't reached the target square, it keeps updating its $\lmap$ with sensed data (occupied and unoccupied squares). When it reaches the target square, it updates the $\gmap$ with its $\lmap$ information, letting all other agents know the map discovered by it. In terms of our formalization presented in \refsect{prelims}, the final value of $\gmap$ corresponds to the constructed grid occupancy mapping, $\map$. 
-
 
 
 \subsubsection{External (Library) Functions}
