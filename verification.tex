@@ -71,11 +71,9 @@ Let $\map_i:Q\mapsto \left\{-1,0,1\right\}$ denote a construction of a map funct
 
 
 We can then state the 2-d distributed mapping problem, $\mapprob$ as follows. \begin{quote}
- {\em Given a quantization $\qfunc$ of a 2-d domain $D\subset \mathbb{R}^2$, a ground truth function $\world$ (extended to $\world_Q$ through $\qfunc$), a set of robots $[N]$ with , for each robot $i \in [N]$ construct an occupancy mapping, $\map_i: Q \mapsto \left\{1,0,-1\right\}$, such that $\forall i , j \in [N], \forall q \in Q$,:
- \begin{align*} & (map_i(q) = 0 \Rightarrow
- map_j(q) = 0 \vee map_j(q) = -1)\\ \wedge
- &(map_i(q) = 1 \Rightarrow
- map_j(q) = 1 \vee map_j(q) = -1)\end{align*}. 
+ {\em Given a quantization $\qfunc$ of a 2-d domain $D\subset \mathbb{R}^2$, a ground truth function $\world$ (extended to $\world_Q$ through $\qfunc$), a set of robots $[N]$ with , for each robot $i \in [N]$ construct an occupancy mapping, $\map_i: Q \mapsto \left\{1,0,-1\right\}$, such that $\forall i , j \in [N], \forall q \in Q, \forall v \in \left\{0,1\right\}$,:
+$$ (map_i(q) = v \Rightarrow
+ map_j(q) = v \vee map_j(q) = -1)$$
  }
 \end{quote}
 
@@ -89,7 +87,7 @@ A vacuously correct solution to $\mapprob$ given $D, \qfunc$ and $\world_Q$ is $
 
 We assume that at time $t$, if robot $i$ detects an obstacle in $q \in \sensarea(\qfunc(\pos_t(i)))$ , then $q$ does contain an obstacle, otherwise it does not. The point of this presentation isn't dealing with the issue of potentially false positives while identifying an obstacle. A robot partially constructs a grid occupancy function by assigning values to the grid squares in its \emph{sensed} area.
 
-\subsubsection{Soundness and Correctness}
+
 
 
 
@@ -102,5 +100,22 @@ We discuss now discuss how our algorithm implemented $\lgname$ shown in \reffig{
     \label{fig:flowmap}
 \end{figure}
 
-
 \subsubsection{External (Library) Functions}
+
+
+\subsubsection{Soundness and Correctness}
+Having stated the problem, we now define the notion of soundness of a proposed occupancy map w.r.t an instance of $\mapprob$. 
+\begin{definition}
+\label{soundness}
+Given an instance of $\mapprob$ with domain $D$, a quantization $\qfunc: D\mapsto Q$, ground truth mapping $\world_Q$, a proposed map $\map: Q \mapsto \left\{-1,0,1\right\}$ is \emph{sound} if :
+\begin{itemize}
+\item $\forall v \in \left\{0,1\right\} \map(q) = v \Rightarrow \world_Q(q)  = v$
+\item $\forall v \in \left\{0,1\right\}\world_Q(q) = v \Rightarrow \map(q) = v \vee \map(q) = -1$
+\end{itemize}
+\end{definition}
+
+These two statements collectively state that given a proposed occupancy map, \emph{any grid point marked as 0 is indeed obstacle free, and if it is marked as 1 then there is indeed an obstacle at least partially in it.}  An algorithm for $\mapprob$ is \emph{Sound} if its output occupancy map is sound according to \defn{soundness}.
+
+\begin{theorem}
+The $\lgname$ application shown in \reffig{mapapp} implements a sound algorithm for any input instance of $\mapprob$.
+\end{theorem}
