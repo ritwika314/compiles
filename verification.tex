@@ -35,19 +35,19 @@ and the localization system.
 \subsubsection{synchronization issues}
  
 \subsection{The Distributed Mapping Problem}
-In this section, we introduce the distributed mapping problem that the $\lgname$ program shown in \reffig{mapapp} aims to solve. The key difference between distributed SLAM and this application is that we assume that the robots know their \emph{global coordinates} within the area of deployment. They are only attempting to map it.
+In this section, we introduce the distributed mapping problem that the $\lgname$ program shown in \reffig{mapapp} aims to solve. The key difference between distributed SLAM and this application is that we assume that the robots know their \emph{global coordinates} within the area of deployment. They are only attempting to map the static obstacles within this area.
 
-Informally, the problem requires a set of robots to collaboratively agree on positioning of static \emph{obstacles} within a given area $D$, which any robot should avoid while moving in $D$. 
+Informally, the problem requires a set of robots to collaboratively agree on positioning of static \emph{obstacles} within a given area $D$, which any robot should avoid while moving in $D$. We currently assume that the only sensors available for sensing obstacles are LIDAR based, and the robots are constrained to move in a 2-D space.
 
 
 \subsubsection{Preliminaries}
 \label{sec:prelims}
-We first set up the terminology and assumptions to discuss our approach to this problem. We currently assume that the only sensors available for sensing obstacles are LIDAR based, and the robots are constrained to move in a 2-D space.
+We first set up the terminology and assumptions to discuss our approach to this problem. 
 
 The mapping problem is defined over a (\emph{bounded}) domain $D$. In our problem setup, we assume $D$ is a rectangle in $\mathbb{R}^2$ given by $[x_1,x_2]\times [y_1,y_2]$.
 
 \begin{definition}
-A \emph{grid quantization} of a bounded domain $D$ is defined as a mapping $\qfunc:D \mapsto \qdom$, where $\qdom$ is a discrete set . If $\qdom$ is, for instance, $\mathbb{Z}\times \mathbb{Z}$, this can be viewed as an embedding of a 2D-lattice in $\mathbb{R}^2$. 
+A \emph{quantization} of a bounded domain $D$ is defined as a mapping $\qfunc:D \mapsto \qdom$, where $\qdom$ is a discrete set. If $\qdom$ is, for instance, $\mathbb{Z}\times \mathbb{Z}$, this can be viewed as an embedding of a 2D-lattice in $\mathbb{R}^2$. 
 \end{definition}
 
 In theory, we can assume the existence of a \emph{ground truth} function $\world : D\mapsto \left\{0,1\right\}$, where $$\world(\Vec{x}) = \begin{cases}
@@ -62,28 +62,36 @@ $\world_Q : Q \mapsto \left\{0,1\right\}$, where $$\world_Q(q) = \begin{cases}
 0\ \mbox{otherwise}
 \end{cases}
 $$
-\rg{Consider also, that there is a set of ground robots $[N]$ in which each robot can reliably detect obstacles within a certain \emph{sensing area} (which we shall presently define) of the current position of the robot.} 
+\rg{Consider that there is a set of ground robots $[N]$, which can create a mapping of static obstacles in $Q$ collaboratively by constructing local mappings based on sensed information.}
+
+Let $\map_i:Q\mapsto \left\{-1,0,1\right\}$ denote a construction of a map function \emph{local} to robot $i$, where, $\map_i(q) = 1$ indicates that according to robot $i$, there is an obstacle in $q$, $\map_i(q) = 0$ indicates that according to robot $i$, $q$ is unoccupied, and $\map_i(q) = -1$ indicates that robot $i$ doesn't have information about $q$. 
+
+\begin{definition} The \emph{sensing area} of a robot $i$ at position $\pos(i)$ is defined by $\sensarea: Q \mapsto 2^{Q}$, such that $\map_i(\sensarea(q)) = \world_Q(\sensarea(q))$.  
+  \end{definition}
+
+
 We can then state the 2-d distributed mapping problem, $\mapprob$ as follows. \begin{quote}
- {\em Given a grid quantization $\qfunc$ of a 2-d domain $D\subset \mathbb{R}^2$, a ground truth function $\world$ (extended to $\world_Q$ through $\qfunc$), a set of robots $[N]$, construct a grid occupancy mapping, $\map: Q \mapsto \left\{1,0,-1\right\}$, where:
- \begin{flalign*}
- \map(q) = 1 &\Rightarrow \world_Q = 1\\
- \map(q) = 0 &\Rightarrow \world_Q = 0\\
- \world_q = 0 &\Rightarrow \map(q) = 0 \mbox{ or } \map(q) = -1\\
-  \world_q = 1 &\Rightarrow \map(q) = 1 \mbox{ or } \map(q) = -1\\
- \end{flalign*}
- 
+ {\em Given a quantization $\qfunc$ of a 2-d domain $D\subset \mathbb{R}^2$, a ground truth function $\world$ (extended to $\world_Q$ through $\qfunc$), a set of robots $[N]$ with , for each robot $i \in [N]$ construct an occupancy mapping, $\map_i: Q \mapsto \left\{1,0,-1\right\}$, such that $\forall i , j \in [N], \forall q \in Q$,:
+ \begin{align*} & (map_i(q) = 0 \Rightarrow
+ map_j(q) = 0 \vee map_j(q) = -1)\\ \wedge
+ &(map_i(q) = 1 \Rightarrow
+ map_j(q) = 1 \vee map_j(q) = -1)\end{align*}. 
  }
 \end{quote}
- Let $\pos_t(i)$ denote the position of robot $i$ at time $t$, and $\pos_0(i)$ denote the initial position of the robot $i$. A vacuously correct solution to $\mapprob$ given $D, \qfunc$ and $\world_Q$ is $$\map : Q \mapsto \left\{0,1,-1\right\}, \forall  q \in Q , \map(q)= -1$$ To allow for other solutions than the one stated above, we assume that we are given that initially, each robot starts at a grid square with no obstacle, and the grid occupancy function $\map$ is initialized as follows:
- $\forall i \in [N], \world_Q(\qfunc(\pos_{0}(i))) = 0$ and 
- $\forall i \in [N], \map(\qfunc(\pos_{0}(i))) = 0$.
 
- Let $\map_i:Q\mapsto \left\{-1,0,1\right\}$ denote a \emph{proposed} map function from the perspective of robot $i$,: where $\map_i(q) = 0$ when robot $i$ doesn't sense an obstacle in $q$, $\map_i(q) = 1$ when it does, and $\map_i(q) = -1$ otherwise. 
- \begin{definition} The \emph{sensing area} of a robot $i$ at time $t$ is defined by $\sensarea: Q \mapsto 2^{Q}$, where given $\qfunc(\pos_t(i)) = Q \Rightarrow \map_i(Q) = 0$, and  $\map_i(\sensarea(q)) = 0$ or $\map_i(\sensarea(q)) = 1$. 
-  \end{definition}
-  
-  
+ \rg{We can then \emph{combine} the elements of the set of \emph{local maps}, $\{\map_i\}_{i\in [N]}$ to form a \emph{global} occupancy mapping, $\map: Q\mapsto \left\{-1,0,1\right\}$ where $\map(q) = Max(\{\map_i(q)\}_{i\in[N]})$.}
+ 
+A vacuously correct solution to $\mapprob$ given $D, \qfunc$ and $\world_Q$ is $\forall i \in [N]$, $$\map_i : Q \mapsto \left\{0,1,-1\right\}, \forall  q \in Q , \map_i(q)= -1$$ To allow for other solutions than the one stated above, we assume that we are given that initially, each robot $i\in[N]$ starts at a grid square with no obstacle, and the occupancy function $\map_i$ is initialized as follows:
+ $\forall i \in [N], \world_Q(\qfunc(\mathit{ipos}(i))) = 0$ and 
+ $\forall i \in [N], \map_i(\qfunc(\mathit{ipos}(i))) = 0$,
+  where $\mathit{ipos}(i)$ denotes the initial position of the robot $i$. 
+
+
 We assume that at time $t$, if robot $i$ detects an obstacle in $q \in \sensarea(\qfunc(\pos_t(i)))$ , then $q$ does contain an obstacle, otherwise it does not. The point of this presentation isn't dealing with the issue of potentially false positives while identifying an obstacle. A robot partially constructs a grid occupancy function by assigning values to the grid squares in its \emph{sensed} area.
+
+\subsubsection{Soundness and Correctness}
+
+
 
 \subsubsection{Approach}
 We discuss now discuss how our algorithm implemented $\lgname$ shown in \reffig{mapapp} tackles $\mapprob$. \reffig{flowmap} shows each agent's approach towards solving $\mapprob$. The variable $\lmap$ refers to each agent's current \emph{view} of $\map$ being constructed by the algorithm. The function $\mathit{MaxExp}$ informally, determines whether the maximum exploration of the map required by the algorithm (in the agent's view) has been completed. If not, the agent first updates its $\lmap$ from $\gmap$, which contains the map of obstacles and unoccupied squares created collaboratively from $\lmap$s of all agents so far. The agent then picks a new point in a square known to be unoccupied in its $\lmap$ and sets $\mathit{Motion.Path}$ to a path moving only over squares known to be unoccupied by its $\lmap$. While the agent hasn't reached the target square, it keeps updating its $\lmap$ with sensed data (occupied and unoccupied squares). When it reaches the target square, it updates the $\gmap$ with its $\lmap$ information, letting all other agents know the map discovered by it. In terms of our formalization presented in \refsect{prelims}, the final value of $\gmap$ corresponds to the constructed grid occupancy mapping, $\map$. 
