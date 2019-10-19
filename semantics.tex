@@ -1,15 +1,11 @@
 \section{Koord Language and Overview}
 \label{sec:semantics}
-The interaction model of an agent executing a $\lgname$ program is shown in \reffig{arch}. 
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=0.23\textwidth]{figs/arch.png}
-\includegraphics[width=0.24\textwidth]{figs/agents2.png}
-\caption{\small An agent executing a $\lgname$ application and interacting with the physical environment through sensor and actuator ports ({\em left}). Interaction across multiple agents happens through shared variables implmented over message passing ({\em right}).}
-\label{fig:arch}
-\end{figure}
+
 The program and the controller interact with each other through {\em sensor} and {\em actuator} ports.  The program reads the sensor ports, reads and writes to program variables, and writes to actuator ports. The controller drives the underlying physical plant. The \emph{environment} of a  $\lgname$ program is the combination of the controller and the plant. The set of agents in the system may interact with each other using {\em shared variables\/}. Each agent in the system runs an instance of the \emph{same} $\lgname$ program. 
 % exmaple code snippet
+
+    
+\paragraph* {A distributed $\mathit{Mapping}$  application} \reffig{mapapp} shows a distributed mapping allocation application written in $\lgname$. This app involves :
 \begin{figure}[!htbp]
     \noindent
     \begin{mdframed}
@@ -22,11 +18,11 @@ The program and the controller interact with each other through {\em sensor} and
     \end{center}
     \end{mdframed}
 
-    \caption{$\lgname$ program for robot $i$ to perform distributed mapping}
+    \caption{$\lgname$ code for robot $i$ for the 2D distributed mapping application. \vspace{-5mm}}
     \label{fig:mapapp}
 \end{figure}
-    
-\paragraph* {A distributed $\mathit{Mapping}$  application} \reffig{mapapp} shows a distributed mapping allocation application written in $\lgname$. This app involves :
+
+
 \begin{itemize}
     \item Multiple sensors
     \item Sampled sensing : sensed over time. 

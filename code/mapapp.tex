@@ -30,7 +30,7 @@ NewPoint:$\label{newpt}$
         newpoint $=$ False
 
 LUpdate:$\label{lup}$
-   pre !(newpoint || Motion.reached )
+   pre not (newpoint || Motion.reached )
    eff : pscan $=$ tSync(Motion.tPos, Lidar.ldata)
          for i in pldata:
            setAll(getSquares(i.pos,i.scan,dim),0)
@@ -44,5 +44,3 @@ GUpdate: $\label{gup}$
   eff : atomic:
            max(localMap,globalMap)
         newpoint $=$ True
-      
-

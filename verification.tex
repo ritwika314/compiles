@@ -35,10 +35,13 @@ and the localization system.
 \subsubsection{synchronization issues}
  
 \subsection{The Distributed Mapping Problem}
-In this section, we introduce the distributed mapping problem that the $\lgname$ program shown in \reffig{mapapp} aims to solve. The key difference between distributed SLAM and this application is that we assume that the robots know their \emph{global coordinates} within the area of deployment. They are only attempting to map it. 
-Informally, the problem requires a set of robots to collaboratively agree on positioning of static \emph{obstacles} within a given area $D$, which any robot should avoid while moving in $D$.
+In this section, we introduce the distributed mapping problem that the $\lgname$ program shown in \reffig{mapapp} aims to solve. The key difference between distributed SLAM and this application is that we assume that the robots know their \emph{global coordinates} within the area of deployment. They are only attempting to map it.
+
+Informally, the problem requires a set of robots to collaboratively agree on positioning of static \emph{obstacles} within a given area $D$, which any robot should avoid while moving in $D$. 
+
 
 \subsubsection{Preliminaries}
+\label{sec:prelims}
 We first set up the terminology and assumptions to discuss our approach to this problem. We currently assume that the only sensors available for sensing obstacles are LIDAR based, and the robots are constrained to move in a 2-D space.
 
 The mapping problem is defined over a (\emph{bounded}) domain $D$. In our problem setup, we assume $D$ is a rectangle in $\mathbb{R}^2$ given by $[x_1,x_2]\times [y_1,y_2]$.
@@ -71,19 +74,27 @@ We can then state the 2-d distributed mapping problem, $\mapprob (D, \qfunc, \wo
  
  }
 \end{quote}
-
- A vacuously correct solution to $\mapprob(D, \qfunc, \world)$ is $F : Q \mapsto \left\{0,1,-1\right\}, \forall  q \in Q , F(q)= -1$. For a robot $i\in [N]$, let $\pos_{0}(i)$ denote its initial position. To allow for other solutions than the vacuous one stated above, we assume that we are given that initially, each robot starts at a grid square with no obstacle, and the grid occupancy function $\map$ is initialized as such:
+ Let $\pos_t(i)$ denote the position of robot $i$ at time $t$, and $\pos_0(i)$ denote the initial position of the robot $i$. A vacuously correct solution to $\mapprob$ given $D, \qfunc$ and $\world_Q$ is $$F : Q \mapsto \left\{0,1,-1\right\}, \forall  q \in Q , F(q)= -1$$ To allow for other solutions than the one stated above, we assume that we are given that initially, each robot starts at a grid square with no obstacle, and the grid occupancy function $\map$ is initialized as follows:
  $\forall i \in [N], \world_Q(\qfunc(\pos_{0}(i))) = 0$ and 
  $\forall i \in [N], \map(\qfunc(\pos_{0}(i))) = 0$.
 
- Let $\pos_t(i)$ denote the position of robot $i$ at time $t$. Let $\map_i:Q\mapsto \left\{-1,0,1\right\}$ denote a \emph{proposed} map function from the perspective of robot $i$,: where $\map_i(q) = 0$ when robot $i$ doesn't sense an obstacle in $q$, $\map_i(q) = 1$ when it does, and $\map_i(q) = -1$ otherwise. 
+ Let $\map_i:Q\mapsto \left\{-1,0,1\right\}$ denote a \emph{proposed} map function from the perspective of robot $i$,: where $\map_i(q) = 0$ when robot $i$ doesn't sense an obstacle in $q$, $\map_i(q) = 1$ when it does, and $\map_i(q) = -1$ otherwise. 
  \begin{definition} The \emph{sensing area} of a robot $i$ at time $t$ is defined by $\sensarea: Q \mapsto 2^{Q}$, where given $\qfunc(\pos_t(i)) = Q \Rightarrow \map_i(Q) = 0$, and  $\map_i(\sensarea(q)) = 0$ or $\map_i(\sensarea(q)) = 1$. 
   \end{definition}
   
   
 We assume that at time $t$, if robot $i$ detects an obstacle in $q \in \sensarea(\qfunc(\pos_t(i)))$ , then the $q$ does contain an obstacle, otherwise it does not. The point of this presentation isn't dealing with the issue of potentially false positives while identifying an obstacle. A robot partially constructs a grid occupancy function by assigning values to the grid squares in its \emph{sensed} area.
 
- 
+\subsubsection{Approach}
+We discuss now discuss how our algorithm implemented $\lgname$ shown in \reffig{mapapp} tackles $\mapprob$. \reffig{flowmap} shows each agent's approach towards solving $\mapprob$. The variable $\lmap$ refers to each agent's current \emph{view} of $\map$ being constructed by the algorithm. The function $\mathit{MaxExp}$ informally, determines whether the maximum exploration of the map required by the algorithm (in the agent's view) has been completed. 
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=\linewidth]{figs/map_flowchart.png}
+    \caption{Flowchart for a simple solution to 2D distributed mapping problem\vspace{-1mm}}
+    \label{fig:flowmap}
+\end{figure}
+If not, the agent first updates its $\lmap$ from $\gmap$, which contains the map of obstacles and unoccupied squares created collaboratively from $\lmap$s of all agents so far. The agent then picks a new point in a square known to be unoccupied in its $\lmap$ and sets $\mathit{Motion.Path}$ to a path moving only over squares known to be unoccupied by its $\lmap$. While the agent hasn't reached the target square, it keeps updating its $\lmap$ with sensed data (occupied and unoccupied squares). When it reaches the target square, it updates the $\gmap$ with its $\lmap$ information, letting all other agents know the map discovered by it. In terms of our formalization presented in \refsect{prelims}, the final value of $\gmap$ corresponds to the constructed grid occupancy mapping, $\map$. 
 
 
-\subsection{External (Library) Functions}
+
+\subsubsection{External (Library) Functions}
