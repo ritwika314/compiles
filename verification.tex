@@ -35,19 +35,17 @@ and the localization system.
 \subsubsection{synchronization issues}
  
 \subsection{The Distributed Mapping Problem}
-In this section, we introduce the distributed mapping problem that the $\lgname$ program shown in \reffig{mapapp} aims to solve. The key difference between distributed SLAM and this application is that we assume that the robots know their \emph{global coordinates} within the area of deployment. They are only attempting to map the static obstacles within this area.
-
-Informally, the problem requires a set of robots to collaboratively agree on positioning of static \emph{obstacles} within a given area $D$, which any robot should avoid while moving in $D$. We currently assume that the only sensors available for sensing obstacles are LIDAR based, and the robots are constrained to move in a 2-D space.
+In this section, we introduce the distributed mapping problem. Informally, the problem requires a set of robots to collaboratively mark the position of static \emph{obstacles} within a given area $D$, which any robot should avoid while moving in $D$.The key difference between distributed SLAM and this application is that we assume that the robots know their \emph{global coordinates} within the area of deployment. They are only attempting to map the static obstacles within this area. We currently assume that the only sensors available for sensing obstacles are LIDAR based, and the robots are constrained to move in a 2-D space.
 
 
 \subsubsection{Preliminaries}
 \label{sec:prelims}
 We first set up the terminology and assumptions to discuss our approach to this problem. 
 
-The mapping problem is defined over a (\emph{bounded}) domain $D$. In our problem setup, we assume $D$ is a rectangle in $\mathbb{R}^2$ given by $[x_1,x_2]\times [y_1,y_2]$.
+The mapping problem is defined over a (\emph{bounded}) domain $D$, a bounded rectangle in $\mathbb{R}^2$ given by $[a_1,a_2]\times [b_1,b_2]$.
 
 \begin{definition}
-A \emph{quantization} of a bounded domain $D$ is defined as a mapping $\qfunc:D \mapsto \qdom$, where $\qdom$ is a discrete set. If $\qdom$ is, for instance, $\mathbb{Z}\times \mathbb{Z}$, this can be viewed as an embedding of a 2D-lattice in $\mathbb{R}^2$. 
+A \emph{quantization} of a bounded domain $D$ is defined as a mapping $\qfunc:D \mapsto \qdom$ where $\qdom = \left\{q_{ij}\right\}_{i\in [1..n_x], j\in [1..n_y]}$ such that every $q_{ij}$ corresponds to a \emph{grid rectangle} $[x_i, x_{i+1}] \times [y_j, y_{j+1}]$.
 \end{definition}
 
 In theory, we can assume the existence of a \emph{ground truth} function $\world : D\mapsto \left\{0,1\right\}$, where $$\world(\Vec{x}) = \begin{cases}
@@ -64,42 +62,39 @@ $\world_Q : Q \mapsto \left\{0,1\right\}$ is defined as follows,  $$\world_Q(q) 
 $$
 \rg{Consider that there is a set of ground robots $[N]$, which are tasked with creating a mapping of static obstacles in $Q$ collaboratively by constructing local mappings based on sensed information.}
 
-Let $\map_i:Q\mapsto \left\{-1,0,1\right\}$ denote a construction of a map function \emph{local} to robot $i$, where, $\map_i(q) = 1$ indicates that according to robot $i$, there is an obstacle in $q$, $\map_i(q) = 0$ indicates that according to robot $i$, $q$ is unoccupied, and $\map_i(q) = -1$ indicates that robot $i$ doesn't have information about $q$. 
+Let $\map_i:Q\mapsto \left\{-1,0,1\right\}$ denote a construction of an occupancy map function \emph{local} to robot $i$.  % $\map_i(q) = 1$ indicates that according to robot $i$, there is an obstacle in $q$, $\map_i(q) = 0$ indicates that according to robot $i$, $q$ is unoccupied, and $\map_i(q) = -1$ indicates that robot $i$ doesn't have information about $q$. 
 
-\begin{definition} The \emph{sensing area} of a robot $i$ at position $\pos(i)$ is defined by $\sensarea: Q \mapsto 2^{Q}$, such that $\map_i(\sensarea(\qfunc(pos(i))) = \world_Q(\sensarea(\qfunc(pos(i))$.  
+\begin{definition} The \emph{sensing area} of a robot $i$ at position $\pos(i)$ is defined by $\sensarea: Q \mapsto 2^{Q}$, such that the robot can \emph{correctly} compute $\world_Q(\sensarea(pos(i))$.  
   \end{definition}
 
 
 We can then state the 2-d distributed mapping problem, $\mapprob$ as follows. \begin{quote}
- {\em Given a quantization, $\qfunc:D\mapsto Q$ of a 2-d domain $D\subset \mathbb{R}^2$, a ground truth function $\world:D \mapsto \left\{0,1\right\}$, a set of robots $[N]$ , for each robot $i \in [N]$ construct an occupancy mapping, $\map_i: Q \mapsto \left\{1,0,-1\right\}$, such that $\forall i , j \in [N], \forall q \in Q, \forall v \in \left\{0,1\right\}$:
-$$ (map_i(q) = v \Rightarrow
- map_j(q) = v \vee map_j(q) = -1)$$
+ {\em Given a quantization, $\qfunc:D\mapsto Q$ of a 2-d domain $D\subset \mathbb{R}^2$, a ground truth function $\world:D \mapsto \left\{0,1\right\}$, a set of robots $[N]$ , for each robot $i \in [N]$ construct an occupancy mapping, $\map_i: Q \mapsto \left\{1,0,-1\right\}$.
  }
 \end{quote}
 
- \rg{We can then \emph{combine} the elements of the set of \emph{local maps}, $\{\map_i\}_{i\in [N]}$ to form a \emph{global} occupancy mapping, $\map: Q\mapsto \left\{-1,0,1\right\}$ where $\map(q) = Max(\{\map_i(q)\}_{i\in[N]})$.}
- 
-A vacuously correct solution to $\mapprob$ given $D, \qfunc$ and $\world_Q$ is $\forall i \in [N]$, $$\map_i : Q \mapsto \left\{0,1,-1\right\}, \forall  q \in Q , \map_i(q)= -1$$ To allow for other solutions than the one stated above, we assume that we are given that initially, each robot $i\in[N]$ starts at a grid square with no obstacle, and the occupancy function $\map_i$ is initialized as follows:
- $\forall i \in [N], \world_Q(\qfunc(\mathit{ipos}(i))) = 0$ and 
- $\forall i \in [N], \map_i(\qfunc(\mathit{ipos}(i))) = 0$,
-  where $\mathit{ipos}(i)$ denotes the initial position of the robot $i$. 
+ \rg{We can \emph{combine} the elements of the set of \emph{local maps}, $\{\map_i\}_{i\in [N]}$ to form a \emph{global} occupancy mapping. }
 
-Having stated the problem, we now define the notion of soundness of a proposed occupancy map w.r.t an instance of $\mapprob$. 
+ Having stated the problem, we now define the notion of soundness of a proposed occupancy map w.r.t an instance of $\mapprob$. 
 \begin{definition}
 \label{soundness}
-Given an instance of $\mapprob$ with domain $D$, a quantization $\qfunc: D\mapsto Q$, ground truth mapping $\world:D \mapsto \left\{0,1\right\}$, a proposed occupancy mapping, $\map: Q \mapsto \left\{-1,0,1\right\}$ is \emph{sound} if :
+ For a robot $i$, a proposed occupancy mapping $\map_i: Q \mapsto \left\{-1,0,1\right\}$ is \emph{sound} if :
 \begin{itemize}
-\item $\forall v \in \left\{0,1\right\} \map(q) = v \Rightarrow \world_Q(q)  = v$
-\item $\forall v \in \left\{0,1\right\}\world_Q(q) = v \Rightarrow \map(q) = v \vee \map(q) = -1$
+\item $\forall v \in \left\{0,1\right\} \map_i(q) = v \Rightarrow \world_Q(q)  = v$
+\item $\forall v \in \left\{0,1\right\}\world_Q(q) = v \Rightarrow \map(q) = v \vee \map_i(q) = -1$
 \end{itemize}
 \end{definition}
 
-These two statements collectively state that given a proposed occupancy map, \emph{any grid point marked as 0 is indeed obstacle free, and if it is marked as 1 then there is indeed an obstacle at least partially in it.}  An algorithm for $\mapprob$ is \emph{sound} if its output occupancy map is sound according to \defn{soundness}.
+ 
+A vacuously correct (sound) solution to $\mapprob$ given $D, \qfunc$ and $\world_Q$ is $\forall i \in [N]$, $$\map_i : Q \mapsto \left\{0,1,-1\right\}, \forall  q \in Q , \map_i(q)= -1$$ To allow for more interesting solutions than the one stated above, we assume that we are given that initially, each robot $i\in[N]$ starts at a grid rectangle with no obstacle, and the occupancy function $\map_i$ is initialized as follows:
+ $\forall i \in [N], \world_Q(\qfunc(\mathit{pos}_0(i))) = 0$ and 
+ $\forall i \in [N], \map_i(\qfunc(\mathit{pos}_0(i))) = 0$,
+  where $\mathit{pos}_0(i)$ denotes the initial position of the robot $i$. 
+
+
+These two statements collectively state that given a proposed occupancy map, \emph{any grid rectangle marked as 0 is indeed obstacle free, and if it is marked as 1 then there is indeed an obstacle at least partially in it.}  An algorithm for $\mapprob$ is \emph{sound} if its output occupancy map is sound according to \defn{soundness}.
 
 We assume that at time $t$, if robot $i$ detects an obstacle in $q \in \sensarea(\qfunc(\pos_t(i)))$ , then $q$ does contain an obstacle, otherwise it does not. The point of this presentation isn't dealing with the issue of potentially false positives while identifying an obstacle. A robot partially constructs a grid occupancy function by assigning values to the grid squares in its \emph{sensed} area.
-
-
-
 
 
 \subsubsection{Approach}
@@ -115,8 +110,10 @@ We discuss now discuss how our algorithm implemented $\lgname$ shown in \reffig{
 The variable $\lmap$ refers to each agent's current \emph{view} of $\map$ being constructed by the algorithm. The function $\mathit{MaxExp}$ informally, determines whether the maximum exploration of the map required by the algorithm (in the agent's view) has been completed. If not, the agent first updates its $\lmap$ from $\gmap$, which contains the map of obstacles and unoccupied squares created collaboratively from $\lmap$s of all agents so far. The agent then picks a new point in a square known to be unoccupied in its $\lmap$ and sets $\mathit{Motion.Path}$ to a path moving only over squares known to be unoccupied by its $\lmap$. While the agent hasn't reached the target square, it keeps updating its $\lmap$ with sensed data (occupied and unoccupied squares). When it reaches the target square, it updates the $\gmap$ with its $\lmap$ information, letting all other agents know the map discovered by it. In terms of our formalization presented in \refsect{prelims}, the final value of $\gmap$ corresponds to the constructed grid occupancy mapping, $\map$. 
 
 
-
-
+\begin{lemma}
+ Given a system of robots $[N]$, if $\exists i , j \in [N], \exists  q \in Q, \exists v \in \left\{0,1\right\} (map_i(q) = v \wedge
+ map_j(q) = 1 - v $, then either $\map_i$, or $\map_j$ or both are not \emph{sound}. 
+\end{lemma}
 
 
 \begin{theorem}
