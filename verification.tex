@@ -5,15 +5,15 @@
 
 
 
-To run a $\lgname$ program (hardware or simulation), the user has to provide a configuration file, with 
+To run a $\lgname$ program (hardware or simulation), the user has to provide a configuration file, with
 \begin{inparaenum}
-\item the number of agents, 
-\item in case of simulation, the initial positions of the agents and the length of the simulation and 
-\item in case of hardware deployment their IP addresses, 
-and the localization system.
-\end{inparaenum} 
+    \item the number of agents,
+    \item in case of simulation, the initial positions of the agents and the length of the simulation and
+    \item in case of hardware deployment their IP addresses,
+    and the localization system.
+\end{inparaenum}
 
-\subsection{Key environment assumptions} 
+\subsection{Key environment assumptions}
 
 
 \subsubsection{Periodic event execution semantics}
@@ -33,97 +33,118 @@ and the localization system.
 \subsubsection{positioning}
 \subsubsection{sampled sensing}
 \subsubsection{synchronization issues}
- 
+
 \subsection{The Distributed Mapping Problem}
 In this section, we introduce the distributed mapping problem. Informally, the problem requires a set of robots to collaboratively mark the position of static \emph{obstacles} within a given area $D$, which any robot should avoid while moving in $D$.The key difference between distributed SLAM and this application is that we assume that the robots know their \emph{global coordinates} within the area of deployment. They are only attempting to map the static obstacles within this area. We currently assume that the only sensors available for sensing obstacles are LIDAR based, and the robots are constrained to move in a 2-D space.
 
 
 \subsubsection{Preliminaries}
 \label{sec:prelims}
-We first set up the terminology and assumptions to discuss our approach to this problem. 
+We first set up the terminology and assumptions to discuss our approach to this problem.
 
 The mapping problem is defined over a (\emph{bounded}) domain $D$, a bounded rectangle in $\mathbb{R}^2$ given by $[a_1,a_2]\times [b_1,b_2]$.
 
 \begin{definition}
-A \emph{quantization} of a bounded domain $D$ is defined as a mapping $\qfunc:D \mapsto \qdom$ where $\qdom = \left\{q_{ij}\right\}_{i\in [1..n_x], j\in [1..n_y]}$ such that every $q_{ij}$ corresponds to a \emph{grid rectangle} $[x_i, x_{i+1}] \times [y_j, y_{j+1}]$.
+    A \emph{quantization} of a bounded domain $D$ is defined as a mapping $\qfunc:D \mapsto \qdom$ where $\qdom = \left\{q_{ij}\right\}_{i\in [1..n_x], j\in [1..n_y]}$ such that every $q_{ij}$ corresponds to a \emph{grid rectangle} $[x_i, x_{i+1}] \times [y_j, y_{j+1}]$.
 \end{definition}
 
 In theory, we can assume the existence of a \emph{ground truth} function $\world : D\mapsto \left\{0,1\right\}$, where $\forall \Vec{x} \in D$, $$\world(\Vec{x}) = \begin{cases}
-1\ \mbox{if there is an obstacle at }\Vec{x}\\
-0\ \mbox{otherwise}
+                                                                                                                                                                        1\ \mbox{if there is an obstacle at }\Vec{x}\\
+                                                                                                                                                                        0\ \mbox{otherwise}
 \end{cases}
 $$
 
-Given any quantization $Q$ of the domain $D$ given by $\qfunc:D\mapsto Q$, the corresponding \emph{quantized} ground truth function 
+Given any quantization $Q$ of the domain $D$ given by $\qfunc:D\mapsto Q$, the corresponding \emph{quantized} ground truth function
 $\world_Q : Q \mapsto \left\{0,1\right\}$ is defined as follows,  $$\world_Q(q) = \begin{cases}
-1\ \Leftrightarrow \exists \Vec{x}\in D, \qfunc(\Vec{x}) = q \wedge \world(\Vec{x}) = 1 \\
-0\ \mbox{otherwise}
+                                                                                      1\ \Leftrightarrow \exists \Vec{x}\in D, \qfunc(\Vec{x}) = q \wedge \world(\Vec{x}) = 1 \\
+                                                                                      0\ \mbox{otherwise}
 \end{cases}
 $$
 \rg{Consider that there is a set of ground robots $[N]$, which are tasked with creating a mapping of static obstacles in $Q$ collaboratively by constructing local mappings based on sensed information.}
 
 Let $\map_i:Q\mapsto \left\{-1,0,1\right\}$ denote a construction of an occupancy map function \emph{local} to robot $i$.  % $\map_i(q) = 1$ indicates that according to robot $i$, there is an obstacle in $q$, $\map_i(q) = 0$ indicates that according to robot $i$, $q$ is unoccupied, and $\map_i(q) = -1$ indicates that robot $i$ doesn't have information about $q$. 
 
-\begin{definition} The \emph{sensing area} of a robot $i$ at position $\pos(i)\in D$ is defined by $\sensarea_i: D \mapsto 2^{Q}$, such that the robot can \emph{correctly} compute $\world_Q(\sensarea(\pos(i)))$.
-  \end{definition}
- 
+\begin{definition}
+    The \emph{sensing area} of a robot $i$ at position $\pos(i)\in D$ is defined by $\sensarea_i: D \mapsto 2^{Q}$, such that the robot can \emph{correctly} compute $\world_Q(\sensarea(\pos(i)))$.
+\end{definition}
+
+We assume that given $\Vec{x} \in q, \forall \Vec{x^\prime} \in q, \sensarea(\Vec{x}) \subseteq \sensarea(\Vec{x^\prime})$.
+
 We can now state the 2-d distributed mapping problem, $\mapprob$ as follows. \begin{quote}
- {\em Given a quantization, $\qfunc:D\mapsto Q$ of a 2-d domain $D\subset \mathbb{R}^2$, a ground truth function $\world:D \mapsto \left\{0,1\right\}$, a set of robots $[N]$ , for each robot $i \in [N]$ construct an occupancy mapping, $\map_i: Q \mapsto \left\{1,0,-1\right\}$.
- }
+{\em Given a quantization, $\qfunc:D\mapsto Q$ of a 2-d domain $D\subset \mathbb{R}^2$, a ground truth function $\world:D \mapsto \left\{0,1\right\}$, a set of robots $[N]$ , for each robot $i \in [N]$ construct an occupancy mapping, $\map_i: Q \mapsto \left\{1,0,-1\right\}$.
+}
 \end{quote}
 
- % \rg{We can \emph{combine} the elements of the set of \emph{local maps}, $\{\map_i\}_{i\in [N]}$ to form a \emph{global} occupancy mapping. }
+% \rg{We can \emph{combine} the elements of the set of \emph{local maps}, $\{\map_i\}_{i\in [N]}$ to form a \emph{global} occupancy mapping. }
 
- Having stated the problem, we now define the notion of soundness of a proposed occupancy map. 
+Having stated the problem, we now define the notion of soundness of a proposed occupancy map.
 \begin{definition}
-\label{soundness}
- For a robot $i$, a proposed occupancy mapping $\map_i: Q \mapsto \left\{-1,0,1\right\}$ is \emph{sound} if :
-\begin{itemize}
-\item $\forall v \in \left\{0,1\right\} \map_i(q) = v \Rightarrow \world_Q(q)  = v$
-\item $\forall v \in \left\{0,1\right\}\world_Q(q) = v \Rightarrow \map(q) = v \vee \map_i(q) = -1$
-\end{itemize}
+    \label{soundness}
+    For a robot $i$, a proposed occupancy mapping $\map_i: Q \mapsto \left\{-1,0,1\right\}$ is \emph{sound} if :
+    \begin{itemize}
+        \item $\forall v \in \left\{0,1\right\} \map_i(q) = v \Rightarrow \world_Q(q)  = v$
+        \item $\forall v \in \left\{0,1\right\}\world_Q(q) = v \Rightarrow \map(q) = v \vee \map_i(q) = -1$
+    \end{itemize}
 \end{definition}
 
 
 These two statements collectively state that given a proposed occupancy map, \emph{any grid rectangle marked as 0 is indeed obstacle free, and if it is marked as 1 then there is indeed an obstacle at least partially in it.}
 
 A vacuously correct (sound) solution to $\mapprob$ given $D, \qfunc$ and $\world_Q$ is $\forall i \in [N]$, $$\map_i : Q \mapsto \left\{0,1,-1\right\}, \forall  q \in Q , \map_i(q)= -1$$ To allow for more interesting solutions than the one stated above, we assume that we are given that initially, each robot $i\in[N]$ starts at a grid rectangle with no obstacle, and there is at least one obstacle free rectangle within the sensed area of each robot:
- $\forall i \in [N], \world_Q(\qfunc(\mathit{pos}_0(i))) = 0 \wedge \exists q \in \sensarea(\pos_0)(i), \world_Q(q) =  0 $ and
-  where $\mathit{pos}_0(i)$ denotes the initial position of the robot $i$.
+$\forall i \in [N], \world_Q(\qfunc(\mathit{pos}_0(i))) = 0 \wedge \exists q \in \sensarea(\pos_0)(i), \world_Q(q) = 0 $ and
+where $\mathit{pos}_0(i)$ denotes the initial position of the robot $i$.
 
 
 
 
 \begin{lemma}
     \label{comptbl}
- Given a system of robots $[N]$, if $\exists i , j \in [N], \exists  q \in Q, \exists v \in \left\{0,1\right\} (map_i(q) = v \wedge
- map_j(q) = 1 - v $, then at least one of $\map_i$, or $\map_j$ is not sound.
+    Given a system of robots $[N]$, if $\exists i , j \in [N], \exists  q \in Q, \exists v \in \left\{0,1\right\} (map_i(q) = v \wedge
+    map_j(q) = 1 - v $, then at least one of $\map_i$, or $\map_j$ is not sound.
 \end{lemma}
 
 \begin{proof}
-Given $\map_i$, $\map_j$, and $q\in Q$ , let $\map_i(q) = 1$, and $\map_j(q) = 0$. Suppose $\map_i$ is sound, then $\world_Q(q) = 1$, which implies $\map_j$ is not sound. By the same argument, if $\map_j$ is sound, $\map_i$ is not. 
+    Given $\map_i$, $\map_j$, and $q\in Q$ , let $\map_i(q) = 1$, and $\map_j(q) = 0$. Suppose $\map_i$ is sound, then $\world_Q(q) = 1$, which implies $\map_j$ is not sound. By the same argument, if $\map_j$ is sound, $\map_i$ is not.
 \end{proof}
 
 A set of proposed mappings $\left\{\map_i\right\}_{i\in [N]}$, can only be sound if they satisfy the following: $$\forall i,j \in [N],\forall q\in Q, \forall v \in \left\{0,1\right\}, (\map_i = v) \Rightarrow (\map_j = v \vee \map_j = -1)$$.
 
 We assume that if robot $i$ is at position $\pos(i)$, and it detects an obstacle in $q \in \sensarea(\qfunc(\pos(i)))$, then $q$ does contain an obstacle, otherwise it does not. The point of this presentation isn't dealing with the issue of potentially false positives while identifying an obstacle. A robot partially constructs a grid occupancy function by assigning values to the grid rectangles in its \emph{sensed} area.
 
-\begin{lemma}Suppose robot $i$ is at $\pos(i)\in D$, and $\exists(q^\prime)\in \sensarea(\pos(i))$,
-s.t $\map_i(q) = 1$. Consider a mapping, $\map^\prime_i:Q \mapsto \left\{-1,0,1\right\}$
-such that, $\forall q\in \left\{Q \setminus \sensarea(\pos(i))\right\}, map^\prime_i(q) = map_i(q)$
-and $\forall q \in \sensarea(\pos_i), \map^\prime_i(q) = \world_Q(q)$.
-Then, $\map^\prime_i(q)$ is sound if $\map_i$ is sound.
+\begin{lemma}
+    \label{lem:extension}
+    Suppose robot $i$ is at $\pos(i)\in D$, and $\exists(q^\prime)\in \sensarea(\pos(i))$,
+    s.t $\map_i(q) = 1$. Consider a mapping, $\map^\prime_i:Q \mapsto \left\{-1,0,1\right\}$
+    such that, $\forall q\in \left\{Q \setminus \sensarea(\pos(i))\right\}, map^\prime_i(q) = map_i(q)$
+    and $\forall q \in \sensarea(\pos_i), \map^\prime_i(q) = \world_Q(q)$.
+    Then, $\map^\prime_i(q)$ is sound if $\map_i$ is sound.
 \end{lemma}
 
 The proof for this is straightforward and follows from the definition of $\map^\prime_i$ combined with \defn{soundness}.
 
-Recall from the definition of the sensing area of a robot $i$ at $\pos(i)$, that it can reliably compute the ground truth mapping $\world_Q$ for all $q \in \sensarea(\pos(i))$. This lemma essentially states that given a sound occupancy mapping $\map_i$, it can be used to compute to another \emph{sound} occupancy mapping $\map^\prime_i$ by setting the values of $\map^\prime_i(\sensarea(\pos(i)))$ to the ground truth function. Taken in conjunction with our assumption on the initial positions of each robot, this leads to a strategy for computing sound occupancy mapping functions from a given initial position.
+Recall from the definition of the sensing area of a robot $i$ at $\pos(i)$, that it can reliably compute the ground truth mapping $\world_Q$ for all $q \in \sensarea(\pos(i))$. This lemma essentially states that given a sound occupancy mapping $\map_i$, it can be used to compute to another \emph{sound} occupancy mapping $\map^\prime_i$ by setting the values of $\map^\prime_i(\sensarea(\pos(i)))$ to the ground truth function. Taken in conjunction with our assumption on the initial positions of each robot, this leads to a strategy for computing sound occupancy mapping functions.
 
+\begin{definition}
+ We say that $\Vec{x_n}\in D$ is \emph{reachable} from $\Vec{x_0}$ if there is a \emph{path} $p = \Vec{x_0},\Vec{x_1}, \Vec{x_2},\ldots, \Vec{x_n}$ , such that
+\begin{itemize}
+\item $\forall i \in [0..n],\world_Q(\qfunc{\Vec{x_i}}) = 0$
+\item a robot can move from $\Vec{x_i}$ to $\Vec{x_{i+1}}$ for $i \in [0..n]$, while staying within $\qfunc(\Vec{x_i}) \cup \qfunc(\Vec{x_{i+1}})$.
+\end{itemize}
+\end{definition}
+
+A grid rectangle $q\in Q$ is reachable in general, if $\exists \Vec{x}\in D, q = \qfunc{x}$ such that $\Vec{x}$ is reachable from either \begin{inparaenum} [(a)]\item the initial position of a robot, or \item another reachable point $\Vec{x^\prime}\in D$.
+\end{inparaenum}
+
+\begin{lemma}
+    Consider a sound occupancy mapping $\map_i$, such that there is a reachable point $\Vec{x}$ and $\exists q^\prime \in Q, q^\prime\in\sensarea(\Vec{x}) \wedge \map_i(q^\prime) = -1$, then it can be extended to another sound occupancy mapping $\map_i^\prime$, such that $\map_i^\prime(q^\prime) = \world_Q(q^\prime)$, and $\forall q \neq q^\prime,\map_i(q) = \map_i^\prime(q)$.
+\end{lemma}
+
+This follows from the definition of reachability and \lem{extension}.
 
 
 
 \subsubsection{Approach}
-We discuss now discuss how our algorithm implemented $\lgname$ shown in \reffig{mapapp} tackles $\mapprob$. \reffig{flowmap} shows each agent's approach towards solving $\mapprob$. 
+We discuss now discuss how our algorithm implemented $\lgname$ shown in \reffig{mapapp} tackles $\mapprob$. \reffig{flowmap} shows each agent's approach towards solving $\mapprob$.
 
 \begin{figure}[!htbp]
     \centering
@@ -132,12 +153,12 @@ We discuss now discuss how our algorithm implemented $\lgname$ shown in \reffig{
     \label{fig:flowmap}
 \end{figure}
 
-The variable $\lmap$ refers to each agent's current \emph{view} of $\map$ being constructed by the algorithm. The function $\mathit{MaxExp}$ informally, determines whether the maximum exploration of the map required by the algorithm (in the agent's view) has been completed. If not, the agent first updates its $\lmap$ from $\gmap$, which contains the map of obstacles and unoccupied squares created collaboratively from $\lmap$s of all agents so far. The agent then picks a new point in a rectangle known to be unoccupied in its $\lmap$ and sets $\mathit{Motion.Path}$ to a path moving only over squares known to be unoccupied by its $\lmap$. While the agent hasn't reached the target rectangle, it keeps updating its $\lmap$ with sensed data (occupied and unoccupied rectangles). When it reaches the target, it updates the $\gmap$ with its $\lmap$ information, letting all other agents know the map discovered by it. In terms of our formalization presented in \refsect{prelims}, the final value of $\gmap$ corresponds to the constructed grid occupancy mapping, $\map$. 
+The variable $\lmap$ refers to each agent's current \emph{view} of $\map$ being constructed by the algorithm. The function $\mathit{MaxExp}$ informally, determines whether the maximum exploration of the map required by the algorithm (in the agent's view) has been completed. If not, the agent first updates its $\lmap$ from $\gmap$, which contains the map of obstacles and unoccupied squares created collaboratively from $\lmap$s of all agents so far. The agent then picks a new point in a rectangle known to be unoccupied in its $\lmap$ and sets $\mathit{Motion.Path}$ to a path moving only over squares known to be unoccupied by its $\lmap$. While the agent hasn't reached the target rectangle, it keeps updating its $\lmap$ with sensed data (occupied and unoccupied rectangles). When it reaches the target, it updates the $\gmap$ with its $\lmap$ information, letting all other agents know the map discovered by it.
 
 
 
 \begin{theorem}
-The $\lgname$ application shown in \reffig{mapapp} implements a sound algorithm for any input instance of $\mapprob$.
+    The $\lgname$ application shown in \reffig{mapapp} implements a sound algorithm for any input instance of $\mapprob$.
 \end{theorem}
 
 \subsubsection{External (Library) Functions}
