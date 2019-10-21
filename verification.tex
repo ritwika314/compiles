@@ -65,12 +65,10 @@ $$
 Let $\map_i:Q\mapsto \left\{-1,0,1\right\}$ denote a construction of an occupancy map function \emph{local} to robot $i$.  % $\map_i(q) = 1$ indicates that according to robot $i$, there is an obstacle in $q$, $\map_i(q) = 0$ indicates that according to robot $i$, $q$ is unoccupied, and $\map_i(q) = -1$ indicates that robot $i$ doesn't have information about $q$. 
 
 \begin{definition}
-    The \emph{sensing area} of a robot $i$ at position $\pos(i)\in D$ is defined by $\sensarea_i: D \mapsto 2^{Q}$, such that the robot can \emph{correctly} compute $\world_Q(\sensarea(\pos(i)))$.
+    The \emph{sensing area} of a robot $i$ at position $\pos(i)\in D$ is defined by $\sensarea_i: Q \mapsto 2^{Q}$, such that the robot can \emph{correctly} compute $\world_Q(q^\prime)$, where $q^\prime \in \sensarea(\quant(\pos(i))) $.
 \end{definition}
 
-We assume that given $\Vec{x} \in q, \forall \Vec{x^\prime} \in q, \sensarea(\Vec{x}) \subseteq \sensarea(\Vec{x^\prime})$.
-
-We can now state the 2-d distributed mapping problem, $\mapprob$ as follows. \begin{quote}
+We assume that given $\Vec{x} \in q, \forall \Vec{x^\prime} \in q, \sensarea(\Vec{x}) \subseteq \sensarea(\Vec{x^\prime})$. We can now state the 2-d distributed mapping problem, $\mapprob$ as follows. \begin{quote}
 {\em Given a quantization, $\qfunc:D\mapsto Q$ of a 2-d domain $D\subset \mathbb{R}^2$, a ground truth function $\world:D \mapsto \left\{0,1\right\}$, a set of robots $[N]$ , for each robot $i \in [N]$ construct an occupancy mapping, $\map_i: Q \mapsto \left\{1,0,-1\right\}$.
 }
 \end{quote}
