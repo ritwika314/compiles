@@ -132,14 +132,15 @@ Recall from the definition of the sensing area of a robot $i$ at $\pos(i)$, that
 \end{itemize}
 \end{definition}
 
-A grid rectangle $q\in Q$ is reachable in general, if $\exists \Vec{x}\in D, q = \qfunc{x}$ such that $\Vec{x}$ is reachable from either \begin{inparaenum} [(a)]\item the initial position of a robot, or \item another reachable point $\Vec{x^\prime}\in D$.
+A grid rectangle $q\in Q$ is reachable in general, if $\exists \Vec{x}\in D, q = \qfunc{x}$ such that $\Vec{x}$ is reachable from either \begin{inparaenum} [(a)]\item the initial position of a robot, or \item another reachable point $\Vec{x^\prime}\in D$. We denote the reachability of a grid rectangle using a predicate $\mathit{Reach} : Q \mapsto \left\{\mathit{True}, \mathit{False}\right\}$, where $\mathit{Reach}(q) = \mathit{True}$ if its reachable,  $\mathit{False}$ otherwise.
 \end{inparaenum}
 
-\begin{lemma}
-    Consider a sound occupancy mapping $\map_i$, such that there is a reachable point $\Vec{x}$ and $\exists q^\prime \in Q, q^\prime\in\sensarea(\Vec{x}) \wedge \map_i(q^\prime) = -1$, then it can be extended to another sound occupancy mapping $\map_i^\prime$, such that $\map_i^\prime(q^\prime) = \world_Q(q^\prime)$, and $\forall q \neq q^\prime,\map_i(q) = \map_i^\prime(q)$.
-\end{lemma}
+\begin{definition}
+    Given a sound occupancy mapping $\map_i$, the \emph{frontier} of $\map_i$, denoted by $\ff(\map_i)$ is defined as follows:
+    $$ \left\{ \Vec{x} \mid \exists \Vec{y}, \mathit{Reach(\qfunc({\Vec{y}})}) \wedge \map_i(\qfunc(x)) = -1 \wedge \qfunc(x) \in \sensarea(\Vec{y})\right\} $$
+\end{definition}
 
-This follows from the definition of reachability and \lem{extension}.
+Given a sound occupancy mapping $\map_i$, and $q^\prime \in \ff(\map_i)$, another sound mapping $\map_i^\prime$ can be constructed, such that $\map_i^\prime(q^\prime) = \world_Q(q^\prime)$, and $\forall q \neq q^\prime,\map_i(q) = \map_i^\prime(q)$. This follows from the definition of reachability and \lem{extension}.
 
 
 
