@@ -165,6 +165,6 @@ Given a set of sound mappings $\left\{\map_i\right\}_{i\in[N]}$, we can construc
 The variable $\lmap$ refers to the current mapping $\map_i$ constructed by each agent $i$ using the algorithm. The function $\mathit{MaxExp}$ informally, determines whether there is a grid rectangle in the frontier of the current $\map_i$ . If not, the agent first updates its $\lmap$ from $\gmap$, which contains the map of obstacles and unoccupied squares \emph{created collaboratively} from $\lmap$s of all agents so far. The agent then picks a new point in a rectangle known to be unoccupied in its $\lmap$ and sets $\mathit{Motion.Path}$ to a path moving only over squares known to be unoccupied by its $\lmap$. While the agent hasn't reached the target rectangle, it keeps updating its $\lmap$ with sensed data (occupied and unoccupied rectangles). When it reaches the target, it updates the $\gmap$ from its $\lmap$.
 
 
- Recall from \refsect{overview} that $\lgname$ computation occurs in \emph{rounds}. Suppose that at round $r$, each robot $i$ has a \emph{sound} mapping $\map_i$, which is stored in the agent's local variable $\lmap$.  By definition of soundness, given two sound mappings $\map_i$ and $\map_j$, if $q$ is \emph{known} by $\map_i$, then its
+
 \subsubsection{External (Library) Functions}
 
