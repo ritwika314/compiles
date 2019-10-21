@@ -94,6 +94,7 @@ A vacuously correct (sound) solution to $\mapprob$ given $D, \qfunc$ and $\world
 These two statements collectively state that given a proposed occupancy map, \emph{any grid rectangle marked as 0 is indeed obstacle free, and if it is marked as 1 then there is indeed an obstacle at least partially in it.}  
 
 \begin{lemma}
+    \label{comptbl}
  Given a system of robots $[N]$, if $\exists i , j \in [N], \exists  q \in Q, \exists v \in \left\{0,1\right\} (map_i(q) = v \wedge
  map_j(q) = 1 - v $, then at least one of $\map_i$, or $\map_j$ is not sound.
 \end{lemma}
@@ -108,10 +109,16 @@ We assume that if robot $i$ is at position $\pos(i)$, and it detects an obstacle
 
 \begin{lemma}Suppose robot $i$ is at $\pos(i)\in D$, and $\exists(q^\prime)\in \sensarea(\pos(i))$,
 s.t $\map_i(q) = 1$. Consider a mapping, $\map^\prime_i:Q \mapsto \left\{-1,0,1\right\}$
-such that, $\forall q\in Q, q\notin \sensarea(\pos(i)) = map_i(q)$
+such that, $\forall q\in \left\{Q \setminus \sensarea(\pos(i))\right\}, map^\prime_i(q) = map_i(q)$
 and $\forall q \in \sensarea(\pos_i), \map^\prime_i(q) = \world_Q(q)$.
 Then, $\map_i(q)$ is sound iff $\map^\prime_i$ is sound.
 \end{lemma}
+
+\begin{proof}
+    \emph{$\map^\prime_i$ is sound $\Rightarrow$ $\map_i$ is sound} :
+\emph{$\map_i$ is sound $\Rightarrow$ $\map^\prime_i$ is sound} :
+
+\end{proof}
 \subsubsection{Approach}
 We discuss now discuss how our algorithm implemented $\lgname$ shown in \reffig{mapapp} tackles $\mapprob$. \reffig{flowmap} shows each agent's approach towards solving $\mapprob$. 
 
