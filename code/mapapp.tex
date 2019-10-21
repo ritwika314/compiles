@@ -1,46 +1,39 @@
 using Lidar $\label{lidardef}$
     sensors:
-       tscan[] ldata 
-       float maxdist
+       ScanStamped[] ldata
 
 using Motion $\label{moddef}$
     sensors:
-        tPos[] trace, pos psn,
+        Pos pos,
+        PosStamped[] trace,
         bool reached
     actuators:
-       pos target
+        Pos target
 
 allwrite:$\label{awvar}$
-    int[][] globalMap 
-    
+    GridMap globalMap
+
 #$\mathit{omitting\ initialization}$
 
 local:
-   int dim
-   int[][] localMap 
-   posScan[] pscan
-   pos[] obstacles
-   int x,y
+   GridMap map
    bool newpoint $=$ True
-   
+
 NewPoint:$\label{newpt}$
   pre newpoint
-  eff : localMap $=$ max(globalMap, localMap)
-        Motion.target $=$ pickMaxFree(localMap)
+  eff : map $=$ map $\oplus$ globalMap
+        Motion.target $=$ pickFrontierPos(
+                              localMap, Motion.pos)
         newpoint $=$ False
 
 LUpdate:$\label{lup}$
    pre not (newpoint || Motion.reached )
-   eff : pscan $=$ tSync(Motion.tPos, Lidar.ldata)
-         for i in pldata:
-           setAll(getSquares(i.pos,i.scan,dim),0)
-             obstacles $=$ getObs(i.pos, i.scan)
-             for ob in obstacles:
-                 x,y $=$ gridx(ob), gridy(ob)
-                 localMap[x][y] $=$ 1
-    
+   eff : pscan $=$ tSync(Motion.trace, Lidar.ldata)
+         for pos, scan in pscan:
+             map $=$ map $\oplus$ scanToMap(pos, scan)
+
 GUpdate: $\label{gup}$
   pre Motion.reached
-  eff : atomic:
-           max(localMap,globalMap)
+  eff: atomic:
+           globalMap $=$ globalMap $\oplus$ map
         newpoint $=$ True
