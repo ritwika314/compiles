@@ -87,10 +87,9 @@ We can now state the 2-d distributed mapping problem, $\mapprob$ as follows. \be
 
 These two statements collectively state that given a proposed occupancy map, \emph{any grid rectangle marked as 0 is indeed obstacle free, and if it is marked as 1 then there is indeed an obstacle at least partially in it.}
 
-A vacuously correct (sound) solution to $\mapprob$ given $D, \qfunc$ and $\world_Q$ is $\forall i \in [N]$, $$\map_i : Q \mapsto \left\{0,1,-1\right\}, \forall  q \in Q , \map_i(q)= -1$$ To allow for more interesting solutions than the one stated above, we assume that we are given that initially, each robot $i\in[N]$ starts at a grid rectangle with no obstacle, and the occupancy function $\map_i$ is initialized as follows:
- $\forall i \in [N], \world_Q(\qfunc(\mathit{pos}_0(i))) = 0$ and 
- $\forall i \in [N], \map_i(\qfunc(\mathit{pos}_0(i))) = 0$,
-  where $\mathit{pos}_0(i)$ denotes the initial position of the robot $i$. 
+A vacuously correct (sound) solution to $\mapprob$ given $D, \qfunc$ and $\world_Q$ is $\forall i \in [N]$, $$\map_i : Q \mapsto \left\{0,1,-1\right\}, \forall  q \in Q , \map_i(q)= -1$$ To allow for more interesting solutions than the one stated above, we assume that we are given that initially, each robot $i\in[N]$ starts at a grid rectangle with no obstacle, and there is at least one obstacle free rectangle within the sensed area of each robot:
+ $\forall i \in [N], \world_Q(\qfunc(\mathit{pos}_0(i))) = 0 \wedge \exists q \in \sensarea(\pos_0)(i), \world_Q(q) =  0 $ and
+  where $\mathit{pos}_0(i)$ denotes the initial position of the robot $i$.
 
 
 
@@ -118,7 +117,7 @@ Then, $\map^\prime_i(q)$ is sound if $\map_i$ is sound.
 
 The proof for this is straightforward and follows from the definition of $\map^\prime_i$ combined with \defn{soundness}.
 
-Recall from the definition of the sensing area of a robot $i$ at $\pos(i)$, that it can reliably compute the ground truth mapping $\world_Q$ for all $q \in \sensarea(\pos(i))$. This lemma essentially states that given a sound occupancy mapping $\map_i$, it can be used to compute to another \emph{sound} occupancy mapping $\map^\prime_i$ by setting the values of $\map^\prime_i(\sensarea(\pos(i)))$ to the ground truth function. Taken in conjunction, this leads to a strategy for computing sound occupancy mapping functions from a given initial position and an initial mapping function where
+Recall from the definition of the sensing area of a robot $i$ at $\pos(i)$, that it can reliably compute the ground truth mapping $\world_Q$ for all $q \in \sensarea(\pos(i))$. This lemma essentially states that given a sound occupancy mapping $\map_i$, it can be used to compute to another \emph{sound} occupancy mapping $\map^\prime_i$ by setting the values of $\map^\prime_i(\sensarea(\pos(i)))$ to the ground truth function. Taken in conjunction, this leads to a strategy for computing sound occupancy mapping functions from a given initial position.
 
 \subsubsection{Approach}
 We discuss now discuss how our algorithm implemented $\lgname$ shown in \reffig{mapapp} tackles $\mapprob$. \reffig{flowmap} shows each agent's approach towards solving $\mapprob$. 
