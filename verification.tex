@@ -137,10 +137,10 @@ A grid rectangle $q\in Q$ is reachable in general, if $\exists \Vec{x}\in D, q =
 
 \begin{definition}
     Given a sound occupancy mapping $\map_i$, the \emph{frontier} of $\map_i$, denoted by $\ff(\map_i)$ is defined as follows:
-    $$ \left\{ \Vec{x} \mid \exists \Vec{y}, \mathit{Reach(\qfunc({\Vec{y}})}) \wedge \map_i(\qfunc(x)) = -1 \wedge \qfunc(x) \in \sensarea(\Vec{y})\right\} $$
+    $$ \left\{ q\in Q \mid Reach(q) \wedge \exists q \in \sensarea(\Vec{x}), \map_i(q) = -1\right\} $
 \end{definition}
 
-Given a sound occupancy mapping $\map_i$, and $q^\prime \in \ff(\map_i)$, another sound mapping $\map_i^\prime$ can be constructed, such that $\map_i^\prime(q^\prime) = \world_Q(q^\prime)$, and $\forall q \neq q^\prime,\map_i(q) = \map_i^\prime(q)$. This follows from the definition of reachability and \lem{extension}. Taken in conjunction with our assumption on the initial positions of each robot, this leads to a strategy for computing sound occupancy mapping functions.
+Given a sound occupancy mapping $\map_i$, another sound mapping $\map_i^\prime$ can be constructed as shown in \lem{extension}. Taken in conjunction with our assumption on the initial positions of each robot, this leads to a strategy for computing sound occupancy mapping functions.
 
 
 
