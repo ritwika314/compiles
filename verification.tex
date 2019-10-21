@@ -162,9 +162,9 @@ Given a sound occupancy mapping $\map_i$, another sound mapping $\map_i^\prime$ 
 
 
 
-We discuss now discuss how our algorithm implemented $\lgname$ shown in \reffig{mapapp} tackles $\mapprob$. \reffig{flowmap} shows each agent's approach towards solving $\mapprob$.
+We discuss now discuss how our algorithm implemented $\lgname$ shown in \reffig{mapapp} tackles $\mapprob$. \reffig{flowmap} shows a simple idea for solving this problem for each robot:
 
-The variable $\lmap$ refers to the current mapping $\map_i$ constructed by each agent $i$ using the algorithm. The function $\mathit{MaxExp}$ informally, determines whether there is a grid rectangle in the frontier of the current $\map_i$ . If not, the agent first updates its $\lmap$ from $\gmap$, which contains the map of obstacles and unoccupied squares \emph{created collaboratively} from $\lmap$s of all agents so far. The agent then picks a new point in a rectangle known to be unoccupied in its $\lmap$ and sets $\mathit{Motion.Path}$ to a path moving only over squares known to be unoccupied by its $\lmap$. While the agent hasn't reached the target rectangle, it keeps updating its $\lmap$ with sensed data (occupied and unoccupied rectangles). When it reaches the target, it updates the $\gmap$ from its $\lmap$.
+The variable $\lmap$ refers to the current mapping $\map_i$ constructed by each robot $i$ using the algorithm. The function $\mathit{MaxExp}$ informally, determines whether there is a grid rectangle in the frontier of the current $\map_i$ . If not, the robot first updates its $\lmap$ from $\gmap$, which contains the map of obstacles and unoccupied squares \emph{created collaboratively} from $\lmap$s of all agents so far. The robot then picks a new point in a rectangle known to be unoccupied in its $\lmap$ and sets $\mathit{Motion.Path}$ to a path moving only over squares known to be unoccupied by its $\lmap$. While the robot hasn't reached the target rectangle, it keeps updating its $\lmap$ with sensed data (occupied and unoccupied rectangles). When it reaches the target, it updates the $\gmap$ from its $\lmap$.
 
 
 
