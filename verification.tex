@@ -110,7 +110,7 @@ A set of proposed mappings $\left\{\map_i\right\}_{i\in [N]}$, can only be sound
 We assume that if robot $i$ is at position $\pos(i)$, and it detects an obstacle in $q \in \sensarea(\qfunc(\pos(i)))$, then $q$ does contain an obstacle, otherwise it does not. The point of this presentation isn't dealing with the issue of potentially false positives while identifying an obstacle. A robot partially constructs a grid occupancy function by assigning values to the grid rectangles in its \emph{sensed} area.
 
 \begin{lemma}
-    \label{lem:extension}
+    \label{ext}
     Suppose robot $i$ is at $\pos(i)\in D$, and $\exists(q^\prime)\in \sensarea(\pos(i))$,
     s.t $\map_i(q) = 1$. Consider a mapping, $\map^\prime_i:Q \mapsto \left\{-1,0,1\right\}$
     such that, $\forall q\in Q \setminus \sensarea(\pos(i)), map^\prime_i(q) = map_i(q)$
@@ -138,7 +138,7 @@ A grid rectangle $q\in Q$ is reachable in general, if $\exists \Vec{x}\in D, q =
     $$ \left\{ q\in Q \mid Reach(q) \wedge \exists q \in \sensarea(\Vec{x}), \map_i(q) = -1\right\} $$
 \end{definition}
 
-Given a sound occupancy mapping $\map_i$, another sound mapping $\map_i^\prime$ can be constructed as shown in \lem{extension}. Taken in conjunction with our assumption on the initial positions of each robot, this leads to a strategy for computing sound occupancy mapping functions.
+Given a sound occupancy mapping $\map_i$, another sound mapping $\map_i^\prime$ can be constructed as shown in \lem{ext}. Taken in conjunction with our assumption on the initial positions of each robot, this leads to a strategy for computing sound occupancy mapping functions.
 
 
 
@@ -152,13 +152,19 @@ We discuss now discuss how our algorithm implemented $\lgname$ shown in \reffig{
     \label{fig:flowmap}
 \end{figure}
 
-The variable $\lmap$ refers to the current mapping $\map_i$ constructed by each agent $i$ using the algorithm. The function $\mathit{MaxExp}$ informally, determines whether there is a grid rectangle in the frontier of the current $\map_i$ . If not, the agent first updates its $\lmap$ from $\gmap$, which contains the map of obstacles and unoccupied squares created collaboratively from $\lmap$s of all agents so far. The agent then picks a new point in a rectangle known to be unoccupied in its $\lmap$ and sets $\mathit{Motion.Path}$ to a path moving only over squares known to be unoccupied by its $\lmap$. While the agent hasn't reached the target rectangle, it keeps updating its $\lmap$ with sensed data (occupied and unoccupied rectangles). When it reaches the target, it updates the $\gmap$ with its $\lmap$ information, letting all other agents know the map discovered by it.
+Given a set of sound mappings $\left\{\map_i\right\}_{i\in[N]}$, we can construct a sound mapping $\map$ from them as follows :
+
+\begin{lemma}
+    Given a set of sound mappings $\left\{\map_i\right\}_{i\in[N]}$, the mapping described by $\map: Q \mapsto \left\{-1,0,1\right\}$ such that $\map(q) = \mathit{Max}_{i\in[N]}\left\{\map_i(q)\right\}$ is also sound.
+\end{lemma}
+
+\begin{proof}
+    If $\map(q) = 1$, $\exists i\in [N]$, s.t $\map_i(q) = 1$. By \lem{comptbl}, $\forall j \in [N], j\neq i \Rightarrow \map_j(q) = 1\vee \map_j(q) = -1$. Since $\map_i$ is sound, $\map(q) = \world_Q(q)$. The case for $\map(q) = 0$ is also similar. Therefore, $\map(q) = 0\vee \map(q) = 1\Rightarrow \map(q) = \world_Q(q)$. Otherwise, by definition, $\map(q) = -1$, which together with the previous statement, implies that $\map$ is sound.
+\end{proof}
+
+The variable $\lmap$ refers to the current mapping $\map_i$ constructed by each agent $i$ using the algorithm. The function $\mathit{MaxExp}$ informally, determines whether there is a grid rectangle in the frontier of the current $\map_i$ . If not, the agent first updates its $\lmap$ from $\gmap$, which contains the map of obstacles and unoccupied squares \emph{created collaboratively} from $\lmap$s of all agents so far. The agent then picks a new point in a rectangle known to be unoccupied in its $\lmap$ and sets $\mathit{Motion.Path}$ to a path moving only over squares known to be unoccupied by its $\lmap$. While the agent hasn't reached the target rectangle, it keeps updating its $\lmap$ with sensed data (occupied and unoccupied rectangles). When it reaches the target, it updates the $\gmap$ from its $\lmap$.
 
 
-
-\begin{theorem}
-    The $\lgname$ application shown in \reffig{mapapp} implements a sound algorithm for any input instance of $\mapprob$.
-\end{theorem}
-
+ Recall from \refsect{overview} that $\lgname$ computation occurs in \emph{rounds}. Suppose that at round $r$, each robot $i$ has a \emph{sound} mapping $\map_i$, which is stored in the agent's local variable $\lmap$.  By definition of soundness, given two sound mappings $\map_i$ and $\map_j$, if $q$ is \emph{known} by $\map_i$, then its
 \subsubsection{External (Library) Functions}
 
