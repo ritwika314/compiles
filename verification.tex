@@ -111,14 +111,11 @@ We assume that if robot $i$ is at position $\pos(i)$, and it detects an obstacle
 s.t $\map_i(q) = 1$. Consider a mapping, $\map^\prime_i:Q \mapsto \left\{-1,0,1\right\}$
 such that, $\forall q\in \left\{Q \setminus \sensarea(\pos(i))\right\}, map^\prime_i(q) = map_i(q)$
 and $\forall q \in \sensarea(\pos_i), \map^\prime_i(q) = \world_Q(q)$.
-Then, $\map_i(q)$ is sound iff $\map^\prime_i$ is sound.
+Then, $\map^\prime_i(q)$ is sound if $\map_i$ is sound.
 \end{lemma}
 
-\begin{proof}
-    \emph{$\map^\prime_i$ is sound $\Rightarrow$ $\map_i$ is sound} :
-\emph{$\map_i$ is sound $\Rightarrow$ $\map^\prime_i$ is sound} :
+The proof for this is straightforward and follows from the definition of $\map^\prime_i$ combined with \defn{soundness}.
 
-\end{proof}
 \subsubsection{Approach}
 We discuss now discuss how our algorithm implemented $\lgname$ shown in \reffig{mapapp} tackles $\mapprob$. \reffig{flowmap} shows each agent's approach towards solving $\mapprob$. 
 
