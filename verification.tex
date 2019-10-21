@@ -122,7 +122,7 @@ We assume that if robot $i$ is at position $\pos(i)$, and it detects an obstacle
 
 The proof for this is straightforward and follows from the definition of $\map^\prime_i$ combined with \defn{soundness}.
 
-Recall from the definition of the sensing area of a robot $i$ at $\pos(i)$, that it can reliably compute the ground truth mapping $\world_Q$ for all $q \in \sensarea(\pos(i))$. This lemma essentially states that given a sound occupancy mapping $\map_i$, it can be used to compute to another \emph{sound} occupancy mapping $\map^\prime_i$ by setting the values of $\map^\prime_i(\sensarea(\pos(i)))$ to the ground truth function. Taken in conjunction with our assumption on the initial positions of each robot, this leads to a strategy for computing sound occupancy mapping functions.
+Recall from the definition of the sensing area of a robot $i$ at $\pos(i)$, that it can reliably compute the ground truth mapping $\world_Q$ for all $q \in \sensarea(\pos(i))$. This lemma essentially states that given a sound occupancy mapping $\map_i$, it can be used to compute to another \emph{sound} occupancy mapping $\map^\prime_i$ by setting the values of $\map^\prime_i(\sensarea(\pos(i)))$ to the ground truth function.
 
 \begin{definition}
  We say that $\Vec{x_n}\in D$ is \emph{reachable} from $\Vec{x_0}$ if there is a \emph{path} $p = \Vec{x_0},\Vec{x_1}, \Vec{x_2},\ldots, \Vec{x_n}$ , such that
@@ -140,7 +140,7 @@ A grid rectangle $q\in Q$ is reachable in general, if $\exists \Vec{x}\in D, q =
     $$ \left\{ \Vec{x} \mid \exists \Vec{y}, \mathit{Reach(\qfunc({\Vec{y}})}) \wedge \map_i(\qfunc(x)) = -1 \wedge \qfunc(x) \in \sensarea(\Vec{y})\right\} $$
 \end{definition}
 
-Given a sound occupancy mapping $\map_i$, and $q^\prime \in \ff(\map_i)$, another sound mapping $\map_i^\prime$ can be constructed, such that $\map_i^\prime(q^\prime) = \world_Q(q^\prime)$, and $\forall q \neq q^\prime,\map_i(q) = \map_i^\prime(q)$. This follows from the definition of reachability and \lem{extension}.
+Given a sound occupancy mapping $\map_i$, and $q^\prime \in \ff(\map_i)$, another sound mapping $\map_i^\prime$ can be constructed, such that $\map_i^\prime(q^\prime) = \world_Q(q^\prime)$, and $\forall q \neq q^\prime,\map_i(q) = \map_i^\prime(q)$. This follows from the definition of reachability and \lem{extension}. Taken in conjunction with our assumption on the initial positions of each robot, this leads to a strategy for computing sound occupancy mapping functions.
 
 
 
