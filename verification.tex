@@ -113,7 +113,7 @@ We assume that if robot $i$ is at position $\pos(i)$, and it detects an obstacle
     \label{lem:extension}
     Suppose robot $i$ is at $\pos(i)\in D$, and $\exists(q^\prime)\in \sensarea(\pos(i))$,
     s.t $\map_i(q) = 1$. Consider a mapping, $\map^\prime_i:Q \mapsto \left\{-1,0,1\right\}$
-    such that, $\forall q\in \left\{Q \setminus \sensarea(\pos(i))\right\}, map^\prime_i(q) = map_i(q)$
+    such that, $\forall q\in Q \setminus \sensarea(\pos(i)), map^\prime_i(q) = map_i(q)$
     and $\forall q \in \sensarea(\pos_i), \map^\prime_i(q) = \world_Q(q)$.
     Then, $\map^\prime_i(q)$ is sound if $\map_i$ is sound.
 \end{lemma}
