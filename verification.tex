@@ -72,7 +72,7 @@ $$
 
 
 \begin{definition}
-    The \emph{sensing area} of a robot $i$ at position $\pos(i)\in D$ is defined by $\sensarea_i: Q \mapsto 2^{Q}$, such that there is a \qdfunc $\rmap : \sensarea_i \mapsto \left\{0,1\right\}$, where $$\forall q \in \sensarea_i(\qfunc(\pos_i)), \rmap(q) = \world_Q(q).$$
+    The \emph{sensing area} of a robot $i$ at position $\pos(i)\in D$ is defined by $\sensarea_i: Q \mapsto 2^{Q}$, such that there is a \qdfunc\ $\rmap : \sensarea_i \mapsto \left\{0,1\right\}$, where $$\forall q \in \sensarea_i(\qfunc(\pos_i)), \rmap(q) = \world_Q(q).$$
     Given a robot $i \in [N]$, $\sensarea_i$ may depend both on the position of the robot as well as the range of the LIDAR scanner.
 \end{definition}
 
@@ -111,7 +111,7 @@ where $q^0_i = \qfunc(\pos_0(i))$, and $\pos_0(i)$ denotes the initial position 
     Given  $i , j \in [N]$, two proposed occupancy mappings $\map_i: Q_i\mapsto\left\{0,1\right\}$ and $\map_j: Q_j\mapsto \left\{0,1\right\}$, are consistent only if $\forall q \in Q_i \cup Q_j, \map_i(q) = \map_j(q)$.
 \end{definition}
 
-    Given $\map_i$, $\map_j$, and $q\in Q_i \cup Q_j$ , let $\map_i(q) = 1$, and $\map_j(q) = 0$. Suppose $\map_i$ is sound, then $\world_Q(q) = 1$, which implies $\map_j$ is not sound. By the same argument, if $\map_j$ is sound, $\map_i$ is not. It can be seen that a set of proposed mappings $\left\{\map_i\right\}_{i\in [N]}$, can only be sound if they are pairwise consistent.
+    Given $\map_i$, $\map_j$, and $q\in Q_i \cup Q_j$ , let $\map_i(q) = 1$, and $\map_j(q) = 0$. Suppose $\map_i$ is sound, then $\world_Q(q) = 1$, which implies $\map_j$ is not sound. By the same argument, if $\map_j$ is sound, $\map_i$ is not. A set of proposed mappings $\left\{\map_i\right\}_{i\in [N]}$ can only be sound if they are pairwise consistent.
 
 We assume that if robot $i$ is at position $\pos(i)$, and it detects an obstacle in $q \in \sensarea(\qfunc(\pos(i)))$, then $q$ does contain an obstacle, otherwise it does not. The point of this presentation isn't dealing with the issue of potentially false positives while identifying an obstacle. A robot partially constructs a grid occupancy function by assigning values to the grid rectangles in its \emph{sensed} area.
 
