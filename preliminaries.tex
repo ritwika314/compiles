@@ -42,28 +42,38 @@ In this section, we introduce the distributed mapping problem. Informally, the p
 \label{sec:prelims}
 We first set up the terminology and assumptions to discuss our approach to this problem.
 
-The mapping problem is defined over a (\emph{bounded}) domain $D$, a bounded rectangle in $\mathbb{R}^2$ given by $[a_1,a_2]\times [b_1,b_2]$.
+We define the mapping problem over a domain $D$ which is bounded rectangle $[a_1,a_2]\times [b_1,b_2]$ in $\mathbb{R}^2$ corresponding to the physical arena. 
+The \emph{ground truth} about the occupancy of obstacles in this arena is modeled by a function $\world : D\mapsto \left\{0,1\right\}$, where $\forall \Vec{x} \in D$, 
+
+\begin{align}
+\world(\Vec{x}) = 
+		\left\{
+		\begin{array}{ll}
+			1 & \mathit{there \ is\ an\ obstacle\ at}\ \Vec{x}\\
+			0 & \mathit{otherwise}.
+		\end{array}
+		\right.
+\end{align}
+
+The map created by agents will be a data-structure and it will (ideally) be a quantized version of the $\world$.
+Let $\qdom$ be a $(n_x\times n_y)$-quantized representation of $D$, for some resolution constants $n_x,n_y \in \mathbb{N}$. That is, $\qdom = \{q_{ij}\}_{i\in [1..n_x], j\in [1..n_y]}$
+such that every $q_{ij}$ corresponds to a disjoint $[x_i, x_{i+1}] \times [y_j, y_{j+1}]$ in $D$.
 
 \begin{definition}
-    A \emph{quantization} of a bounded domain $D$ is defined as a mapping $\qfunc:D \mapsto \qdom$ where $\qdom = \left\{q_{ij}\right\}_{i\in [1..n_x], j\in [1..n_y]}$ such that every $q_{ij}$ corresponds to a \emph{grid rectangle} $[x_i, x_{i+1}] \times [y_j, y_{j+1}]$.
-\end{definition}
-
-We assume the existence of a \emph{ground truth} function $\world : D\mapsto \left\{0,1\right\}$, where $\forall \Vec{x} \in D$, $$\world(\Vec{x}) = \begin{cases}
-                                                                                                                                                                        1\ \mbox{if there is an obstacle at }\Vec{x}\\
-                                                                                                                                                                        0\ \mbox{otherwise}
-\end{cases}
-$$
-
+    The \emph{quantization function}  $\qfunc:D \mapsto \qdom$ maps points in $D$ to their quantized versions. 
+    That is $\qfunc(\Vec{x}) = q_{ij}$ iff $\Vec{x} \in [x_i, x_{i+1}] \times [y_j, y_{j+1}]$.
+   \end{definition}
 
 \begin{definition}
-    Given a quantized domain $Q$, a \emph{\qdfunc} over $Q$ is any function $F$ with the signature $Q^\prime \mapsto \left\{0,1\right\}$, where $F$ is only defined on $Q^\prime \subset Q$, and it maps each $q_i \in Q^\prime$ to either 0 or 1.
+    Given any function $f:\qdom \rightarrow S$ and a subset $Q' \subseteq Q$, 
+    the restriction of $f$ to $Q'$, written as $f \lceil Q'$, is the function
+    $g:Q' \rightarrow S$ such that for all $q \in Q'$, $g(q) = f(q)$.
 \end{definition}
 
-
-Given any quantization $Q$ of the domain $D$ given by $\qfunc:D\mapsto Q$, the corresponding \qdfunc
-$\world_Q : Q \mapsto \left\{0,1\right\}$ is defined as follows,  $$\world_Q(q) = \begin{cases}
-                                                                                      1\ \Leftrightarrow \exists \Vec{x}\in D, \qfunc(\Vec{x}) = q \wedge \world(\Vec{x}) = 1 \\
-                                                                                      0\ \mbox{otherwise}
+We will fix the domain $D$, the $\world$, and the quantization of $\qdom$ of $D$ throughout this section, which also fixes the quantization function $\qdfunc$ and defines a quantized version of the world $\world_Q : \qdom \mapsto \left\{0,1\right\}$, where  
+$$\world_Q(q) = \begin{cases}
+        1\ \Leftrightarrow \exists \Vec{x}\in \qfunc^{-1}(q), \world(\Vec{x}) = 1, \\
+        0\ \mbox{otherwise}
 \end{cases}
 $$
 
