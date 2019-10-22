@@ -1,15 +1,13 @@
-\subsection{Occupancy Map Construction}
 
-We now set up the terminology for analysis of the construction of $\map_i$ in an $\lgname$ application.  Recall that \fTBD{setup Koord in overview}
 
 \subsubsection{Approach}
 
 
 \begin{figure}[!htbp]
-    \centering
-    \includegraphics[width=\linewidth]{figs/map_flowchart.png}
-    \caption{Flowchart for a simple solution to 2D distributed mapping problem\vspace{-2mm}}
-    \label{fig:flowmap}
+\centering
+\includegraphics[width=\linewidth]{figs/map_flowchart.png}
+\caption{Flowchart for a simple solution to 2D distributed mapping problem\vspace{-2mm}}
+\label{fig:flowmap}
 \end{figure}
 
 
@@ -21,9 +19,17 @@ The variable $\lmap$ refers to the current mapping $\map_i$ constructed by each 
 
 
 
+\subsubsection{Analysis}
+A (distributed) system of robots which execute $\lgname$ can be viewed as a nondeterministic, timed automaton~\cite{TIOAmon}. The robots execute the program in  \emph{rounds} of duration $\delta$, and in each round, each robot performs an action, which is expressed in $\lgname$ as an event, and the state of each agent can be seen as evolving according to the controllers driving the robot according to the actuators that may have been set in the event. The program and sensor variables of the robot can be seen as the state variables for each agent.
 
-%We assume that if robot $i$ is at position $\pos(i)$, and it detects an obstacle in $q \in \sensarea(\qfunc(\pos(i)))$, then $q$ does contain an obstacle, otherwise it does not. The point of this presentation isn't dealing with the issue of potentially false positives while identifying an obstacle. A robot partially constructs a grid occupancy function by assigning values to the grid rectangles in its \emph{sensed} area.
 
+\noindent
+Given the set of all variables in the $\lgname$ applications is $\Var$, and the set of all values that the variables can take is $\Val$. The state of a robot is a tuple $$s_i = ( M,\en), \mbox{ where}$$
+\begin{enumerate}
+\item ${M} : \Var \mapsto \Val$ is the mapping all variables (including sensor and actuator)in the application known by the robot to their values.
+\item $\en$ is the set of all \emph{enabled} events.
+\end{enumerate}
+The components of the tuple $s_i$ are accessed using the dot $.$ notation, for instance, $s_i.M$, $s_i.w$, etc. Each element of
 
 
 

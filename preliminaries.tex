@@ -70,7 +70,7 @@ such that every $q_{ij}$ corresponds to a disjoint $[x_i, x_{i+1}] \times [y_j, 
     $g:Q' \rightarrow S$ such that for all $q \in Q'$, $g(q) = f(q)$.
 \end{definition}
 
-We will fix the domain $D$, the $\world$, and the quantization of $\qdom$ of $D$ throughout this section, which also fixes the quantization function $\qdfunc$ and defines a quantized version of the world $\world_Q : \qdom \mapsto \left\{0,1\right\}$, where  
+We will fix the domain $D$, the $\world$, and the quantization of $\qdom$ of $D$ throughout this section, which also fixes the quantization function $\qfunc$ and defines a quantized version of the world $\world_Q : \qdom \mapsto \left\{0,1\right\}$, where
 $$\world_Q(q) = \begin{cases}
         1\ \Leftrightarrow \exists \Vec{x}\in \qfunc^{-1}(q), \world(\Vec{x}) = 1, \\
         0\ \mbox{otherwise}
@@ -78,17 +78,15 @@ $$\world_Q(q) = \begin{cases}
 $$
 
 
-\rg{Consider that there is a set of ground robots $[N]$, which are tasked with creating a mapping of static obstacles in $Q$ collaboratively by constructing local mappings based on sensed information.}
+\rg{Consider that there is a set of ground robots $[N]$, which are tasked with creating a mapping of static obstacles in $Q$ collaboratively by constructing local mappings based on sensed information. Each robot has a \emph{software state}, $\sensfunc : Q \mapsto \left\{0,1\right\}$ associated with it}.
+
 
 
 \begin{definition}
-    The \emph{sensing area} of a robot $i$ at position $\pos(i)\in D$ is defined by $\sensarea_i: Q \mapsto 2^{Q}$, such that there is a \qdfunc\ $\rmap : \sensarea_i \mapsto \left\{0,1\right\}$, where $$\forall q \in \sensarea_i(\qfunc(\pos_i)), \rmap(q) = \world_Q(q).$$
-    Given a robot $i \in [N]$, $\sensarea_i$ may depend both on the position of the robot as well as the range of the LIDAR scanner.
-\end{definition}
+   Given a robot at a position $\Vec{x}\in D, \qfunc{\Vec{x}} = q$, we define the \emph{sensing area} of $q$ follows: $\sensarea: Q \mapsto 2^{Q}$, such that  $\forall q^\prime \in \sensarea(q), \sensfunc(q) = \world_Q(q)$.  \end{definition}
 
 
-
-Let $\map_i:Q\mapsto \left\{-1,0\right\}$ denote a \qdfunc \emph{local} to robot $i$, which we see as a \emph{software state} for a given robot $i$.  % $\map_i(q) = 1$ indicates that according to robot $i$, there is an obstacle in $q$, $\map_i(q) = 0$ indicates that according to robot $i$, $q$ is unoccupied, and $\map_i(q) = -1$ indicates that robot $i$ doesn't have information about $q$.
+Let $\map_i:Q\mapsto \left\{-1,0\right\}$ denote a \qdfunc \emph{local} to robot $i$, which we can see as a software state for a given robot $i$ as well.  % $\map_i(q) = 1$ indicates that according to robot $i$, there is an obstacle in $q$, $\map_i(q) = 0$ indicates that according to robot $i$, $q$ is unoccupied, and $\map_i(q) = -1$ indicates that robot $i$ doesn't have information about $q$.
 
 
 
