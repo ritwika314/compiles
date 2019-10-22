@@ -19,7 +19,6 @@ local:
    posScan pscan
    GridMap localMap
    bool newpoint $=$ True
-   bool update  $=$ False
    obs obstacles
 
 NewPoint:$\label{newpt}$
@@ -29,9 +28,9 @@ NewPoint:$\label{newpt}$
         Motion.path $=$ find_path(pickFrontierPos(
                               localMap, Motion.pos), obstacles)
         if Motion.path is None:
-           update = True
-
-        newpoint $=$ False
+           newpoint $=$ True
+        else:
+           newpoint $=$ False
 
 LUpdate:$\label{lup}$
    pre not (newpoint || Motion.reached )
@@ -40,7 +39,7 @@ LUpdate:$\label{lup}$
              map $=$ map $\oplus$ scanToMap(pos, scan)
 
 GUpdate: $\label{gup}$
-  pre Motion.reached || update
+  pre Motion.reached
   eff: atomic:
            globalMap $=$ globalMap $\oplus$ map
         newpoint $=$ True

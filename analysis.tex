@@ -61,12 +61,18 @@ A grid rectangle $q\in Q$ is reachable in general, if $\exists \Vec{x}\in D, q =
 
 In the event \emph{NewPoint}, the operation the robot tries to find a path to a point on the \emph{frontier} of $s_i.M.\lmap$. Assume that the planner returns a path if \begin{inparaenum}[(a)]\item the frontier is non-empty [(b)] the grid rectangle picked on the frontier is reachable from the current point \end{inparaenum}. We also constrain the robots to move only on \emph{known} unoccupied grid rectangles, i.e $q\in Q, s_i.M.\lmap[q] = 0$. In implementation, we achieve this by providing all the unknown ($s_i.M.\lmap[q] = -1$) squares as obstacles to the path planner.
 
-If the path is empty, then the robot sets its $s_i.M.\mathit{update}$ variable to $True$, \emph{enabling} the \emph{GUpdate} event, which we presently discuss. Otherwise, until the robot finishes traversing the path, the \emph{LUpdate} event is enabled.
+If the path is empty, then the robot does nothing, and attempts to execute this event in the next round. Otherwise, until the robot finishes traversing the path, the \emph{LUpdate} event is enabled.
 
 \paragraph{LUpdate}
 This event is enabled while the robot is traversing the path computed in \emph{NewPoint}: the robot hasn't finishing traversing the path. i.e given an agent $i$, $s_i.\cp.\mathit{Motion.reached}  = \mathit{False}$. The sensors \emph{Motion.trace} and \emph{Lidar.ldata} are \emph{sampled} sensors, i.e. $\mathit{Motion.trace}: [0,\delta] \mapsto \mathit{Pos}$, where $\delta$ is the duration of a \emph{round}. $s_i.\cp.\mathit{Motion.trace}$ is therefore a set of $M$ tuples $\{(t_i, p_i)\}_{i \in [M]}$ where $p_i$ is the position of the robot at time $t_i$ from the beginning of the round. Similarly, $\mathit{Lidar.ldata} : [0,\delta]\mapsto \mathit{Scan}$ and $s_i.\cp.\mathit{Lidar.ldata}$ is a set of $M'$ tuples $\{t_i^\prime, l_i^\prime\}_{i^\prime \in M^\prime}$ where $l_i^\prime$ is the LIDAR \emph{scan} at time $t_i^\prime$. The sampling frequencies of these sensors may be different, hence the potentially different number of readings, and potentially different timestamps of the readings. The function $\mathit{tSync}$ is used to \emph{synchronize} the readings, where we compute a mapping $\mathit{pScan}: \mathit{Pos} \mapsto \mathit{Scan}$, where $s_i.M.\mathit{pscan}$ is a set of $M^{\prime\prime}$ tuples $\{(p_i^{\prime\prime}, l_i^{\prime\prime})\}_{i^{\prime\prime} \in M ^{\prime\prime}}$, where  $(p, l) \in s_i.M.\mathit{pscan}$ if given $\epsilon > 0$,  $(t,p) \in s_i.\cp.\mathit{Motion.trace}, (t^\prime,l )\in s_i.\cp.\mathit{Lidar.ldata}, |t - t^\prime| \leq \epsilon$.
 
 Given a small enough $\epsilon$, we can assume that we get a synchronized set of LIDAR scans at intermediate positions observed during each round while the robot is traversing the path.  The function $\mathit{scanToMap}: \mathit{Scan} \times \mathit{Pos}\mapsto \mathit{GridMap}$, given a position $p_i$ and its corresponding scan $l_i$, computes $\sensfunc$ in $\sensarea(\qfunc(p_i))$, and by definition, returns a \emph{sound} mapping. We stated earlier that the operator $\oplus$ applied to two sound mappings returns a sound mapping. Therefore, given $s_i^\prime$ such that $s_i^\prime.r = s_i.r + 1$, and $\mathit{s_i^\prime \in \mathit{trans}(s_i,\mathit{LUpdate})}$,  $s_i^\prime.M.\lmap$ is sound if $s_i.M.\lmap$ is sound.
+
+Once the robot finishes traversing the path picked in \emph{NewPoint}, the \emph{GUpdate} event is enabled.
+
+
+\paragraph{GUpdate}
+
 
 %\begin{lemma}
 %    \label{ext}
