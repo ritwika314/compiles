@@ -16,14 +16,20 @@ allwrite:$\label{awvar}$
 #$\mathit{omitting\ initialization}$
 
 local:
-   GridMap map
+   GridMap localMap
    bool newpoint $=$ True
+   bool update  $=$ False
+   obs obstacles
 
 NewPoint:$\label{newpt}$
   pre newpoint
   eff : map $=$ map $\oplus$ globalMap
-        Motion.target $=$ pickFrontierPos(
-                              localMap, Motion.pos)
+        obstacles = findObs(localMap)
+        Motion.path $=$ find_path(pickFrontierPos(
+                              localMap, Motion.pos), obstacles)
+        if Motion.path is None:
+           update = True
+
         newpoint $=$ False
 
 LUpdate:$\label{lup}$
@@ -33,7 +39,8 @@ LUpdate:$\label{lup}$
              map $=$ map $\oplus$ scanToMap(pos, scan)
 
 GUpdate: $\label{gup}$
-  pre Motion.reached
+  pre Motion.reached || update
   eff: atomic:
            globalMap $=$ globalMap $\oplus$ map
         newpoint $=$ True
+        update $=$ False

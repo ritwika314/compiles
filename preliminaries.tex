@@ -91,7 +91,7 @@ Let $\map_i:Q\mapsto \left\{-1,0\right\}$ denote a \qdfunc \emph{local} to robot
 
 
 We assume that given $\Vec{x} \in q, \forall \Vec{x^\prime} \in q, \sensarea(\Vec{x}) \subseteq \sensarea(\Vec{x^\prime})$. We can now state the 2-d distributed mapping problem, $\mapprob$ as follows. \begin{quote}
-{\em Given a quantization, $\qfunc:D\mapsto Q$ of a 2-d domain $D\subset \mathbb{R}^2$, a ground truth function $\world:D \mapsto \left\{0,1\right\}$, a set of robots $[N]$ , for each robot $i \in [N]$ construct an \emph{occupancy map} which is a \qdfunc, $\map_i: Q_i \mapsto \left\{1,0\right\}$, $Q_i\subseteq Q$.
+{\em Given a set of robots $[N]$ , for each robot $i \in [N]$ construct an \emph{occupancy map}, $\map_i: Q_i \mapsto \left\{1,0\right\}$, $Q_i\subseteq Q$.
 }
 \end{quote}
 
@@ -100,18 +100,18 @@ We assume that given $\Vec{x} \in q, \forall \Vec{x^\prime} \in q, \sensarea(\Ve
 Having stated the problem, we now define the notion of soundness of a proposed occupancy map.
 \begin{definition}
     \label{soundness}
-    For a robot $i$, a proposed occupancy mapping over $Q_i\subset Q$, given by $\map_i: Q_i \mapsto \left\{-1,0\right\}$ is \emph{sound} if :
-    \begin{itemize}
-        \item $\map_i(q) = v \Rightarrow \world_Q(q)  = v$
-        \item $\forall v \in \left\{0,1\right\}\world_Q(q) = v \Rightarrow \map(q) = v \vee q\notin Q_i$
-    \end{itemize}
+    For a robot $i$, a proposed occupancy mapping over $Q_i\subset Q$, given by $\map_i: Q_i \mapsto \left\{-1,0\right\}$ is \emph{sound} if
+     $\world_Q(q) =  \map_i(q) \vee q\notin Q_i$
 \end{definition}
 
 
 These two statements collectively state that given a proposed occupancy map, \emph{any grid rectangle in the domain of the occupancy map marked as 0 is indeed obstacle free, and if it is marked as 1 then there is indeed an obstacle at least partially in it.}
 
-A vacuously correct (sound) solution to $\mapprob$ given $D, \qfunc$ and $\world_Q$ is $\forall i \in [N]$, $$\map_i : Q_i \mapsto \left\{0,1\right\}, Q_i = \phi$$ To allow for more interesting solutions than the one stated above, we assume that we are given that initially, each robot $i\in[N]$ starts at a grid rectangle with no obstacle, the sensed area of each robot $i$ is non empty, and there is at least one obstacle free rectangle within the sensed area of each robot:
-$\forall i \in [N], \world_Q(q^0_i) = 0 \wedge \exists q \in \sensarea(q^0_i), \world_Q(q) = 0 $ and
+%We define $\mathit{Adj}_{q_{ij}}$ as the set $\{q_{i^\prime j^\prime}\mid i^\prime \in \{i, i+1,i-1\}\wedge j^\prime \in \{j,j+1,j-1\}\wedge q_{i^\prime j^\prime} \neq q_{ij}\}$
+
+
+A vacuously correct (sound) solution to $\mapprob$ given $D, \qfunc$ and $\world_Q$ is $\forall i \in [N]$, $$\map_i : Q_i \mapsto \left\{0,1\right\}, Q_i = \phi$$ To allow for potentially more interesting solutions than the one stated above, we assume that we are given that initially, each robot $i\in[N]$ starts at a grid rectangle with no obstacle, the sensed area of each robot $i$ is non empty
+$\forall i \in [N], \world_Q(q^0_i) = 0\wedge \sensarea(q^0_i) \neq \phi$
 where $q^0_i = \qfunc(\pos_0(i))$, and $\pos_0(i)$ denotes the initial position of robot $i$.
 
 
@@ -119,6 +119,12 @@ where $q^0_i = \qfunc(\pos_0(i))$, and $\pos_0(i)$ denotes the initial position 
     Given  $i , j \in [N]$, two proposed occupancy mappings $\map_i: Q_i\mapsto\left\{0,1\right\}$ and $\map_j: Q_j\mapsto \left\{0,1\right\}$, are consistent only if $\forall q \in Q_i \cup Q_j, \map_i(q) = \map_j(q)$.
 \end{definition}
 
-    Given $\map_i$, $\map_j$, and $q\in Q_i \cup Q_j$ , let $\map_i(q) = 1$, and $\map_j(q) = 0$. Suppose $\map_i$ is sound, then $\world_Q(q) = 1$, which implies $\map_j$ is not sound. By the same argument, if $\map_j$ is sound, $\map_i$ is not. A set of proposed mappings $\left\{\map_i\right\}_{i\in [N]}$ can only be sound if they are pairwise consistent.
+    Given $\map_i$, $\map_j$, and $q\in Q_i \cup Q_j$ , let $\map_i(q) = 1$, and $\map_j(q) = 0$. Suppose $\map_i$ is sound, then $\world_Q(q) = 1$, which implies $\map_j$ is not sound. By the same argument, if $\map_j$ is sound, $\map_i$ is not. Each mapping in a set of proposed mappings $\left\{\map_i\right\}_{i\in [N]}$ can only be sound if they are pairwise consistent.
 
+Given a mapping $\map_i$, $\mathit{dom}(\map_i)$ denotes $ Q_i \subset Q$, such that $\forall q \in Q_i \map_i(q) = 0 \vee \map_i(q) = 1$.
+\begin{definition}
+    \label{cons}
+Consider a set of sound mappings $\left\{\map_i\right\}_{i\in[N]}$. The \emph{ combined mapping} described by $\map: Q^\prime \mapsto \left\{0,1\right\}$ where $Q^\prime = \bigcup_{i\in[N]} \mathit{dom}(\map_i)$ , and $\exists j \in [N], q\in \mathit{dom}(\map_j)\Rightarrow \map(q) = \map_j(q)$ is also sound.
+\end{definition}
 
+$\map$ is sound by construction, and consistency of the sound mappings it is constructed from.

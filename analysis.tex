@@ -17,21 +17,51 @@ We discuss now discuss how our algorithm implemented $\lgname$ shown in \reffig{
 The variable $\lmap$ refers to the current mapping $\map_i$ constructed by each robot $i$ using the algorithm. The function $\mathit{MaxExp}$ informally, determines whether there is a grid rectangle in the frontier of the current $\map_i$ . If not, the robot first updates its $\lmap$ from $\gmap$, which is used for sharing the currently computed occupancy maps by all agents so far. The robot then picks a new point in a rectangle known to be unoccupied in its $\lmap$ and follows a path ($\mathit{Motion.Path}$) moving only over grid rectangles known to be unoccupied by its $\lmap$. While the robot hasn't reached the target rectangle, it keeps updating its $\lmap$ with sensed data (occupied and unoccupied rectangles). When it reaches the target, it updates the $\gmap$ from its $\lmap$.
 
 
-
-
 \subsubsection{Analysis}
 A (distributed) system of robots which execute $\lgname$ can be viewed as a nondeterministic, timed automaton~\cite{TIOAmon}. The robots execute the program in  \emph{rounds} of duration $\delta$, and in each round, each robot performs an action, which is expressed in $\lgname$ as an event, and the state of each agent can be seen as evolving according to the controllers driving the robot according to the actuators that may have been set in the event. The program and sensor variables of the robot can be seen as the state variables for each agent.
 
 
 \noindent
-Given the set of all variables in the $\lgname$ applications is $\Var$, and the set of all values that the variables can take is $\Val$. The state of a robot is a tuple $$s_i = ( M,\en), \mbox{ where}$$
+Given the set of all variables in the $\lgname$ applications is $\Var$, and the set of all values that the variables can take is $\Val$. The state of a robot $i$ is a tuple $$s_i = ( \{M\}, \{cp\}, r), \mbox{ where}$$
 \begin{enumerate}
-\item ${M} : \Var \mapsto \Val$ is the mapping all variables (including sensor and actuator)in the application known by the robot to their values.
-\item $\en$ is the set of all \emph{enabled} events.
+\item $\{M\} : \Var \mapsto \Val$ is the mapping of all program variables in the application known by the robot to their values.
+\item $\{cp\} : \Var \mapsto \Val$ is the mapping of actuator and sensor variables to their values.
+    \item $r\in \mathbb{Z},r \geq 0$ is the \emph{round} of program execution.
 \end{enumerate}
-The components of the tuple $s_i$ are accessed using the dot $.$ notation, for instance, $s_i.M$, $s_i.w$, etc. Each element of
+The components of the tuple $s_i$ are accessed using the dot $.$ notation, for instance, $s_i.M$, etc. The value of a program variable $v$ at a state $s_i$ is denoted by $s_i.M.v$.
 
 
+
+Having defined the state of the agent, we now analyze the $\lgname$ program shown in \reffig{mapapp}. Given a robot $i$, $s_i.M.\lmap$ represents the \emph{local map} $\map_i$ constructed by each agent. $s_i.M.\gmap$ represents the \emph{global} map $\map$ constructed from the local maps as outlined in \defn{cons}. In implementation, if $\map_i$ is not defined on $q\in Q$, then we set $\lmap[q] = -1$. Consequently, if $\map$ is not defined, we set $\gmap[q] = -1$.
+
+
+We omit the initialization of the mappings in the presentation of the program in \reffig{mapapp}. From our assumption on the initial conditions discussed in \refsect{prelims}, for each robot $i$, $s_i.r = 0\Rightarrow s_i.M.\lmap[q_0] = 0$ where $q_0\in Q$ is the initial grid rectangle the robot is in. We also assumed that $\sensarea(q_0)\neq \phi$, and assume that $s_i.M.\lmap$ is intialized with the values of all the corresponding \emph{sound} values. $s_i.M.\gmap$ is initialized as $s_i.M.\gmap[q] = -1$ for all $q\in Q$. Thus, initially, both $s_i.M.\lmap$ and $s_i.M.\gmap$ are sound mappings.
+
+\subsubsection{NewPoint}
+In this event, the robot first updates its value of $s_i.M.\lmap$ from the currently known value of $s_i.M.\gmap$ where the operator $\oplus$ is defined as follows:
+ $$\forall q \in Q, f[q] \oplus g[q] = \mathit{Max}(f[q], q[q])$$
+
+Given two sound maps $\lmap$ and $\gmap$, $\lmap \oplus \gmap$ corresponds to a combined map construction as outlined in \defn{cons}, and is sound. The event \emph{NewPoint} doesn't modify $s_i.M.\lmap$ further, and therefore, $\lmap$ remains \emph{sound} during the execution of this event.
+
+\begin{definition}
+ We say that $\Vec{x_n}\in D$ is \emph{reachable} from $\Vec{x_0}$ if there is a \emph{path} $p = \Vec{x_0},\Vec{x_1}, \Vec{x_2},\ldots, \Vec{x_n}$ , such that
+\begin{itemize}
+\item $\forall i \in [0..n],\world_Q(\qfunc{\Vec{x_i}}) = 0$
+\item a robot can move from $\Vec{x_i}$ to $\Vec{x_{i+1}}$ for $i \in [0..n]$, while staying within $\qfunc(\Vec{x_i}) \cup \qfunc(\Vec{x_{i+1}})$.
+\end{itemize}
+\end{definition}
+
+A grid rectangle $q\in Q$ is reachable in general, if $\exists \Vec{x}\in D, q = \qfunc(\Vec{x})$ such that $\Vec{x}$ is reachable from either \begin{inparaenum} [(a)]\item the initial position of a robot, or \item another reachable point $\Vec{x^\prime}\in D$. We denote the reachability of a grid rectangle using a predicate $\mathit{Reach} : Q \mapsto \left\{\mathit{True}, \mathit{False}\right\}$, where $\mathit{Reach}(q) = \mathit{True}$ if its reachable,  $\mathit{False}$ otherwise.
+\end{inparaenum}
+
+\begin{definition}
+    Given a sound occupancy mapping $\map_i$, the \emph{frontier} of $\map_i$, denoted by $\ff(\map_i)$ is defined as follows:
+    $$ \left\{ q\in Q \mid Reach(q) \wedge \exists q \in \sensarea(\Vec{x}), q \notin \mathit{dom}(\map_i)\right\} $$
+\end{definition}
+
+In the event \emph{NewPoint}, the operation the robot tries to find a path to a point on the \emph{frontier} of $s_i.M.\lmap$. Assume that the planner returns a path if \begin{inparaenum}[(a)]\item the frontier is non-empty [(b)] the grid rectangle picked on the frontier is reachable from the current point \end{inparaenum}. We also constrain the robots to move only on \emph{known} unoccupied grid rectangles, i.e $q\in Q, s_i.M.\lmap[q] = 0$. In implementation, we achieve this by providing all the unknown ($s_i.M.\lmap[q] = -1$) squares as obstacles to the path planner.
+
+If the path is empty, then the robot sets its $s_i.M.\mathit{update}$ variable to $True$, \emph{enabling} the \emph{GUpdate} event, which we presently discuss. Otherwise, until the robot finishes traversing the path, the \emph{LUpdate} event is enabled.
 
 %\begin{lemma}
 %    \label{ext}
@@ -64,14 +94,7 @@ The components of the tuple $s_i$ are accessed using the dot $.$ notation, for i
 %
 %Given a sound occupancy mapping $\map_i$, another sound mapping $\map_i^\prime$ can be constructed as shown in \lem{ext}. Taken in conjunction with our assumption on the initial positions of each robot, this leads to a strategy for computing sound occupancy mapping functions. Further, given a set of sound mappings $\left\{\map_i\right\}_{i\in[N]}$, we can construct a sound mapping $\map$ from them as follows :
 %
-%\begin{lemma}
-%    Given a set of sound mappings $\left\{\map_i\right\}_{i\in[N]}$, the mapping described by $\map: Q \mapsto \left\{-1,0,1\right\}$ such that $\map(q) = \mathit{Max}_{i\in[N]}\left\{\map_i(q)\right\}$ is also sound.
-%\end{lemma}
-%
-%\begin{proof}
-%    If $\map(q) = 1$, $\exists i\in [N]$, s.t $\map_i(q) = 1$. By \lem{comptbl}, $\forall j \in [N], j\neq i \Rightarrow \map_j(q) = 1\vee \map_j(q) = -1$. Since $\map_i$ is sound, $\map(q) = \world_Q(q)$. The case for $\map(q) = 0$ is also similar. Therefore, $\map(q) = 0\vee \map(q) = 1\Rightarrow \map(q) = \world_Q(q)$. Otherwise, by definition, $\map(q) = -1$, which together with the previous statement, implies that $\map$ is sound.
-%\end{proof}
-%
+
 %
 %
 
