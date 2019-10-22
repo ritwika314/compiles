@@ -71,9 +71,15 @@ Given a small enough $\epsilon$, we can assume that we get a synchronized set of
 Once the robot finishes traversing the path picked in \emph{NewPoint}, the \emph{GUpdate} event is enabled.
 
 
-\paragraph{GUpdate}
+ In the $GUpdate$ event, robot attempts to \emph{atomically} or in a mutually exclusive manner, update the value of $s_i.M.\gmap$ with  $s_i.M.\lmap$. Given that $\oplus$ preserves soundness, again, that given $s_i^\prime$ such that $s_i^\prime.r = s_i.r + 1$, and $\mathit{s_i^\prime \in \mathit{trans}(s_i,\mathit{GUpdate})}$,  $s_i^\prime.M.\gmap$ is sound if $s_i.M.\gmap$ and $s_i.M.\lmap$ are sound.
 
+\begin{theorem}
+    For the system of robots $[N]$ executing the $\lgname$ program shown in \reffig{mapapp}, the shared variable $\gmap$ represents a sound mapping of the domain $Q$.
+\end{theorem}
 
+\begin{proof}
+
+\end{proof}
 %\begin{lemma}
 %    \label{ext}
 %    Suppose robot $i$ is at $\pos(i)\in D$, and $\exists(q^\prime)\in \sensarea(\pos(i))$,
