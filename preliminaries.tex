@@ -79,10 +79,11 @@ In this section, we present the formal definition of the distributed mapping pro
 \label{sec:prelims}
 
 \begin{figure}[t]
+\newcommand{\grid}[2]{\ensuremath{\langle#1,#2\rangle}}
 
 \input{figs/quantized-map.tex}
 
-\caption{$D = [0.0,10.0]^2 \subset \mathbb{R}^2$, $Q=\{0, \cdots, 9\}^2 \subset \mathbb{Z}^2$, for example, $\world_Q(0,4) = 1$}
+\caption{$D = [0.0,10.0]^2 \subset \mathbb{R}^2$, $Q=\{0.5, \cdots, 9.5\}^2 \subset \mathbb{Q}^2$, for example, $\world_Q(\grid{5.5}{0.5}) = 0$ and $\world_Q(\grid{6.5}{0.5}) = 1$}
 \end{figure}
 
 \paragraph{Notations.}

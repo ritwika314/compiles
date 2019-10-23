@@ -9,17 +9,20 @@
 
 \pgfmathsetseed{1138}
 
-\begin{tikzpicture}[scale=0.5]
+\begin{tikzpicture}[
+    scale=0.6,
+    every node/.style = {font=\scriptsize,align=center}
+]
 \draw[step=1, gray, very thin] (-5.2,-5.2) grid (5.5,5.5);
 
 \draw[thick,->] (-6,-5) -- (6,-5) node (x axis) [right] {$x$};
 \draw[thick,->] (-5,-6) -- (-5,6) node (y axis) [above] {$y$};
 
-\draw
+\draw[densely dotted]
   (-5,-5) node (min) [below left] {(0,0)}
-  ( 0,-5) node [below] {(5,0)}
-  ( 5,-5) node [below] {(10,0)}
-  (-5, 0) node [left] {(0,5)}
+  (-4.5,-4.5) -- (  -4,-5.5) node {\grid{0.5}{0.5}}
+  ( 0.5,-4.5) -- ( 0.5,-5.5) node {\grid{5.5}{0.5}}
+  ( 4.5,-4.5) -- (   4,-5.5) node {\grid{9.5}{0.5}}
   (-5, 5) node [left] {(0,10)}
   ( 5, 5) node (max) [above right] {(10,10)}
   ;
