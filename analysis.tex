@@ -22,12 +22,25 @@ The variable $\lmap$ refers to the current mapping $\map_i$ constructed by each 
 \label{sec:analysis}
 
 
+Introduce the name of the state machine for \dmap as $\A$. 
 
 Having defined the state of the robot, we now analyze the $\lgname$ program shown in \reffig{mapapp}. Given a robot $i$, ${\bf s}.\lmap_i$ represents the \emph{local} map, $\map_i$ constructed by each robot. $s_i.M.\gmap$ represents the \emph{global} map, $\map$ constructed from the local maps as outlined in \defn{cons}. In implementation, if $\map_i$ is not defined on $q\in Q$, then we set $\lmap[q] = -1$. Consequently, if $\map$ is not defined, we set $\gmap[q] = -1$.
 
-
+% initial states of $\A$. 
 We omit the initialization of the mappings in the presentation of the program in \reffig{mapapp}. From our assumption on the initial conditions discussed in \refsect{prelims}, for each robot $i$, its initial state $s_i$, $s_i.M.\lmap[q_0] = 0$ where $q_0\in Q$ is the grid rectangle the robot starts in. We also assumed that $\sensarea(q_0)\neq \phi$, and assume that $s_i.M.\lmap(q) = \sensfunc(\sensarea(q))$ . $s_i.M.\gmap$ is initialized as $s_i.M.\gmap[q] = -1$ for all $q\in Q$. Thus, for an initial state $s_i$, both $s_i.M.\lmap$ and $s_i.M.\gmap$ are sound mappings.
 
+The individual soundness requirement of the mapping problem is then captured by the following invariant of $\A$. 
+\begin{invariant}
+\label{inv:ind-sound}
+For all $i \in [N]$ ... 	
+\end{invariant}
+
+\begin{invariant}
+\label{inv:consistency}
+For all $i \in [N]$ ... 	
+\end{invariant}
+
+Now we proceed to show that each of the events preserve these invariants. 
 \paragraph{NewPoint}
 In this event, the robot first updates its value of $s_i.M.\lmap$ from the currently known value of $s_i.M.\gmap$ where the operator $\oplus$ is defined as follows:
 $$\forall q \in Q, f[q] \oplus g[q] = \mathit{Max}(f[q], q[q])$$

@@ -43,7 +43,8 @@ The robots execute the \dmap application program in  \emph{rounds} of duration $
 The state update performed by a single robot executing an  event is modeled as an  transition of the state machine updating the program variables, however,  different events executed by the different robots may interleave. In between the events of successive rounds, the program variables remain constant, but {\em all\/} the \sayan{sensor and actuator variables} of all the robots  change continuously with time.  These are modeled as the $\delta$-transitions that advance time as well as the \sayan{sensor and actuator variables}.
 
 %
-	
+
+\sayan{$\A = (Q, Q_0, D)$}
 
 %
 %of each robot evolve to the 	controllers driving the robot according to the actuators that may have been set in the event. The program and sensor variables of the robot can be seen as the state variables for each robot.
@@ -131,11 +132,16 @@ $$
 %
 
 For each robot $i$, the program variable $\mathit{map}_i$ will ideally store a qunantized restriction of $\world$. That is, the type of this variable will be $\mathit{map}_i: Q' \rightarrow \mathbb{B}$, for some $Q' \subseteq Q$. 
+%
+Finally, we will assume that each robot $i$ occupies space within the arena $D$ and it's position is available from a sensor port $\mathit{pos}_i$ which takes values in $D$. 
 
 Now we can formally state the desirable requirements of the mapping application.
 \begin{enumerate}
 	\item {\em (Individually sound)} Always, each robot's map is a quantized restriction of the ground truth. That is, $\map_i: Q_i \mapsto \mathbb{B}$, where $Q_i\subseteq Q$ and  $\map_i(q) = \world_Q(q)$ for every $q\in Q_i$.
 	\item {\em (Consistent)\/} Always, robot maps are consistent. That is, for any two robots $i,j \in [N]$,   $\map_i(q) = map_j(q)$  for any  $q\in \domain(\map_i)  \cap \domain(map_j)$.
+	\item {\em (Safe location)\/} Always, each robot is located in a part of the arena that is known to be free. 
+	%That is, for any  $i \in [N]$,   $\pos_i \in  = map_j(q)$  for any  $q\in \domain(\map_i)  \cap \domain(map_j)$.
+
 	\item {\em (Eventual completeness)} Eventually, the constructed maps cover $\world$. That is, for each robot $i\in [N], \domain(\map_i) = Q$.
 \end{enumerate}
 
@@ -144,6 +150,12 @@ Now we can formally state the desirable requirements of the mapping application.
 \subsection{Assumptions}
 \label{sec:formal:sensing}
 
+
+\subsubsection{Perception}
+
+\subsubsection{Planning and actuation}
+
+\subsubsection{Running time of Koord programs}
 
 \marginpar{\scriptsize\sayan{MAke this a list of {\bf Assumptions} with discussion on why they hold, or what they mean in English.}}
 

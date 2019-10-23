@@ -12,6 +12,7 @@ Informally, the problem requires a set of robots to collaboratively mark the pos
 
 \reffig{flowmap1} shows a simple idea for solving the mapping problem problem for each robot, and \reffig{mapapp} shows our solution to $\dmap$ written using $\lgname$, a high level language with native support for multi-robot systems designed to interact with a physical environment. The design of solution to the mapping problem in \reffig{flowmap1} captures an occupancy map of the 2D space in a variable $\gmap$. \reffig{flowmap}. The variable $\lmap$ is a local mapping constructed by each robot $i$ using sensors, and information from other robots shared via $\gmap$. The robot first updates its $\lmap$ from $\gmap$, which stores the currently computed occupancy map \emph{by all robots}.  The robot then picks a new point in the grid known to be unoccupied in its $\lmap$ and follows a path ($\mathit{Motion.Path}$) moving only over grid rectangles known to be unoccupied by its $\lmap$. While the robot hasn't reached the target rectangle, it keeps updating its $\lmap$ with sensed data (occupied and unoccupied grid points). When it reaches the target, it updates the $\gmap$ with new data from its $\lmap$.
 
+
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=\linewidth]{figs/map_flowchart.png}
