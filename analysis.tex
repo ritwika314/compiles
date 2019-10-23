@@ -25,7 +25,7 @@ Given the set of all variables in the $\lgname$ applications is $\Var$, and the 
     \item $M : \Var \mapsto \Val$ is the mapping of all program variables in the application known by the robot to their values.
     \item $cp : \Var \mapsto \Val$ is the mapping of actuator and sensor variables to their values.
 \end{enumerate}
-The components of the tuple $s_i$ are accessed using the dot $.$ notation, for instance, $s_i.M$, etc. The value of a program variable $v$ at a state $s_i$ is denoted by $s_i.M.v$.
+The components of the tuple $s_i$ are accessed using the dot $`.'$ notation, for instance, $s_i.M$, etc. The value of a program variable $v$ at a state $s_i$ is denoted by $s_i.M.v$.
 
 Given an $\lgname$ program with a set of events $E$, the set of states of an robot $S$, we define a transition $\mathit{trans}: S \times E \mapsto 2^S$ as a non-deterministic mapping from a state to a set of states reached by a robot after a round in which a given event is executed.
 
