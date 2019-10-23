@@ -34,57 +34,76 @@ To run a $\lgname$ program (hardware or simulation), the user has to provide a c
 \subsubsection{sampled sensing}
 \subsubsection{synchronization issues}
 
-\subsection{Formal modeling and analysis}
+\section{Formal modeling and analysis}
 \label{sec:formal}
 
-In this section, we present the formal definition of the distributed mapping problem. 
-
-\subsubsection{Preliminaries}
+In this section, we present the formal definition of the distributed mapping problem. Then we develop a state machine model of the \dmap application executing in the physical environment, and finally, using this model we show that the it meet the key requirements of the mapping problem. One of the outcomes of this analysis is the identification of a list of precise 
+ assumptions of sensors, CyPhyHouse middleware implementation, quantization, and \sayan{fill in}, that need to be checked separately for obtaining end-to-end, system-level guaranteed. 
+ 
+\subsection{Formal definition of mapping problem}
 \label{sec:prelims}
-We first set up the terminology and assumptions to discuss our approach to this problem.
 
-We define the mapping problem over a domain $D$ which is bounded rectangle $[a_1,a_2]\times [b_1,b_2]$ in $\mathbb{R}^2$ corresponding to the physical arena. 
-The \emph{ground truth} about the occupancy of obstacles in this arena is modeled by a function $\world : D\mapsto \left\{0,1\right\}$, where $\forall \Vec{x} \in D$, 
+\paragraph{Notations.}
+$\mathbb{R}, \mathbb{Q},\mathbb{N}$, and $\mathbb{B}$ denote the sets of real, rational, natural, and boolean numbers.
+For any $N \in \mathbb{N}$, $[N]$ is the set $\{1,2,\ldots,N\}$.
+%
+Given any function $f:A \rightarrow S$ and a subset $A' \subseteq A$, 
+    the restriction of $f$ to $A'$, written as $f \lceil A'$, is the function $g:A' \rightarrow S$ such that for all $a \in A'$, $g(a) = f(a)$.
 
+\paragraph{Mapping problem.}
+The mapping problem is defined in terms of the following parameters.
+\begin{enumerate}
+	\item A positive integer $N$ which is the number of participating agents or robots. We will assume that the number and identity of agents is known. foe convenience, here we assume that the robots have unique identifiers from the set $[N]$.
+	\item A domain $D$ which is bounded rectangle $[a_1,a_2]\times [b_1,b_2]$ in $\mathbb{R}^2$ corresponding to the physical arena.
+	\item A \emph{ground truth} function $\world : D\mapsto \left\{0,1\right\}$ that gives the actual  occupancy of obstacles in this arena. That is, $\forall \Vec{x} \in D$, 
 \begin{align}
 \world(\Vec{x}) = 
 		\left\{
 		\begin{array}{ll}
-			1 & \mathit{there \ is\ an\ obstacle\ at}\ \Vec{x}\\
+			1 & \mathit{if}\ \Vec{x} \ \mathit{is \ occupied}\\
 			0 & \mathit{otherwise}.
 		\end{array}
 		\right.
 \end{align}
-
-The map created by agents will be a data-structure and it will (ideally) be a quantized version of the $\world$.
-Let $\qdom$ be a $(n_x\times n_y)$-quantized representation of $D$, for some resolution constants $n_x,n_y \in \mathbb{N}$. That is, $\qdom = \{q_{ij}\}_{i\in [1..n_x], j\in [1..n_y]}$
-such that every $q_{ij}$ corresponds to a disjoint $[x_i, x_{i+1}] \times [y_j, y_{j+1}]$ in $D$.
-
-\begin{definition}
-    The \emph{quantization function}  $\qfunc:D \mapsto \qdom$ maps points in $D$ to their quantized versions. 
-    That is $\qfunc(\Vec{x}) = q_{ij}$ iff $\Vec{x} \in [x_i, x_{i+1}] \times [y_j, y_{j+1}]$.
-   \end{definition}
-
-\begin{definition}
-    Given any function $f:\qdom \rightarrow S$ and a subset $Q' \subseteq Q$, 
-    the restriction of $f$ to $Q'$, written as $f \lceil Q'$, is the function
-    $g:Q' \rightarrow S$ such that for all $q \in Q'$, $g(q) = f(q)$.
-\end{definition}
-
-We will fix the domain $D$, the $\world$, and the quantization of $\qdom$ of $D$ throughout this section, which also fixes the quantization function $\qfunc$ and defines a quantized version of the world $\world_Q : \qdom \mapsto \left\{0,1\right\}$, where
+	\item A set $\qdom \subseteq D \cap \mathbb{Q}^2$ which is a quantized representation of $D$.
+	\item A Koord program variable, let us call it $\mathit{map}_i$, for each robot $i \in [N]$, that stores the $\qdom$-quantized, shared map.
+\end{enumerate}
+%%
+%%
+For the sake of specificity, we assume that $\qdom$ is a $(n_x\times n_y)$-grid representation of $D$ for some resolution constants $n_x,n_y \in \mathbb{N}$. That is, $\qdom = \{q_{ij} \in \mathbb{Q}^2\}_{i\in [1..n_x], j\in [1..n_y]}$ such that every $q_{ij}$ uniquely represents a disjoint $[x_i, x_{i+1}] \times [y_j, y_{j+1}]$ in $D$.
+%
+%\begin{definition}
+    The \emph{quantization function}  $\qfunc:D \mapsto \qdom$ maps points in $D$ to their quantized versions. That is $\qfunc(\Vec{x}) = q_{ij}$ iff $\Vec{x} \in [x_i, x_{i+1}] \times [y_j, y_{j+1}]$.
+The inverse is defined accordingly: $\qinv(q_{ij}) =  [x_i, x_{i+1}] \times [y_j, y_{j+1}]$ for any $q_{ij} \in Q$. 
+%\end{definition}
+%
+The quantization defines a quantized version of the world $\world_Q : \qdom \mapsto \left\{0,1\right\}$, where
 $$\world_Q(q) = \begin{cases}
-        1\ \Leftrightarrow \exists \Vec{x}\in \qfunc^{-1}(q), \world(\Vec{x}) = 1, \\
-        0\ \mbox{otherwise}
+        1\ \Leftrightarrow \exists \Vec{x}\in \qinv(q), \world(\Vec{x}) = 1, \\
+        0\ \mbox{otherwise}.
 \end{cases}
 $$
+%
+
+For each robot $i$, the program variable $\mathit{map}_i$ will ideally store a qunantized restriction of $\world$. That is, the type of this variable will be $\mathit{map}_i: Q' \rightarrow \mathbb{B}$, where $Q' \subseteq Q$. 
+
+Now we can formally state the requirements of the mapping application.
+\begin{enumerate}
+	\item Always, each robot's map is a quantized restriction of the ground truth, that is, $\map_i: Q_i \mapsto \mathbb{B}$, where $Q_i\subseteq Q$ and 
+	\item 
+\end{enumerate}
 
 
-\rg{Consider that there is a set of ground robots $[N]$, which are tasked with creating a mapping of static obstacles in $Q$ collaboratively by constructing local mappings based on sensed information. Each robot has a \emph{software state}, $\sensfunc : Q \mapsto \left\{0,1\right\}$ associated with it}.
 
 
+\subsection{Sensing}
+\label{sec:formal:sensing}
 
 \begin{definition}
-   Given a robot at a position $\Vec{x}\in D, \qfunc{\Vec{x}} = q$, we define the \emph{sensing area} of $q$ follows: $\sensarea: Q \mapsto 2^{Q}$, such that  $\forall q^\prime \in \sensarea(q), \sensfunc(q) = \world_Q(q)$.  \end{definition}
+   Given a robot at a position $\Vec{x}\in D, \qfunc{\Vec{x}} = q$, we define the \emph{sensing area} of $q$ follows: $\sensarea: Q \mapsto 2^{Q}$, such that  $\forall q^\prime \in \sensarea(q), \sensfunc(q) = \world_Q(q)$.  
+\end{definition}
+
+
 
 
 Let $\map_i:Q\mapsto \left\{-1,0\right\}$ denote a \qdfunc \emph{local} to robot $i$, which we can see as a software state for a given robot $i$ as well.  % $\map_i(q) = 1$ indicates that according to robot $i$, there is an obstacle in $q$, $\map_i(q) = 0$ indicates that according to robot $i$, $q$ is unoccupied, and $\map_i(q) = -1$ indicates that robot $i$ doesn't have information about $q$.
