@@ -23,7 +23,7 @@ local:
 
 NewPoint:$\label{newpt}$
   pre newpoint
-  eff : LocalMap $=$ LocalMap $\oplus$ map
+  eff : LocalMap $=$ merge(localMap, map)
         obstacles = findObs(localMap)
         Motion.path $=$ find_path(pickFrontierPos(
                               localMap, Motion.pos), obstacles)
@@ -36,11 +36,11 @@ LUpdate:$\label{lup}$
    pre not (newpoint || Motion.reached )
    eff : pscan $=$ tSync(Motion.trace, Lidar.ldata)
          for pos, scan in pscan:
-             map $=$ map $\oplus$ scanToMap(pos, scan)
+             localmap $=$ merge(localMap,scanToMap(pos, scan))
 
 GUpdate: $\label{gup}$
   pre Motion.reached
   eff: atomic:
-           map $=$ map $\oplus$ LocalMap
+           map $=$ merge(map, localMap)
         newpoint $=$ True
         update $=$ False
