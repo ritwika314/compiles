@@ -34,9 +34,10 @@ To run a $\lgname$ program (hardware or simulation), the user has to provide a c
 \subsubsection{sampled sensing}
 \subsubsection{synchronization issues}
 
-\subsection{The Distributed Mapping Problem}
-In this section, we introduce the distributed mapping problem. Informally, the problem requires a set of robots to collaboratively mark the position of static \emph{obstacles} within a given area $D$, which any robot should avoid while moving in $D$.The key difference between distributed SLAM and this application is that we assume that the robots know their \emph{global coordinates} within the area of deployment. They are only attempting to map the static obstacles within this area. We currently assume that the only sensors available for sensing obstacles are LIDAR based, and the robots are constrained to move in a 2-D space.
+\subsection{Formal modeling and analysis}
+\label{sec:formal}
 
+In this section, we present the formal definition of the distributed mapping problem. 
 
 \subsubsection{Preliminaries}
 \label{sec:prelims}

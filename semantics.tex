@@ -1,5 +1,12 @@
-\section{Koord Language and Overview}
+\section{Overview of mapping problem and CyPhyHouse}
 \label{sec:semantics}
+
+\subsection{Mapping problem }
+\sayan{
+Informally, the problem requires a set of robots to collaboratively mark the position of static \emph{obstacles} within a given area $D$, which any robot should avoid while moving in $D$.The key difference between distributed SLAM and this application is that we assume that the robots know their \emph{global coordinates} within the area of deployment. They are only attempting to map the static obstacles within this area. We currently assume that the only sensors available for sensing obstacles are LIDAR based, and the robots are constrained to move in a 2-D space.
+}
+
+\subsection{\dmap Application}
 
 The program and the controller interact with each other through {\em sensor} and {\em actuator} ports.  The program reads the sensor ports, reads and writes to program variables, and writes to actuator ports. The controller drives the underlying physical plant. The \emph{environment} of a  $\lgname$ program is the combination of the controller and the plant. The set of agents in the system may interact with each other using {\em shared variables\/}. Each agent in the system runs an instance of the \emph{same} $\lgname$ program. 
 % exmaple code snippet
