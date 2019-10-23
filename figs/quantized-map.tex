@@ -10,10 +10,19 @@
 \pgfmathsetseed{1138}
 
 \begin{tikzpicture}[scale=0.5]
-\draw[step=1, gray, very thin] (-5.5,-5.5) grid (5.5,5.5); 
+\draw[step=1, gray, very thin] (-5.2,-5.2) grid (5.5,5.5);
 
-\draw[thick,->] (-6,-5) -- (6,-5) coordinate (x axis);
-\draw[thick,->] (-5,-6) -- (-5,6) coordinate (y axis);
+\draw[thick,->] (-6,-5) -- (6,-5) node (x axis) [right] {$x$};
+\draw[thick,->] (-5,-6) -- (-5,6) node (y axis) [above] {$y$};
+
+\draw
+  (-5,-5) node (min) [below left] {(0,0)}
+  ( 0,-5) node [below] {(5,0)}
+  ( 5,-5) node [below] {(10,0)}
+  (-5, 0) node [left] {(0,5)}
+  (-5, 5) node [left] {(0,10)}
+  ( 5, 5) node (max) [above right] {(10,10)}
+  ;
 
 \draw[thick] (-5, -5) rectangle ++ (10, 10);
 
