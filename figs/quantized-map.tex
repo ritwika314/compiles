@@ -9,10 +9,7 @@
 
 \pgfmathsetseed{1138}
 
-\begin{tikzpicture}[
-    scale=0.6,
-    every node/.style = {font=\scriptsize,align=center}
-]
+\begin{tikzpicture}[grid map]
 \draw[step=1, gray, very thin] (-5.2,-5.2) grid (5.5,5.5);
 
 \draw[thick,->] (-6,-5) -- (6,-5) node (x axis) [right] {$x$};
@@ -34,7 +31,7 @@
 \coordinate (obs2) at (2.3,-3);
 \fill[darkgray, rounded corners=1mm] (obs2) \irregularcircle{1.5cm}{0.2cm};
 
-\fill[gray, pattern=north west lines] % quantize obs1
+\fill[gray, pattern=dots] % quantize obs1
        (0,0)
     -- (0,1)
     -- (1,1)
@@ -54,7 +51,7 @@
     -- (0, -1)
     -- cycle;
 
-\fill[gray, pattern=north west lines] % quantize obs2
+\fill[gray, pattern=dots] % quantize obs2
        (1,-1)
     -- (1,-2)
     -- (0,-2)
