@@ -34,6 +34,41 @@ To run a $\lgname$ program (hardware or simulation), the user has to provide a c
 \subsubsection{sampled sensing}
 \subsubsection{synchronization issues}
 
+\subsection{Formal semantics of Koord}
+\label{sec:semantics}
+
+The (distributed) system of robots  executing the \dmap application written in $\lgname$ can be viewed as a nondeterministic, state machine automaton~\cite{TIOAmon, Mitra07PhD}. The complete semantics of $\lgname$ has been developed in the $\mathbb{K}$ framework and will appear elsewhere. For the purpose of the analysis here, we briefly describe the formalization. 
+
+The robots execute the \dmap application program in  \emph{rounds} of duration $\delta$, and in each round, each robot performs a $\lgname$ event.
+The state update performed by a single robot executing an  event is modeled as an  transition of the state machine updating the program variables, however,  different events executed by the different robots may interleave. In between the events of successive rounds, the program variables remain constant, but {\em all\/} the \sayan{sensor and actuator variables} of all the robots  change continuously with time.  These are modeled as the $\delta$-transitions that advance time as well as the \sayan{sensor and actuator variables}.
+
+%
+	
+
+%
+%of each robot evolve to the 	controllers driving the robot according to the actuators that may have been set in the event. The program and sensor variables of the robot can be seen as the state variables for each robot.
+
+\marginpar{\scriptsize\sayan{We will need to introduce the different types of variables, program varianbles, sensors, actuators.}}
+Given the set of all variables in the $\lgname$ applications is $\Var$, and the set of all values that the variables can take is $\Val$, the \emph{state} of a robot $i$ is a tuple $$s_i = ( M, cp), \mbox{ where}$$
+\begin{enumerate}
+    \item $M : \Var \mapsto \Val$ is the mapping of all program variables in the application known by the robot to their values.
+    \item $cp : \Var \mapsto \Val$ is the mapping of actuator and sensor variables to their values.
+\end{enumerate}
+The components of the tuple $s_i$ are accessed using the dot $`.'$ notation, for instance, $s_i.M$, etc. The value of a program variable $v$ at a state $s_i$ is denoted by $s_i.M.v$.
+
+Given an $\lgname$ program with a set of events $E$, the set of states of an robot $S$, we define a transition $\mathit{trans}: S \times E \mapsto 2^S$ as a non-deterministic mapping from a state to a set of states reached by a robot after a round in which a given event is executed.
+
+Execution ${\bf  s}_0, {\bf s}_1$, execution. 
+
+Reachable states, invariants of the big state machine. 
+
+${\bf s},{\bf  s'}$ state of the whole system. 
+${\bf s}.variablenme_i$ state of the $i,j$ robot. 
+
+\marginpar{\scriptsize\sayan{Introduce the time-transitions, give it a name and say that it updates the ports.}}
+
+
+
 \section{Formal modeling and analysis}
 \label{sec:formal}
 
@@ -103,9 +138,13 @@ Now we can formally state the desirable requirements of the mapping application.
 	\item {\em (Eventual completeness)} Eventually, the constructed maps cover $\world$. That is, for each robot $i\in [N], \domain(\map_i) = Q$.
 \end{enumerate}
 
+\marginpar{\scriptsize\sayan{Say that we will prove 1,2 and why 3 is in general hard world may be partitioned. Path planning might hard. Quantization may be too coarse for finding safe paths...}}
 
 \subsection{Assumptions}
 \label{sec:formal:sensing}
+
+
+\marginpar{\scriptsize\sayan{MAke this a list of {\bf Assumptions} with discussion on why they hold, or what they mean in English.}}
 
 \begin{definition}
    Given a robot at a position $\Vec{x}\in D, \qfunc{\Vec{x}} = q$, we define the \emph{sensing area} of $q$ follows: $\sensarea: Q \mapsto 2^{Q}$, such that  $\forall q^\prime \in \sensarea(q), \sensfunc(q) = \world_Q(q)$.  
