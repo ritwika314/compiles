@@ -1,12 +1,12 @@
 \subsection{\dmap Application}
 
 
-\begin{figure}[!htbp]
-    \centering
-    \includegraphics[width=\linewidth]{figs/map_flowchart.png}
-    \caption{Flowchart for a simple solution to 2D distributed mapping problem\vspace{-2mm}}
-    \label{fig:flowmap}
-\end{figure}
+%\begin{figure}[!htbp]
+%    \centering
+%    \includegraphics[width=\linewidth]{figs/map_flowchart.png}
+%    \caption{Flowchart for a simple solution to 2D distributed mapping problem\vspace{-2mm}}
+%    \label{fig:flowmap}
+%\end{figure}
 
 
 
@@ -14,36 +14,16 @@ We discuss now discuss how our algorithm implemented $\lgname$ shown in \reffig{
 
 The variable $\lmap$ refers to the current mapping $\map_i$ constructed by each robot $i$ using the algorithm. The function $\mathit{MaxExp}$ informally, determines whether there is a grid rectangle in the frontier of the current $\map_i$ . If not, the robot first updates its $\lmap$ from $\gmap$, which is used for sharing the currently computed occupancy maps by all robots so far. The robot then picks a new point in a rectangle known to be unoccupied in its $\lmap$ and follows a path ($\mathit{Motion.Path}$) moving only over grid rectangles known to be unoccupied by its $\lmap$. While the robot hasn't reached the target rectangle, it keeps updating its $\lmap$ with sensed data (occupied and unoccupied rectangles). When it reaches the target, it updates the $\gmap$ from its $\lmap$.
 
-\sayan{
-Assumption about 
- \emph{rounds} of duration $\delta$, and in each round, each robot performs an action, which is expressed in $\lgname$ as an event.
-}
+\sayan{Assumption about 
+ \emph{rounds} of duration $\delta$, and in each round, each robot performs an action, which is expressed in $\lgname$ as an event.}
 
 
 \subsection{Analysis of \dmap}
 \label{sec:analysis}
 
-The (distributed) system of robots  executing the \dmap application written in $\lgname$ can be viewed as a nondeterministic, hybrid automaton~\cite{TIOAmon, Mitra07PhD}. The complete semantics of $\lgname$ has been developed in the $\mathbb{K}$ framework and will appear elsewhere. For the purpose of the analysis here, we briefly describe the formalization. 
-
-The robots execute the \dmap application program in  \emph{rounds} of duration $\delta$, and in each round, each robot performs a $\lgname$ event.
-The state update performed by a single robot executing an  event can be modeled as an instantaneous transition of the hybrid automaton updating program variables, however,  different events executed by the different robots may interleave. In between the events of successive rounds, the program variables remain constant, but the \sayan{sensor variables}
 
 
-
-of each robot evolve to the controllers driving the robot according to the actuators that may have been set in the event. The program and sensor variables of the robot can be seen as the state variables for each robot.
-
-
-\noindent
-Given the set of all variables in the $\lgname$ applications is $\Var$, and the set of all values that the variables can take is $\Val$, the \emph{state} of a robot $i$ is a tuple $$s_i = ( M, cp), \mbox{ where}$$
-\begin{enumerate}
-    \item $M : \Var \mapsto \Val$ is the mapping of all program variables in the application known by the robot to their values.
-    \item $cp : \Var \mapsto \Val$ is the mapping of actuator and sensor variables to their values.
-\end{enumerate}
-The components of the tuple $s_i$ are accessed using the dot $`.'$ notation, for instance, $s_i.M$, etc. The value of a program variable $v$ at a state $s_i$ is denoted by $s_i.M.v$.
-
-Given an $\lgname$ program with a set of events $E$, the set of states of an robot $S$, we define a transition $\mathit{trans}: S \times E \mapsto 2^S$ as a non-deterministic mapping from a state to a set of states reached by a robot after a round in which a given event is executed.
-
-Having defined the state of the robot, we now analyze the $\lgname$ program shown in \reffig{mapapp}. Given a robot $i$, $s_i.M.\lmap$ represents the \emph{local} map, $\map_i$ constructed by each robot. $s_i.M.\gmap$ represents the \emph{global} map, $\map$ constructed from the local maps as outlined in \defn{cons}. In implementation, if $\map_i$ is not defined on $q\in Q$, then we set $\lmap[q] = -1$. Consequently, if $\map$ is not defined, we set $\gmap[q] = -1$.
+Having defined the state of the robot, we now analyze the $\lgname$ program shown in \reffig{mapapp}. Given a robot $i$, ${\bf s}.\lmap_i$ represents the \emph{local} map, $\map_i$ constructed by each robot. $s_i.M.\gmap$ represents the \emph{global} map, $\map$ constructed from the local maps as outlined in \defn{cons}. In implementation, if $\map_i$ is not defined on $q\in Q$, then we set $\lmap[q] = -1$. Consequently, if $\map$ is not defined, we set $\gmap[q] = -1$.
 
 
 We omit the initialization of the mappings in the presentation of the program in \reffig{mapapp}. From our assumption on the initial conditions discussed in \refsect{prelims}, for each robot $i$, its initial state $s_i$, $s_i.M.\lmap[q_0] = 0$ where $q_0\in Q$ is the grid rectangle the robot starts in. We also assumed that $\sensarea(q_0)\neq \phi$, and assume that $s_i.M.\lmap(q) = \sensfunc(\sensarea(q))$ . $s_i.M.\gmap$ is initialized as $s_i.M.\gmap[q] = -1$ for all $q\in Q$. Thus, for an initial state $s_i$, both $s_i.M.\lmap$ and $s_i.M.\gmap$ are sound mappings.
