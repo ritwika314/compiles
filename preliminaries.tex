@@ -37,27 +37,55 @@ To run a $\lgname$ program (hardware or simulation), the user has to provide a c
 \subsection{Formal semantics of Koord}
 \label{sec:semantics}
 
-The (distributed) system of robots  executing the \dmap application written in $\lgname$ can be viewed as a nondeterministic, state machine automaton~\cite{TIOAmon, Mitra07PhD}. The complete semantics of $\lgname$ has been developed in the $\mathbb{K}$ framework and will appear elsewhere. For the purpose of the analysis here, we briefly describe the formalization. 
+The (distributed) system of robots  executing the \dmap application written in $\lgname$ can be viewed as a nondeterministic, state machine automaton~\cite{TIOAmon, Mitra07PhD}. The detailed statement-level semantics of $\lgname$ has been developed in the $\mathbb{K}$ framework and will appear elsewhere. For the purpose of the analysis here, we briefly describe the ``big-step'' semantics of Koord which allows all the statements in an event of a single agent to be executed as an instantaneous transition. 
 
-The robots execute the \dmap application program in  \emph{rounds} of duration $\delta$, and in each round, each robot performs a $\lgname$ event.
+Suppose we have $N$ agents or robots in the system each executing the same Koord application program. As mentioned earlier Koord middleware enforces a synchronous  \emph{round-by-round} execution, where each round lasts for $\delta$ time, where $\delta >0$ is a platform specific execution parameter. 
+%
+In each round, each robot performs an  event.
 The state update performed by a single robot executing an  event is modeled as an  transition of the state machine updating the program variables, however,  different events executed by the different robots may interleave. In between the events of successive rounds, the program variables remain constant, but {\em all\/} the \sayan{sensor and actuator variables} of all the robots  change continuously with time.  These are modeled as the $\delta$-transitions that advance time as well as the \sayan{sensor and actuator variables}.
 
 %
+Let the set of all program variables in the $\lgname$ application be $\Var$, and the set of all the sensor and actuator ports be $\mathit{Port}$. 
+%
+The sets of variables and ports of an individual agent $i$ are denoted by $\Var_i$ and  $\mathit{Port}_i$.
+%
+A {\em valuation\/} of $\Var \cup \Port$ maps the names of the variables and ports to their types. 
+We denote valuations using boldface letter like $\vs, \vs_1, \vs'$, etc. 
+%
+Given a valuation $\vs$, the value of a subset of  variables (or ports) $X$ is denoted by $\vs.X$. For example, the  valuation of all the variables of agent $i$ is $\vs.\Var_i$.
+%
+Let $\mathit{Event}_i$ be the set of event names for the application program of agent $i$. 
+%
+\sayan{For example, in \dmap ...vars, ports, events. }
 
-\sayan{$\A = (Q, Q_0, D)$}
-
+%
+%values that the variables can take is $\Val$, the \emph{state} of a robot $i$ is a tuple $$s_i = ( M, cp), \mbox{ where}$$
+%
+For the purpose of this paper, we define the  semantics of the overall system with $N$ agents as discrete transition system $\A = (Q, Q_0, A, \D)$,
+where 
+(1) $Q$ is the set of valuations of all the variables in $\Var$ and all the ports $\mathit{Port}$, 
+(2) $Q_0 \subseteq Q$ is the set of initial values of the variables and port. All variables and ports have to be initialized, 
+(3) $A = \{\delta\} \cup \left( \cup_{i \in [N]} \mathit{Events}_i \right)$ is the set of transition labels, and
+(4) $D \subseteq Q \times A \times Q$ is a set of discrete transitions. There are two types of transitions, namely:
+\begin{enumerate}
+	\item {\em event transition}: Any $a \in \Event_i$ for some $i \in [N]$, and  $(\vs,a,\vs') \in \D$ iff (i) $\vs'.\Var_i$ is obtained by applying the transition relation of $a$ to $\vs.\Var_i$, and 
+		(ii) For all $j \neq i$, 
+		$\vs'.\Var_j = \vs.\Var_j$.
+	\item {\em $\delta$-transition}: $a = \delta$, and $(\vs,a,\vs') \in \D$ iff (i) $\vs'.\Var = \vs.Var$. 
+\end{enumerate}
+\sayan{This formalization allows the ports to behave arbitrarily over $\delta$-transitions. In order to establish invariant properties of applications,  therefore, we will need to constrain the behavior of the sensor and actuator ports with additional assumptions.
+}
 %
 %of each robot evolve to the 	controllers driving the robot according to the actuators that may have been set in the event. The program and sensor variables of the robot can be seen as the state variables for each robot.
 
-\marginpar{\scriptsize\sayan{We will need to introduce the different types of variables, program varianbles, sensors, actuators.}}
-Given the set of all variables in the $\lgname$ applications is $\Var$, and the set of all values that the variables can take is $\Val$, the \emph{state} of a robot $i$ is a tuple $$s_i = ( M, cp), \mbox{ where}$$
-\begin{enumerate}
-    \item $M : \Var \mapsto \Val$ is the mapping of all program variables in the application known by the robot to their values.
-    \item $cp : \Var \mapsto \Val$ is the mapping of actuator and sensor variables to their values.
-\end{enumerate}
-The components of the tuple $s_i$ are accessed using the dot $`.'$ notation, for instance, $s_i.M$, etc. The value of a program variable $v$ at a state $s_i$ is denoted by $s_i.M.v$.
 
-Given an $\lgname$ program with a set of events $E$, the set of states of an robot $S$, we define a transition $\mathit{trans}: S \times E \mapsto 2^S$ as a non-deterministic mapping from a state to a set of states reached by a robot after a round in which a given event is executed.
+%\begin{enumerate}
+%    \item $M : \Var \mapsto \Val$ is the mapping of all program variables in the application known by the robot to their values.
+%    \item $cp : \Var \mapsto \Val$ is the mapping of actuator and sensor variables to their values.
+%\end{enumerate}
+%The components of the tuple $s_i$ are accessed using the dot $`.'$ notation, for instance, $s_i.M$, etc. The value of a program variable $v$ at a state $s_i$ is denoted by $s_i.M.v$.
+
+%Given an $\lgname$ program with a set of events $E$, the set of states of an robot $S$, we define a transition $\mathit{trans}: S \times E \mapsto 2^S$ as a non-deterministic mapping from a state to a set of states reached by a robot after a round in which a given event is executed.
 
 Execution ${\bf  s}_0, {\bf s}_1$, execution. 
 
