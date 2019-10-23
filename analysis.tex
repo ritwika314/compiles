@@ -1,4 +1,4 @@
-\subsubsection{Approach}
+\subsection{\dmap Application}
 
 
 \begin{figure}[!htbp]
@@ -14,9 +14,23 @@ We discuss now discuss how our algorithm implemented $\lgname$ shown in \reffig{
 
 The variable $\lmap$ refers to the current mapping $\map_i$ constructed by each robot $i$ using the algorithm. The function $\mathit{MaxExp}$ informally, determines whether there is a grid rectangle in the frontier of the current $\map_i$ . If not, the robot first updates its $\lmap$ from $\gmap$, which is used for sharing the currently computed occupancy maps by all robots so far. The robot then picks a new point in a rectangle known to be unoccupied in its $\lmap$ and follows a path ($\mathit{Motion.Path}$) moving only over grid rectangles known to be unoccupied by its $\lmap$. While the robot hasn't reached the target rectangle, it keeps updating its $\lmap$ with sensed data (occupied and unoccupied rectangles). When it reaches the target, it updates the $\gmap$ from its $\lmap$.
 
+\sayan{
+Assumption about 
+ \emph{rounds} of duration $\delta$, and in each round, each robot performs an action, which is expressed in $\lgname$ as an event.
+}
 
-\subsubsection{Analysis}
-A (distributed) system of robots which execute $\lgname$ can be viewed as a nondeterministic, timed automaton~\cite{TIOAmon}. The robots execute the program in  \emph{rounds} of duration $\delta$, and in each round, each robot performs an action, which is expressed in $\lgname$ as an event, and the state of each robot can be seen as evolving according to the controllers driving the robot according to the actuators that may have been set in the event. The program and sensor variables of the robot can be seen as the state variables for each robot.
+
+\subsection{Analysis of \dmap}
+\label{sec:analysis}
+
+The (distributed) system of robots  executing the \dmap application written in $\lgname$ can be viewed as a nondeterministic, hybrid automaton~\cite{TIOAmon, Mitra07PhD}. The complete semantics of $\lgname$ has been developed in the $\mathbb{K}$ framework and will appear elsewhere. For the purpose of the analysis here, we briefly describe the formalization. 
+
+The robots execute the \dmap application program in  \emph{rounds} of duration $\delta$, and in each round, each robot performs a $\lgname$ event.
+The state update performed by a single robot executing an  event can be modeled as an instantaneous transition of the hybrid automaton updating program variables, however,  different events executed by the different robots may interleave. In between the events of successive rounds, the program variables remain constant, but the \sayan{sensor variables}
+
+
+
+of each robot evolve to the controllers driving the robot according to the actuators that may have been set in the event. The program and sensor variables of the robot can be seen as the state variables for each robot.
 
 
 \noindent

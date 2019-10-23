@@ -134,10 +134,10 @@ A vacuously correct (sound) solution to $\mapprob$ given $D, \qfunc$ and $\world
 $\forall i \in [N], \world_Q(q^0_i) = 0\wedge \sensarea(q^0_i) \neq \phi$
 where $q^0_i = \qfunc(\pos_0(i))$, and $\pos_0(i)$ denotes the initial position of robot $i$.
 
-
-\begin{definition}
-    Given  $i , j \in [N]$, two proposed occupancy mappings $\map_i: Q_i\mapsto\left\{0,1\right\}$ and $\map_j: Q_j\mapsto \left\{0,1\right\}$, are consistent only if $\forall q \in Q_i \cup Q_j, \map_i(q) = \map_j(q)$.
-\end{definition}
+%
+%\begin{definition}
+%    Given  $i , j \in [N]$, two proposed occupancy mappings $\map_i: Q_i\mapsto\left\{0,1\right\}$ and $\map_j: Q_j\mapsto \left\{0,1\right\}$, are consistent only if $\forall q \in Q_i \cup Q_j, \map_i(q) = \map_j(q)$.
+%\end{definition}
 
     Given $\map_i$, $\map_j$, and $q\in Q_i \cup Q_j$ , let $\map_i(q) = 1$, and $\map_j(q) = 0$. Suppose $\map_i$ is sound, then $\world_Q(q) = 1$, which implies $\map_j$ is not sound. By the same argument, if $\map_j$ is sound, $\map_i$ is not. Each mapping in a set of proposed mappings $\left\{\map_i\right\}_{i\in [N]}$ can only be sound if they are pairwise consistent.
 
