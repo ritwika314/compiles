@@ -11,7 +11,7 @@ using Motion $\label{moddef}$
         Pos target
 
 allwrite:$\label{awvar}$
-    GridMap globalMap
+    GridMap map
 
 #$\mathit{omitting\ initialization}$
 
@@ -23,7 +23,7 @@ local:
 
 NewPoint:$\label{newpt}$
   pre newpoint
-  eff : map $=$ map $\oplus$ globalMap
+  eff : LocalMap $=$ LocalMap $\oplus$ map
         obstacles = findObs(localMap)
         Motion.path $=$ find_path(pickFrontierPos(
                               localMap, Motion.pos), obstacles)
@@ -41,6 +41,6 @@ LUpdate:$\label{lup}$
 GUpdate: $\label{gup}$
   pre Motion.reached
   eff: atomic:
-           globalMap $=$ globalMap $\oplus$ map
+           map $=$ map $\oplus$ LocalMap
         newpoint $=$ True
         update $=$ False
