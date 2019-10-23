@@ -47,8 +47,10 @@ In this section, we present the formal definition of the distributed mapping pro
 $\mathbb{R}, \mathbb{Q},\mathbb{N}$, and $\mathbb{B}$ denote the sets of real, rational, natural, and boolean numbers.
 For any $N \in \mathbb{N}$, $[N]$ is the set $\{1,2,\ldots,N\}$.
 %
-Given any function $f:A \rightarrow S$ and a subset $A' \subseteq A$, 
-    the restriction of $f$ to $A'$, written as $f \lceil A'$, is the function $g:A' \rightarrow S$ such that for all $a \in A'$, $g(a) = f(a)$.
+Given any function $f:A \rightarrow S$, we denote the {\em domain\/} of $s$ as $\domain(f) = A$.
+%
+Given a subset $A' \subseteq \domain(f)$, 
+    the restriction of $f$ to $A'$, is written as $f \lceil A'$, and it is defined as the function $g:A' \rightarrow S$ such that for all $a \in A'$, $g(a) = f(a)$.
 
 \paragraph{Mapping problem.}
 The mapping problem is defined in terms of the following parameters.
@@ -85,18 +87,17 @@ $$\world_Q(q) = \begin{cases}
 $$
 %
 
-For each robot $i$, the program variable $\mathit{map}_i$ will ideally store a qunantized restriction of $\world$. That is, the type of this variable will be $\mathit{map}_i: Q' \rightarrow \mathbb{B}$, where $Q' \subseteq Q$. 
+For each robot $i$, the program variable $\mathit{map}_i$ will ideally store a qunantized restriction of $\world$. That is, the type of this variable will be $\mathit{map}_i: Q' \rightarrow \mathbb{B}$, for some $Q' \subseteq Q$. 
 
-Now we can formally state the requirements of the mapping application.
+Now we can formally state the desirable requirements of the mapping application.
 \begin{enumerate}
-	\item Always, each robot's map is a quantized restriction of the ground truth, that is, $\map_i: Q_i \mapsto \mathbb{B}$, where $Q_i\subseteq Q$ and 
-	\item 
+	\item {\em (Individually sound)} Always, each robot's map is a quantized restriction of the ground truth. That is, $\map_i: Q_i \mapsto \mathbb{B}$, where $Q_i\subseteq Q$ and  $\map_i(q) = \world_Q(q)$ for every $q\in Q_i$.
+	\item {\em (Consistent)\/} Always, robot maps are consistent. That is, for any two robots $i,j \in [N]$,   $\map_i(q) = map_j(q)$  for any  $q\in \domain(\map_i)  \cap \domain(map_j)$.
+	\item {\em (Eventual completeness)} Eventually, the constructed maps cover $\world$. That is, for each robot $i\in [N], \domain(\map_i) = Q$.
 \end{enumerate}
 
 
-
-
-\subsection{Sensing}
+\subsection{Assumptions}
 \label{sec:formal:sensing}
 
 \begin{definition}
@@ -120,8 +121,7 @@ We assume that given $\Vec{x} \in q, \forall \Vec{x^\prime} \in q, \sensarea(\Ve
 Having stated the problem, we now define the notion of soundness of a proposed occupancy map.
 \begin{definition}
     \label{soundness}
-    For a robot $i$, a proposed occupancy mapping over $Q_i\subset Q$, given by $\map_i: Q_i \mapsto \left\{-1,0\right\}$ is \emph{sound} if
-     $\world_Q(q) =  \map_i(q) \vee q\notin Q_i$
+   
 \end{definition}
 
 
