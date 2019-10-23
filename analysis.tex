@@ -1,13 +1,11 @@
-
-
 \subsubsection{Approach}
 
 
 \begin{figure}[!htbp]
-\centering
-\includegraphics[width=\linewidth]{figs/map_flowchart.png}
-\caption{Flowchart for a simple solution to 2D distributed mapping problem\vspace{-2mm}}
-\label{fig:flowmap}
+    \centering
+    \includegraphics[width=\linewidth]{figs/map_flowchart.png}
+    \caption{Flowchart for a simple solution to 2D distributed mapping problem\vspace{-2mm}}
+    \label{fig:flowmap}
 \end{figure}
 
 
@@ -22,15 +20,14 @@ A (distributed) system of robots which execute $\lgname$ can be viewed as a nond
 
 
 \noindent
-Given the set of all variables in the $\lgname$ applications is $\Var$, and the set of all values that the variables can take is $\Val$. The state of a robot $i$ is a tuple $$s_i = ( \{M\}, \{cp\}, r), \mbox{ where}$$
+Given the set of all variables in the $\lgname$ applications is $\Var$, and the set of all values that the variables can take is $\Val$. The state of a robot $i$ is a tuple $$s_i = ( M, cp,), \mbox{ where}$$
 \begin{enumerate}
-\item $\{M\} : \Var \mapsto \Val$ is the mapping of all program variables in the application known by the robot to their values.
-\item $\{cp\} : \Var \mapsto \Val$ is the mapping of actuator and sensor variables to their values.
-    \item $r\in \mathbb{Z},r \geq 0$ is the \emph{round} of program execution.
+    \item $M : \Var \mapsto \Val$ is the mapping of all program variables in the application known by the robot to their values.
+    \item $cp : \Var \mapsto \Val$ is the mapping of actuator and sensor variables to their values.
 \end{enumerate}
 The components of the tuple $s_i$ are accessed using the dot $.$ notation, for instance, $s_i.M$, etc. The value of a program variable $v$ at a state $s_i$ is denoted by $s_i.M.v$.
 
-Given an $\lgname$ program with a set of events $E$, the set of states of an agent $S$, we define a transition $\mathit{trans}: S \times E \mapsto 2^S$ as a non-deterministic mapping from a state  to a set of states reached by a robot after a round in which a given event is executed.
+Given an $\lgname$ program with a set of events $E$, the set of states of an agent $S$, we define a transition $\mathit{trans}: S \times E \mapsto 2^S$ as a non-deterministic mapping from a state to a set of states reached by a robot after a round in which a given event is executed.
 
 Having defined the state of the agent, we now analyze the $\lgname$ program shown in \reffig{mapapp}. Given a robot $i$, $s_i.M.\lmap$ represents the \emph{local map} $\map_i$ constructed by each agent. $s_i.M.\gmap$ represents the \emph{global} map $\map$ constructed from the local maps as outlined in \defn{cons}. In implementation, if $\map_i$ is not defined on $q\in Q$, then we set $\lmap[q] = -1$. Consequently, if $\map$ is not defined, we set $\gmap[q] = -1$.
 
@@ -39,19 +36,20 @@ We omit the initialization of the mappings in the presentation of the program in
 
 \paragraph{NewPoint}
 In this event, the robot first updates its value of $s_i.M.\lmap$ from the currently known value of $s_i.M.\gmap$ where the operator $\oplus$ is defined as follows:
- $$\forall q \in Q, f[q] \oplus g[q] = \mathit{Max}(f[q], q[q])$$
+$$\forall q \in Q, f[q] \oplus g[q] = \mathit{Max}(f[q], q[q])$$
 
 Given two sound maps $\lmap$ and $\gmap$, $\lmap \oplus \gmap$ corresponds to a combined map construction as outlined in \defn{cons}, and is sound. The event \emph{NewPoint} doesn't modify $s_i.M.\lmap$ further, and therefore, $\lmap$ remains \emph{sound} during the execution of this event.
 
 \begin{definition}
- We say that $\Vec{x_n}\in D$ is \emph{reachable} from $\Vec{x_0}$ if there is a \emph{path} $p = \Vec{x_0},\Vec{x_1}, \Vec{x_2},\ldots, \Vec{x_n}$ , such that
-\begin{itemize}
-\item $\forall i \in [0..n],\world_Q(\qfunc{\Vec{x_i}}) = 0$
-\item a robot can move from $\Vec{x_i}$ to $\Vec{x_{i+1}}$ for $i \in [0..n]$, while staying within $\qfunc(\Vec{x_i}) \cup \qfunc(\Vec{x_{i+1}})$.
-\end{itemize}
+    We say that $\Vec{x_n}\in D$ is \emph{reachable} from $\Vec{x_0}$ if there is a \emph{path} $p = \Vec{x_0},\Vec{x_1}, \Vec{x_2},\ldots, \Vec{x_n}$ , such that
+    \begin{itemize}
+        \item $\forall i \in [0..n],\world_Q(\qfunc{\Vec{x_i}}) = 0$
+        \item a robot can move from $\Vec{x_i}$ to $\Vec{x_{i+1}}$ for $i \in [0..n]$, while staying within $\qfunc(\Vec{x_i}) \cup \qfunc(\Vec{x_{i+1}})$.
+    \end{itemize}
 \end{definition}
 
-A grid rectangle $q\in Q$ is reachable in general, if $\exists \Vec{x}\in D, q = \qfunc(\Vec{x})$ such that $\Vec{x}$ is reachable from either \begin{inparaenum} [(a)]\item the initial position of a robot, or \item another reachable point $\Vec{x^\prime}\in D$. We denote the reachability of a grid rectangle using a predicate $\mathit{Reach} : Q \mapsto \left\{\mathit{True}, \mathit{False}\right\}$, where $\mathit{Reach}(q) = \mathit{True}$ if its reachable,  $\mathit{False}$ otherwise.
+A grid rectangle $q\in Q$ is reachable in general, if $\exists \Vec{x}\in D, q = \qfunc(\Vec{x})$ such that $\Vec{x}$ is reachable from either \begin{inparaenum} [(a)]
+                                                                                                                                                   \item the initial position of a robot, or \item another reachable point $\Vec{x^\prime}\in D$. We denote the reachability of a grid rectangle using a predicate $\mathit{Reach} : Q \mapsto \left\{\mathit{True}, \mathit{False}\right\}$, where $\mathit{Reach}(q) = \mathit{True}$ if its reachable,  $\mathit{False}$ otherwise.
 \end{inparaenum}
 
 \begin{definition}
@@ -59,25 +57,28 @@ A grid rectangle $q\in Q$ is reachable in general, if $\exists \Vec{x}\in D, q =
     $$ \left\{ q\in Q \mid Reach(q) \wedge \exists q \in \sensarea(\Vec{x}), q \notin \mathit{dom}(\map_i)\right\} $$
 \end{definition}
 
-In the event \emph{NewPoint}, the operation the robot tries to find a path to a point on the \emph{frontier} of $s_i.M.\lmap$. Assume that the planner returns a path if \begin{inparaenum}[(a)]\item the frontier is non-empty [(b)] the grid rectangle picked on the frontier is reachable from the current point \end{inparaenum}. We also constrain the robots to move only on \emph{known} unoccupied grid rectangles, i.e $q\in Q, s_i.M.\lmap[q] = 0$. In implementation, we achieve this by providing all the unknown ($s_i.M.\lmap[q] = -1$) squares as obstacles to the path planner.
+In the event \emph{NewPoint}, the operation the robot tries to find a path to a point on the \emph{frontier} of $s_i.M.\lmap$. Assume that the planner returns a path if \begin{inparaenum}[(a)]
+                                                                                                                                                                             \item the frontier is non-empty [(b)] the grid rectangle picked on the frontier is reachable from the current point
+\end{inparaenum}. We also constrain the robots to move only on \emph{known} unoccupied grid rectangles, i.e $q\in Q, s_i.M.\lmap[q] = 0$. In implementation, we achieve this by providing all the unknown ($s_i.M.\lmap[q] = -1$) squares as obstacles to the path planner.
 
 If the path is empty, then the robot does nothing, and attempts to execute this event in the next round. Otherwise, until the robot finishes traversing the path, the \emph{LUpdate} event is enabled.
 
 \paragraph{LUpdate}
 This event is enabled while the robot is traversing the path computed in \emph{NewPoint}: the robot hasn't finishing traversing the path. i.e given an agent $i$, $s_i.\cp.\mathit{Motion.reached}  = \mathit{False}$. The sensors \emph{Motion.trace} and \emph{Lidar.ldata} are \emph{sampled} sensors, i.e. $\mathit{Motion.trace}: [0,\delta] \mapsto \mathit{Pos}$, where $\delta$ is the duration of a \emph{round}. $s_i.\cp.\mathit{Motion.trace}$ is therefore a set of $M$ tuples $\{(t_i, p_i)\}_{i \in [M]}$ where $p_i$ is the position of the robot at time $t_i$ from the beginning of the round. Similarly, $\mathit{Lidar.ldata} : [0,\delta]\mapsto \mathit{Scan}$ and $s_i.\cp.\mathit{Lidar.ldata}$ is a set of $M'$ tuples $\{t_i^\prime, l_i^\prime\}_{i^\prime \in M^\prime}$ where $l_i^\prime$ is the LIDAR \emph{scan} at time $t_i^\prime$. The sampling frequencies of these sensors may be different, hence the potentially different number of readings, and potentially different timestamps of the readings. The function $\mathit{tSync}$ is used to \emph{synchronize} the readings, where we compute a mapping $\mathit{pScan}: \mathit{Pos} \mapsto \mathit{Scan}$, where $s_i.M.\mathit{pscan}$ is a set of $M^{\prime\prime}$ tuples $\{(p_i^{\prime\prime}, l_i^{\prime\prime})\}_{i^{\prime\prime} \in M ^{\prime\prime}}$, where  $(p, l) \in s_i.M.\mathit{pscan}$ if given $\epsilon > 0$,  $(t,p) \in s_i.\cp.\mathit{Motion.trace}, (t^\prime,l )\in s_i.\cp.\mathit{Lidar.ldata}, |t - t^\prime| \leq \epsilon$.
 
-Given a small enough $\epsilon$, we can assume that we get a synchronized set of LIDAR scans at intermediate positions observed during each round while the robot is traversing the path.  The function $\mathit{scanToMap}: \mathit{Scan} \times \mathit{Pos}\mapsto \mathit{GridMap}$, given a position $p_i$ and its corresponding scan $l_i$, computes $\sensfunc$ in $\sensarea(\qfunc(p_i))$, and by definition, returns a \emph{sound} mapping. We stated earlier that the operator $\oplus$ applied to two sound mappings returns a sound mapping. Therefore, given $s_i^\prime$ such that $s_i^\prime.r = s_i.r + 1$, and $\mathit{s_i^\prime \in \mathit{trans}(s_i,\mathit{LUpdate})}$,  $s_i^\prime.M.\lmap$ is sound if $s_i.M.\lmap$ is sound.
+Given a small enough $\epsilon$, we can assume that we get a synchronized set of LIDAR scans at intermediate positions observed during each round while the robot is traversing the path. The function $\mathit{scanToMap}: \mathit{Scan} \times \mathit{Pos}\mapsto \mathit{GridMap}$, given a position $p_i$ and its corresponding scan $l_i$, computes $\sensfunc$ in $\sensarea(\qfunc(p_i))$, and by definition, returns a \emph{sound} mapping. We stated earlier that the operator $\oplus$ applied to two sound mappings returns a sound mapping. Therefore, given $s_i^\prime$ such that $s_i^\prime.r = s_i.r + 1$, and $\mathit{s_i^\prime \in \mathit{trans}(s_i,\mathit{LUpdate})}$,  $s_i^\prime.M.\lmap$ is sound if $s_i.M.\lmap$ is sound.
 
 Once the robot finishes traversing the path picked in \emph{NewPoint}, the \emph{GUpdate} event is enabled.
 
 
- In the $GUpdate$ event, robot attempts to \emph{atomically} or in a mutually exclusive manner, update the value of $s_i.M.\gmap$ with  $s_i.M.\lmap$. Given that $\oplus$ preserves soundness, again, that given $s_i^\prime$ such that $s_i^\prime.r = s_i.r + 1$, and $\mathit{s_i^\prime \in \mathit{trans}(s_i,\mathit{GUpdate})}$,  $s_i^\prime.M.\gmap$ is sound if $s_i.M.\gmap$ and $s_i.M.\lmap$ are sound.
+In the $GUpdate$ event, robot attempts to \emph{atomically} or in a mutually exclusive manner, update the value of $s_i.M.\gmap$ with  $s_i.M.\lmap$. Given that $\oplus$ preserves soundness, again, that given $s_i^\prime$ such that $s_i^\prime.r = s_i.r + 1$, and $\mathit{s_i^\prime \in \mathit{trans}(s_i,\mathit{GUpdate})}$,  $s_i^\prime.M.\gmap$ is sound if $s_i.M.\gmap$ and $s_i.M.\lmap$ are sound.
 
 \begin{theorem}
     For the system of robots $[N]$ executing the $\lgname$ program shown in \reffig{mapapp}, the shared variable $\gmap$ represents a sound mapping of the domain $Q$.
 \end{theorem}
 
 \begin{proof}
+
 
 \end{proof}
 %\begin{lemma}
