@@ -59,7 +59,7 @@ A grid rectangle $q\in Q$ is reachable in general, if $\exists \Vec{x}\in D, q =
 
 In the event \emph{NewPoint}, the planner associated with the robot tries to find a path to a point on the \emph{frontier} of $s_i.M.\lmap$. Assume that the planner returns a path if \begin{inparaenum}[(a)]
                                                                                                                                                                              \item the frontier is non-empty [(b)] the grid rectangle picked on the frontier is reachable from the current point
-\end{inparaenum}. We also constrain the robots to move only on \emph{known} unoccupied grid rectangles, i.e $q\in Q, s_i.M.\lmap[q] = 0$. In implementation, we achieve this by providing all the unknown ($s_i.M.\lmap[q] = -1$) squares as obstacles to the path planner.
+\end{inparaenum}. We also constrain the robots to move only on \emph{known} unoccupied grid rectangles, i.e $q\in Q, s_i.M.\lmap[q] = 0$. In implementation, we achieve this by providing all the unknown ($s_i.M.\lmap[q] = -1$) grid rectangles as obstacles to the path planner.
 
 If the path is empty, then the robot does nothing, and attempts to execute this event in the next round. Otherwise, until the robot finishes traversing the path, the \emph{LUpdate} event is enabled.
 
