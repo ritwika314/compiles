@@ -52,10 +52,10 @@ $\lgname$ provides \emph{shared} variables to allow robots within a system to co
 
  The program and the controller interact with each other through \emph{sensor} and \emph{actuator} ports. A $\lgname$ program can have multiple \emph{modules} providing different sensor and actuator ports. The program reads the sensor ports, reads and writes to program variables, and writes to actuator ports. The actuator ports of different modules can be used to provide input to the controller, which drives the underlying physical plant. In $\dmap$, there are two modules \emph{Motion} and \emph{Lidar} which provide interfaces to different sensors and actuators on the robot. The $\mathit{Lidar.ldata}$ sensor module is used to read the LIDAR scan of the actual robot. In the \emph{NewPoint} event, the controller driving the robot directs it along a path set at the actuator port $\mathit{Motion.path}$. The sensor port $\mathit{Motion.psn}$ gives the position of the robot (in a fixed coordinate system) and $\mathit{Motion.reached}$ indicates whether the controller is active or inactive.
 
+In the design of the $\dmap$ application, we employ the use of \emph{sampled} sensors, which is essentially a sequence of timestamped sensor readings between rounds. The \emph{LUpdate} event can occur while each robot is traversing a path and hasn't reached the final destination, during which the robot uses a sampled sensor reading of the positions $\mathit{Motion.trace}$, of type $\mathit{PosStamped}[]$, which denotes an array of timestamped positions; and a sampled sensor reading of LIDAR scans $\mathit{Lidar.ldata}$ of type $\mathit{ScanStamped}$, which denotes an array of timestamped LIDAR scans. These sampled sensor readings are then synchronized to associate a LIDAR scan with a position.
 
 
-
-
+Mutual exclusion is an essential feature required in a distribtued system with shared variables. The robot updates the shared variable $\gmap$ in the event \emph{GUpdate} using the value of its $\lmap$, which may have been updated with newly detected obstacles
 
 %Also, should
 The robot also has access to two system-level \emph{constant} parameters (a) a unique integer identifier $\myuin$ for itself and (b) a list $\UINS$ of identifiers of all participating robots\footnote{Our current system implementation assumes that the set of possible participating robots is known, but this assumption can be relaxed on a per application basis.}
