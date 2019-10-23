@@ -1,10 +1,19 @@
 \section{Introduction}
 \label{sec:intro}
 
-\subsection{Motivation For Cyphyhouse}
+Programming applications for distributed cyberphysical systems is challenging. 
+Enumerate some of the challenges.
 
-\subsection{Distributed Mapping App}
-Distributed mapping is a well researched problem with several existing, successful approaches towards solving it. There is enormous potential in using autonomous multi-robot systems in enabling coverage of large areas finding applications in reconnaissance, surveillance and monitoring of possibly unkown areas. 
+Brief introduction to CyPhyHouse~\cite{CyPhyhouse:arxiv19}.
+Koord language, simulator.
+Shared variable.
+Little bit about semantics.
+
+
+In this paper, we develop and analyze a new distributed mapping application using CyPhyHouse.
+%
+Define the mapping problem; challenges---sensing, perception,  coordination. Short discussion of previous related work.
+ 
 
 \subsection{Simulation of Multi robot systems}
 %A further source of concern is the gap between the system model with and the executable code that is actually . 
@@ -22,13 +31,23 @@ Distributed mapping is a well researched problem with several existing, successf
 %\label{fig:arch}
 %\end{figure}
 %
-\subsection{Contributions of the paper}
-\begin{itemize}
-    \item Designing a distributed mapping application from first principles and implmentation using Koord, our language.
-    \item Define abstraction for sampled sensing. (refine this) 
-    \item Implement abstraction in Koord middleware.
-    \item Extend CyPhyHouse simulator, with visualization of said abstraction to produce obstacle mapping. 
-\end{itemize}
+\subsection*{Contributions}
+The key contributions of the paper are as follows.
+
+First, we illustrate how a complex distributed mapping application can be programmed using the   CyPhyHouse infrastructure~\cite{CyPhyhouse:arxiv19}. The application program \dmap is X lines of Koord code with a \sayan{handful} external functions. 
+%
+The application program, takes full advantage of the Koord language's features shared memory semantics. Individual robots update their local maps using LIDAR scans, and a \sayan{single line of Koord code} merges the local maps to update the shared global map. 
+\sayan{Similar sentence about path planning and sensing.}
+
+
+Second, the modular structure and semantics of the \dmap application makes it possible to formally reason about its correctness. We illustrate this by proving key correctness and consistency properties of the application, namely that, \sayan{write informally.} 
+%
+An intended useful outcome of this methodology  is a list of formal assumptions for the \sayan{sensors, schedulers, ...}. In the end-to-end safety assurance cases~\cite{} for complex cyber-physical systems, these assumptions  can serve as contracts for sensing devices, drivers, hardware platforms,  and operating system modules that are often outside the control of the application programmer. 
+
+ 
+%Define abstraction for sampled sensing. (refine this) 
+
+Finally, \sayan{experimental evaluation. What did we learn that can generalize beyond this specific application? How did we extend CyPhyHouse capabilities generally?}
 
 
 
