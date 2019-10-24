@@ -18,14 +18,19 @@ The sensors used by a robot for perception of the ground truth around it are \em
     \item  $\mathit{Lidar.ldata} : [0,\delta]\mapsto \mathit{Scan}$. Given a state $\vs\in Q$ , $\forall i \in [N], \vs.\mathit{Lidar.ldata}_i = \{t_j^\prime, l_j^\prime\}_{j^\prime \in M^\prime}$ where $l_j^\prime$ is the LIDAR \emph{scan} at time $t_j^\prime$ from the beginning of the round.
 \end{itemize}
 
-The sampling frequencies of these sensors may be different, hence the potentially different number of readings, and potentially different timestamps of the readings.
+\begin{assumption}
+    Given a point $p_i$, if there is a corresponding lidar scan $l_i$ when the robot is in $\qfunc(p_i)$, then there is a function $\sensfunc$ such that $\forall q\in Q$ such that $q \in \domain(\sensfunc), \sensfunc(q) = \world_Q(q)$.
+\end{assumption}
 
-The function $\mathit{tSync}$ is used to \emph{synchronize} the readings, where we compute a mapping $\mathit{pScan}: \mathit{Pos} \mapsto \mathit{Scan}$, where given a state $\vs\in Q$, a robot $i\in [N]$,  $\vs.\mathit{pscan}_i = \{(p_j^{\prime\prime}, l_j^{\prime\prime})\}_{j^{\prime\prime} \in M ^{\prime\prime}}$, where  $(p, l) \in \vs.\mathit{pscan}_i$ if given $\epsilon > 0$,  $(t,p) \in \vs.\mathit{Motion.trace}, (t^\prime,l )\in \vs.\mathit{Lidar.ldata}_i, |t - t^\prime| \leq \epsilon$.
+$\dom{\sensfunc}$ of a robot is defined as its sensing area.
 
-The function $\mathit{scanToMap}: \mathit{Scan} \times \mathit{Pos}\mapsto \mathit{GridMap}$, given a position $p_i$ and its corresponding scan $l_i$, computes a quantized domain function $\sensfunc$.
+%The sampling frequencies of these sensors may be different, hence the potentially different number of readings, and potentially different timestamps of the readings.
+
+%The function $\mathit{tSync}$ is used to \emph{synchronize} the readings, where we compute a mapping $\mathit{pScan}: \mathit{Pos} \mapsto \mathit{Scan}$, where given a state $\vs\in Q$, a robot $i\in [N]$,  $\vs.\mathit{pscan}_i = \{(p_j^{\prime\prime}, l_j^{\prime\prime})\}_{j^{\prime\prime} \in M ^{\prime\prime}}$, where  $(p, l) \in \vs.\mathit{pscan}_i$ if given $\epsilon > 0$,  $(t,p) \in \vs.\mathit{Motion.trace}, (t^\prime,l )\in \vs.\mathit{Lidar.ldata}_i, |t - t^\prime| \leq \epsilon$.
+
+%The function $\mathit{scanToMap}: \mathit{Scan} \times \mathit{Pos}\mapsto \mathit{GridMap}$, given a position $p_i$ and its corresponding scan $l_i$, computes a quantized domain function $\sensfunc$ for .
 
 %By definition, this returns a \emph{sound} mapping. We stated earlier that the operator $\oplus$ applied to two sound mappings returns a sound mapping. Therefore, given $s_i^\prime$ such that $\mathit{s_i^\prime \in \mathit{trans}(s_i,\mathit{LUpdate})}$,  $s_i^\prime.M.\lmap$ is sound if $s_i.M.\lmap$ is sound.
-
 
 
 \begin{definition}
