@@ -31,13 +31,14 @@ NewPoint:$\label{newpt}$
            newpoint $=$ True
         else:
            newpoint $=$ False
+        $\lmap $ = map
 
 LUpdate:$\label{lup}$
    pre not (newpoint || Motion.reached )
-   eff :  $\lmap $ = map
+   eff :
           pscan $=$ tSync(Motion.trace, Lidar.ldata)
          for pos, scan in pscan:
-             $\lmap$ $=$ merge(lmap,scanToMap(pos, scan))
+             $\lmap$ $=$ merge(\lmap,scanToMap(pos, scan))
 
 GUpdate: $\label{gup}$
   pre Motion.reached
