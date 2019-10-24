@@ -1,43 +1,25 @@
-\subsection{\dmap Application}
-
-
-%\begin{figure}[!htbp]
-%    \centering
-%    \includegraphics[width=\linewidth]{figs/map_flowchart.png}
-%    \caption{Flowchart for a simple solution to 2D distributed mapping problem\vspace{-2mm}}
-%    \label{fig:flowmap}
-%\end{figure}
-
-
-
-We discuss now discuss how our algorithm implemented $\lgname$ shown in \reffig{mapapp} tackles $\mapprob$. \reffig{flowmap} shows a simple idea for solving this problem for each robot:
-
-The variable $\lmap$ refers to the current mapping $\map_i$ constructed by each robot $i$ using the algorithm. The function $\mathit{MaxExp}$ informally, determines whether there is a grid rectangle in the frontier of the current $\map_i$ . If not, the robot first updates its $\lmap$ from $\gmap$, which is used for sharing the currently computed occupancy maps by all robots so far. The robot then picks a new point in a rectangle known to be unoccupied in its $\lmap$ and follows a path ($\mathit{Motion.Path}$) moving only over grid rectangles known to be unoccupied by its $\lmap$. While the robot hasn't reached the target rectangle, it keeps updating its $\lmap$ with sensed data (occupied and unoccupied rectangles). When it reaches the target, it updates the $\gmap$ from its $\lmap$.
-
-\sayan{Assumption about 
- \emph{rounds} of duration $\delta$, and in each round, each robot performs an action, which is expressed in $\lgname$ as an event.}
 
 
 \subsection{Analysis of \dmap}
 \label{sec:analysis}
 
 
-Introduce the name of the state machine for \dmap as $\A$. 
-
-Having defined the state of the robot, we now analyze the $\lgname$ program shown in \reffig{mapapp}. Given a robot $i$, ${\bf s}.\lmap_i$ represents the \emph{local} map, $\map_i$ constructed by each robot. $s_i.M.\gmap$ represents the \emph{global} map, $\map$ constructed from the local maps as outlined in \defn{cons}. In implementation, if $\map_i$ is not defined on $q\in Q$, then we set $\lmap[q] = -1$. Consequently, if $\map$ is not defined, we set $\gmap[q] = -1$.
 
 % initial states of $\A$. 
-We omit the initialization of the mappings in the presentation of the program in \reffig{mapapp}. From our assumption on the initial conditions discussed in \refsect{prelims}, for each robot $i$, its initial state $s_i$, $s_i.M.\lmap[q_0] = 0$ where $q_0\in Q$ is the grid rectangle the robot starts in. We also assumed that $\sensarea(q_0)\neq \phi$, and assume that $s_i.M.\lmap(q) = \sensfunc(\sensarea(q))$ . $s_i.M.\gmap$ is initialized as $s_i.M.\gmap[q] = -1$ for all $q\in Q$. Thus, for an initial state $s_i$, both $s_i.M.\lmap$ and $s_i.M.\gmap$ are sound mappings.
 
-The individual soundness requirement of the mapping problem is then captured by the following invariant of $\A$. 
+
+The individual soundness requirement of the mapping problem is then captured by the following invariant of $\A$. The variable $\gmap$ captures.
 \begin{invariant}
 \label{inv:ind-sound}
-For all $i \in [N]$ ... 	
+For all $i \in [N]$,  $\vs\in Q, \vs$
 \end{invariant}
 
+We omit the initialization of the mappings in the presentation of the program in \reffig{mapapp}. From our assumption on the initial conditions discussed in \refsect{prelims}, for each robot $i$, its initial state $s_i$, $s_i.M.\lmap[q_0] = 0$ where $q_0\in Q$ is the grid rectangle the robot starts in. We also assumed that $\sensarea(q_0)\neq \phi$, and assume that $s_i.M.\lmap(q) = \sensfunc(\sensarea(q))$ . $s_i.M.\gmap$ is initialized as $s_i.M.\gmap[q] = -1$ for all $q\in Q$. Thus, for an initial state $s_i$, both $s_i.M.\lmap$ and $s_i.M.\gmap$ are sound mappings.
+
+The consistency requirement of the mapping problem is captured by the following invariant of $\A$
 \begin{invariant}
 \label{inv:consistency}
-For all $i \in [N]$ ... 	
+For all $i \in [N]$
 \end{invariant}
 
     Given $\map_i$, $\map_j$, and $q\in Q_i \cup Q_j$ , let $\map_i(q) = 1$, and $\map_j(q) = 0$. Suppose $\map_i$ is sound, then $\world_Q(q) = 1$, which implies $\map_j$ is not sound. By the same argument, if $\map_j$ is sound, $\map_i$ is not. Each mapping in a set of proposed mappings $\left\{\map_i\right\}_{i\in [N]}$ can only be sound if they are pairwise consistent.

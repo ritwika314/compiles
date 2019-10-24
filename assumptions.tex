@@ -23,7 +23,7 @@ The sensors used by a robot for perception of the ground truth around it are \em
 \end{assumption}
 
 $\domain(\sensfunc)$ of a robot is defined as its sensing area. This assumption is required to ensure the \emph{Individual soundess} of a mapping updated using LIDAR scan information.
-\fTBD{\rg{Need to figure out how to write the assumptions so that the sensor and actuator ports don't do unexpected things during \delta transitions}}
+\fTBD{\rg{Need to figure out how to write the assumptions so that the sensor and actuator ports don't do unexpected things during $\delta$ transitions}}
 %The sampling frequencies of these sensors may be different, hence the potentially different number of readings, and potentially different timestamps of the readings.
 
 %The function $\mathit{tSync}$ is used to \emph{synchronize} the readings, where we compute a mapping $\mathit{pScan}: \mathit{Pos} \mapsto \mathit{Scan}$, where given a state $\vs\in Q$, a robot $i\in [N]$,  $\vs.\mathit{pscan}_i = \{(p_j^{\prime\prime}, l_j^{\prime\prime})\}_{j^{\prime\prime} \in M ^{\prime\prime}}$, where  $(p, l) \in \vs.\mathit{pscan}_i$ if given $\epsilon > 0$,  $(t,p) \in \vs.\mathit{Motion.trace}, (t^\prime,l )\in \vs.\mathit{Lidar.ldata}_i, |t - t^\prime| \leq \epsilon$.
