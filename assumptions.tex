@@ -87,9 +87,9 @@ The following are the timing assumptions on $\lgname$ programs.
 \end{assumption}
 This assumption is reasonable if the time taken to complete a program transition step is negligible compared to $\delta$.  The $\lgname$ middleware ensures that the participating agents begin executing their events synchronously.
 
-\begin{assumption} Shared memory updates are propagated to all agents instantanously.
+\begin{assumption} Shared memory updates are propagated to all agents \sayan{within one round\/}.
 \end{assumption}
-The $\lgname$ middleware uses message passing to implement shared memory, and compared to $\delta$, the time taken to observe a shared memory update as a received message from the time that it is sent is much smaller. We therefore can assume that in this setting, the shared memory semantics of $\lgname$ wherein an update is visible in the next round of program transitions, is a reasonable implementation deliverable. This assumption in this particular example, is required for \emph{Eventual Completeness}, but in other applications, it may be used to correctness.
+The $\lgname$ middleware uses message passing to implement shared memory, and compared to $\delta$, the time taken to observe a shared memory update as a received message from the time that it is sent is much smaller. We therefore can assume that in this setting, the shared memory semantics of $\lgname$ wherein an update is visible in the next round of program transitions, is a reasonable implementation deliverable. This assumption in this particular example, is required for \emph{Eventual Completeness}, but in other applications, it may be used for correctness.
 %$\marginpar{\scriptsize\sayan{MAke this a list of {\bf Assumptions} with discussion on why they hold, or what they mean in English.}}
 
 
