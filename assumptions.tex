@@ -19,7 +19,8 @@ The sensors used by a robot for perception of the ground truth around it are \em
 \end{itemize}
 
 \begin{assumption}
-    Given a point $p_i$, if there is a corresponding lidar scan $l_i$ when the robot is in $\qfunc(p_i)$, then there is a function $\sensfunc$ such that $\forall q \in \domain(\sensfunc), \sensfunc(q) = \world_Q(q)$.
+    \label{maptoscan}
+    Given a point $p_i$, if there is a corresponding LIDAR scan $l_i$ when the robot is in $\qfunc(p_i)$, then there is a function $\sensfunc$ such that $\forall q \in \domain(\sensfunc), \sensfunc(q) = \world_Q(q)$.
 \end{assumption}
 
 This assumption is required to ensure the \emph{Individual soundess} of a mapping updated using LIDAR scan information.$\domain(\sensfunc)$ of a robot is defined as its sensing area.
@@ -53,8 +54,9 @@ $\forall i \in [N], \world_Q(q^0_i) = 0\wedge \sensarea(q^0_i) \neq \phi$
 where $q^0_i = \qfunc(\pos_0(i))$, and $\pos_0(i)$ denotes the initial position of robot $i$.
 \end{assumption}
 
-We also assume that the initialization of the $\lmap$ variable for each robot is \emph{sound}, and $\gmap$ is initially an empty mapping.
 \begin{assumption}
+The initialization of the $\lmap$ variable for each robot is \emph{sound}, and $\gmap$ is initially an empty mapping. That is,
+
     \label{initval}
 \begin{itemize}\item   $\forall \vs \in C_0, \forall i \in [N], \forall q \in \sensarea(q^0_i), \vs.\lmap_i(q) = \sensfunc(q)$ ,
     \item $\forall \vs \in C_0, \forall i \in [N], \vs.\gmap = \phi$

@@ -50,6 +50,12 @@ Now suppose that \inv{consistency} is not preserved, i.e. there are robots  $i, 
 \paragraph{LUpdate}
 Again, for every robot $i$, $\vs.\gmap_i = \vs'.\gmap_i$. Thus, this event trivially preserves \inv{sound}.
 
+
+let $\vs.\mathit{Motion.trace}_i = \{(t_j, p_j)\}_{j \in [M]}$ where $p_j$ is the position of the robot $i$ at time $t_j$ from the beginning of the round and  $\vs.\mathit{Lidar.ldata}_i = \{t_j^\prime, l_j^\prime\}_{j^\prime \in M^\prime}$ where $l_j^\prime$ is the LIDAR scan at time $t_j^\prime$ from the beginning of the round.
+
+The function $\mathit{tSync}$ is used to \emph{synchronize} the readings, where we compute a mapping $\mathit{pScan}: \mathit{Pos} \mapsto \mathit{Scan}$, where given a state $\vs\in Q$, a robot $i\in [N]$,  $\vs.\mathit{pscan}_i = \{(p_j^{\prime\prime}, l_j^{\prime\prime})\}_{j^{\prime\prime} \in M ^{\prime\prime}}$, where  $(p, l) \in \vs.\mathit{pscan}_i$ if given $\epsilon > 0$,  $(t,p) \in \vs.\mathit{Motion.trace}, (t^\prime,l )\in \vs.\mathit{Lidar.ldata}_i, |t - t^\prime| \leq \epsilon$.
+
+The function $\mathit{scanToMap}$ is the same one discussed in \asum{maptoscan}, and it returns a \emph{sound} map by definition. This combined with the fact that $\vs.\lmap_i$ is sound by the induction hypothesis, $\vs'.\lmap_i$ is also sound, thus preserving \inv{ind-sound}.
 As before, we can prove as that since \emph{LUpdate} preserves \inv{ind-sound}, it also preserves \inv{consistency}.
 
 \paragraph{GUpdate}
@@ -93,6 +99,10 @@ Since for every robot $i$, $\vs.\lmap_i$ and $\vs.\gmap_i$ are sound, by definit
 \begin{theorem}
     For the system of robots $[N]$ executing the $\lgname$ program shown in \reffig{mapapp}, the shared variable $\gmap$ represents a sound mapping of the domain $Q$.
 \end{theorem}
+
+\begin{proof}
+
+\end{proof}
 
 %\begin{lemma}
 %    \label{ext}
