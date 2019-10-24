@@ -29,7 +29,6 @@ The frequency of the synchronized data is then limited to the sensor with the lo
 In our simulation, the lowest frequency is 100 Hz for sensing the vehicle position and sufficient for updating the map.
 
 The Lidar scan data provided in the tool chain are pairs of a distance to obstacles and an angle with respect to the heading angle of the vehicle.
-For simplicity, we configure the vehicles so that they do not detect each other as obstacles.
 To implement \ScanToMap, it is then straightforward to compute the positions of obstacles and mark occupied grid rectangles,
 and to mark a rectangle obstacle free is to simply check if all four corners of a grid rectangle are covered in the scan.
 The time difference $\epsilon$ however can introduce an error between real and perceived distances to obstacles.
@@ -57,8 +56,15 @@ To compare across different numbers of vehicles more easily,
 we ensure that all unoccupied rectangles are connected in each map,
 so every car can explore the whole map.
 Each car is equipped with a Lidar providing each scan with radius 2.5m and angles from $-\pi$ to $\pi$.
+For simplicity, we configure the Lidars so that they do not detect other cars as obstacles.
 The maximum speed of all cars is set to 3m/s.
 For each map, we run three simulations with 2, 3, or 4 cars for 20 minutes of simulation time.
 Our simulation is run on a computer with 8 Intel Core i7-6700HQ @ 2.60GHz CPU cores, 16 GB main memory, and a GeForce GTX 970M GPU.
+
+
+\begin{figure}
+\includegraphics[width=0.3\textwidth]{figs/fig-empty-map.png}
+\caption{Empty map. Blue: 2 cars, Orange: 3 cars, Green: 4 cars}
+\end{figure}
 
 The result is show in Table~\ref{}.
