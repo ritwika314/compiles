@@ -8,8 +8,6 @@ In this section, we present an analysis of the $\lgname$ program for the mapping
 % initial states of $\A$.
 
 
-
-
 Consider a state $\vs\in \Reach(\A)$. For $\vs$, the individual soundness, and the soundness requirements of the mapping problem are captured by the following invariants of $\A$ respectively.
 
 
@@ -33,7 +31,6 @@ We omitted the initialization of the mappings in the presentation of the program
 
 
 Given $\map_i$, $\map_j$, and $q\in Q_i \cup Q_j$ , let $\map_i(q) = 1$, and $\map_j(q) = 0$. Suppose $\map_i$ is sound, then $\world_Q(q) = 1$, which implies $\map_j$ is not sound. By the same argument, if $\map_j$ is sound, $\map_i$ is not. This implies that $\vs\in C$ has individual soundness only if it also has consistency. Therefore, given $\vs\in C_0$, it satisfies \inv{consistency}.
-
 
 Suppose, a state of a system $\vs\in C$ satisfies \inv{sound}, \inv{ind-sound} and \inv{consistency} , we now prove that given a transition $(\vs, a, \vs')\in \D$, $\vs'$ also satisfies them. Since these statements are only about \emph{program} variables, $\delta$-transitions don't affect them. Hence, we only need to prove that each event transition preserves these invariants.
 
@@ -59,7 +56,7 @@ The function $\mathit{scanToMap}$ is the same one discussed in \asum{maptoscan},
 As before, we can prove as that since \emph{LUpdate} preserves \inv{ind-sound}, it also preserves \inv{consistency}.
 
 \paragraph{GUpdate}
-Since for every robot $i$, $\vs.\lmap_i$ and $\vs.\gmap_i$ are sound, by definition of \emph{merge},  $\vs'.\gmap_i$ is also sound. Therefore, this event preserves \inv{sound}. \emph{GUpdate} preserves \inv{ind-sound} trivially as it doesn't modify $\vs.\lmap_i$, and as a result, it also preserves \inv{consistency}.
+Since $\mathit{\gmap}$ is updated using the keyword \emph{atomic}, only one agent $i\in [N]$ writes to the shared variable $\gmap$.  $\vs.\lmap_i$ and $\vs.\gmap_i$ are sound, by definition of \emph{merge}, $\vs'.\gmap_i$ is also sound. By \asum{shared}, the same value is propagated to all other agents, meaning $\forall j \in [N], \vs'.\gmap_j$ is sound as well. Therefore, this event preserves \inv{sound}. \emph{GUpdate} preserves \inv{ind-sound} trivially as it doesn't modify $\vs.\lmap_i$, and as a result, it also preserves \inv{consistency}.
 
 
 %\begin{lemma}
@@ -96,13 +93,8 @@ Since for every robot $i$, $\vs.\lmap_i$ and $\vs.\gmap_i$ are sound, by definit
 %\end{definition}
 
 
-\begin{theorem}
-    For the system of robots $[N]$ executing the $\lgname$ program shown in \reffig{mapapp}, the shared variable $\gmap$ represents a sound mapping of the domain $Q$.
-\end{theorem}
 
-\begin{proof}
 
-\end{proof}
 
 %\begin{lemma}
 %    \label{ext}
