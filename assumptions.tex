@@ -1,142 +1,99 @@
-\section{Formal modeling and analysis}
-\label{sec:formal}
-In this section, we present the formal definition of the distributed mapping problem. Then we develop a state machine model of the \dmap application executing in the physical environment, and finally, using this model we show that the it meet the key requirements of the mapping problem. One of the outcomes of this analysis is the identification of a list of precise
- assumptions of sensors, CyPhyHouse middleware implementation, quantization, and \sayan{fill in}, that need to be checked separately for obtaining end-to-end, system-level guaranteed.
-
-\subsection{Formal definition of mapping problem}
-\label{sec:prelims}
-
-\begin{figure*}[t]
-\newcommand{\grid}[2]{\ensuremath{\langle#1,#2\rangle}}
-
-\tikzstyle{grid map} = [
-scale=0.4,
-every node/.style = {font=\scriptsize,align=center},
-]
-
-\input{figs/quantized-map.tex}
-\input{figs/consistent-map.tex}
-
-\caption{$D = [0.0,10.0]^2 \subset \mathbb{R}^2$, $Q=\{0.5, \cdots, 9.5\}^2 \subset \mathbb{Q}^2$, for example, $\world_Q(\grid{5.5}{0.5}) = 0$ and $\world_Q(\grid{6.5}{0.5}) = 1$}
-\end{figure*}
-
-\paragraph{Notations.}
-$\mathbb{R}, \mathbb{Q},\mathbb{N}$, and $\mathbb{B}$ denote the sets of real, rational, natural, and boolean numbers.
-For any $N \in \mathbb{N}$, $[N]$ is the set $\{1,2,\ldots,N\}$.
-%
-Given any function $f:A \rightarrow S$, we denote the {\em domain\/} of $s$ as $\domain(f) = A$.
-%
-Given a subset $A' \subseteq \domain(f)$, 
-    the restriction of $f$ to $A'$, is written as $f \lceil A'$, and it is defined as the function $g:A' \rightarrow S$ such that for all $a \in A'$, $g(a) = f(a)$.
-
-\paragraph{Mapping problem.}
-The mapping problem is defined in terms of the following parameters.
-\begin{enumerate}
-	\item A positive integer $N$ which is the number of participating robotxs or robots. We will assume that the number and identity of robotxs is known. foe convenience, here we assume that the robots have unique identifiers from the set $[N]$.
-	\item A domain $D$ which is bounded rectangle $[a_1,a_2]\times [b_1,b_2]$ in $\mathbb{R}^2$ corresponding to the physical arena.
-	\item A \emph{ground truth} function $\world : D\mapsto \left\{0,1\right\}$ that gives the actual  occupancy of obstacles in this arena. That is, $\forall \Vec{x} \in D$, 
-\begin{align}
-\world(\Vec{x}) = 
-		\left\{
-		\begin{array}{ll}
-			1 & \mathit{if}\ \Vec{x} \ \mathit{is \ occupied}\\
-			0 & \mathit{otherwise}.
-		\end{array}
-		\right.
-\end{align}
-	\item A set $\qdom \subseteq D \cap \mathbb{Q}^2$ which is a quantized representation of $D$.
-	\item A Koord program variable, let us call it $\mathit{map}_i$, for each robot $i \in [N]$, that stores the $\qdom$-quantized, shared map.
-\end{enumerate}
-%%
-%%
-For the sake of specificity, we assume that $\qdom$ is a $(n_x\times n_y)$-grid representation of $D$ for some resolution constants $n_x,n_y \in \mathbb{N}$. That is, $\qdom = \{q_{ij} \in \mathbb{Q}^2\}_{i\in [1..n_x], j\in [1..n_y]}$ such that every $q_{ij}$ uniquely represents a disjoint $[x_i, x_{i+1}] \times [y_j, y_{j+1}]$ in $D$.
-%
-%\begin{definition}
-    The \emph{quantization function}  $\qfunc:D \mapsto \qdom$ maps points in $D$ to their quantized versions. That is $\qfunc(\Vec{x}) = q_{ij}$ iff $\Vec{x} \in [x_i, x_{i+1}] \times [y_j, y_{j+1}]$.
-The inverse is defined accordingly: $\qinv(q_{ij}) =  [x_i, x_{i+1}] \times [y_j, y_{j+1}]$ for any $q_{ij} \in Q$. 
-%\end{definition}
-%
-The quantization defines a quantized version of the world $\world_Q : \qdom \mapsto \left\{0,1\right\}$, where
-$$\world_Q(q) = \begin{cases}
-        1\ \Leftrightarrow \exists \Vec{x}\in \qinv(q), \world(\Vec{x}) = 1, \\
-        0\ \mbox{otherwise}.
-\end{cases}
-$$
-%
-
-For each robot $i$, the program variable $\mathit{map}_i$ will ideally store a qunantized restriction of $\world$. That is, the type of this variable will be $\mathit{map}_i: Q' \rightarrow \mathbb{B}$, for some $Q' \subseteq Q$. 
-%
-Finally, we will assume that each robot $i$ occupies space within the arena $D$ and it's position is available from a sensor port $\mathit{pos}_i$ which takes values in $D$. 
-
-Now we can formally state the desirable requirements of the mapping application.
-\begin{enumerate}
-	\item {\em (Individually sound)} Always, each robot's map is a quantized restriction of the ground truth. That is, $\map_i: Q_i \mapsto \mathbb{B}$, where $Q_i\subseteq Q$ and  $\map_i(q) = \world_Q(q)$ for every $q\in Q_i$.
-	\item {\em (Consistent)\/} Always, robot maps are consistent. That is, for any two robots $i,j \in [N]$,   $\map_i(q) = map_j(q)$  for any  $q\in \domain(\map_i)  \cap \domain(map_j)$.
-	\item {\em (Safe location)\/} Always, each robot is located in a part of the arena that is known to be free. 
-	%That is, for any  $i \in [N]$,   $\pos_i \in  = map_j(q)$  for any  $q\in \domain(\map_i)  \cap \domain(map_j)$.
-
-	\item {\em (Eventual completeness)} Eventually, the constructed maps cover $\world$. That is, for each robot $i\in [N], \domain(\map_i) = Q$.
-\end{enumerate}
-
-\marginpar{\scriptsize\sayan{Say that we will prove 1,2 and why 3 is in general hard world may be partitioned. Path planning might hard. Quantization may be too coarse for finding safe paths...}}
-
 \subsection{Assumptions}
 \label{sec:formal:sensing}
 
+The formal semantics of $\lgname$ is defined under certain timing and system information assumptions. Additionally, given that the application involves interaction with physical plants, we formally state several assumptions about low-level sensing concerns which are abstracted away by $\lgname$.
 
 \subsubsection{Perception}
 
-\subsubsection{Planning and actuation}
 
-\subsubsection{Running time of Koord programs}
+ % $\map_i(q) = 1$ indicates that according to robot $i$, there is an obstacle in $q$, $\map_i(q) = 0$ indicates that according to robot $i$, $q$ is unoccupied, and $\map_i(q) = -1$ indicates that robot $i$ doesn't have information about $q$.
 
-\marginpar{\scriptsize\sayan{MAke this a list of {\bf Assumptions} with discussion on why they hold, or what they mean in English.}}
+%We assume that given $\Vec{x} \in q, \forall \Vec{x^\prime} \in q, \sensarea(\Vec{x}) \subseteq \sensarea(\Vec{x^\prime})$.
+
+
+The sensors used by a robot for perception of the ground truth around it are \emph{Motion.trace} and \emph{Lidar.ldata}, which are \emph{sampled} sensors. Given that $\delta$ is the duration of a \emph{round},
+
+\begin{itemize}
+    \item $\mathit{Motion.trace}: [0,\delta] \mapsto \mathit{Pos}$. Given a state $\vs\in Q$ ,  $\forall i \in [N]\vs.\mathit{Motion.trace}_i = \{(t_j, p_j)\}_{j \in [M]}$ where $p_j$ is the position of the robot $i$ at time $t_j$ from the beginning of the round.
+    \item  $\mathit{Lidar.ldata} : [0,\delta]\mapsto \mathit{Scan}$. Given a state $\vs\in Q$ , $\forall i \in [N], \vs.\mathit{Lidar.ldata}_i = \{t_j^\prime, l_j^\prime\}_{j^\prime \in M^\prime}$ where $l_j^\prime$ is the LIDAR \emph{scan} at time $t_j^\prime$ from the beginning of the round.
+\end{itemize}
+
+The sampling frequencies of these sensors may be different, hence the potentially different number of readings, and potentially different timestamps of the readings.
+
+The function $\mathit{tSync}$ is used to \emph{synchronize} the readings, where we compute a mapping $\mathit{pScan}: \mathit{Pos} \mapsto \mathit{Scan}$, where given a state $\vs\in Q$, a robot $i\in [N]$,  $\vs.\mathit{pscan}_i = \{(p_j^{\prime\prime}, l_j^{\prime\prime})\}_{j^{\prime\prime} \in M ^{\prime\prime}}$, where  $(p, l) \in \vs.\mathit{pscan}_i$ if given $\epsilon > 0$,  $(t,p) \in \vs.\mathit{Motion.trace}, (t^\prime,l )\in \vs.\mathit{Lidar.ldata}_i, |t - t^\prime| \leq \epsilon$.
+
+The function $\mathit{scanToMap}: \mathit{Scan} \times \mathit{Pos}\mapsto \mathit{GridMap}$, given a position $p_i$ and its corresponding scan $l_i$, computes a quantized domain function $\sensfunc$.
+
+%By definition, this returns a \emph{sound} mapping. We stated earlier that the operator $\oplus$ applied to two sound mappings returns a sound mapping. Therefore, given $s_i^\prime$ such that $\mathit{s_i^\prime \in \mathit{trans}(s_i,\mathit{LUpdate})}$,  $s_i^\prime.M.\lmap$ is sound if $s_i.M.\lmap$ is sound.
+
+
 
 \begin{definition}
-   Given a robot at a position $\Vec{x}\in D, \qfunc{\Vec{x}} = q$, we define the \emph{sensing area} of $q$ follows: $\sensarea: Q \mapsto 2^{Q}$, such that  $\forall q^\prime \in \sensarea(q), \sensfunc(q) = \world_Q(q)$.  
+   Given a robot at a position $\Vec{x}\in D, \qfunc{\Vec{x}} = q$, the \emph{sensing area} around $q$ is a function $\sensarea: Q \mapsto 2^{Q}$ where $\forall q^\prime \in \sensarea(q), \sensfunc(q) = \world_Q(q)$.
 \end{definition}
 
+%\fTBD{define the data types in the software section}
 
 
-
-Let $\map_i:Q\mapsto \left\{-1,0\right\}$ denote a \qdfunc \emph{local} to robot $i$, which we can see as a software state for a given robot $i$ as well.  % $\map_i(q) = 1$ indicates that according to robot $i$, there is an obstacle in $q$, $\map_i(q) = 0$ indicates that according to robot $i$, $q$ is unoccupied, and $\map_i(q) = -1$ indicates that robot $i$ doesn't have information about $q$.
-
+%The function $\mathit{scanToMap}: \mathit{Scan} \times \mathit{Pos}\mapsto \mathit{GridMap}$, given a position $p_i$ and its corresponding scan $l_i$, computes the quantized domain function$\sensfunc$, in $\sensarea(\qfunc(p_i))$. By definition, this returns a \emph{sound} mapping. We stated earlier that the operator $\oplus$ applied to two sound mappings returns a sound mapping. Therefore, given $s_i^\prime$ such that $\mathit{s_i^\prime \in \mathit{trans}(s_i,\mathit{LUpdate})}$,  $s_i^\prime.M.\lmap$ is sound if $s_i.M.\lmap$ is sound.
 
 
-We assume that given $\Vec{x} \in q, \forall \Vec{x^\prime} \in q, \sensarea(\Vec{x}) \subseteq \sensarea(\Vec{x^\prime})$. We can now state the 2-d distributed mapping problem, $\mapprob$ as follows. \begin{quote}
-{\em Given a set of robots $[N]$ , for each robot $i \in [N]$ construct an \emph{occupancy map}, $\map_i: Q_i \mapsto \left\{1,0\right\}$, $Q_i\subseteq Q$.
-}
-\end{quote}
+\subsubsection{Problem Setup}
+
+A vacuously correct (sound) solution to $\mapprob$ given $D, \qfunc$ and $\world_Q$ is $\forall i \in [N]$, $$\map_i : Q_i \mapsto \left\{0,1\right\}, Q_i = \phi$$ To allow for potentially more interesting solutions than the one stated above, we make the following assumption on the
+\begin{assumption}
+Initially, each robot $i\in[N]$ starts at a grid rectangle with no obstacle, the sensed area of each robot $i$ is non empty
+$\forall i \in [N], \world_Q(q^0_i) = 0\wedge \sensarea(q^0_i) \neq \phi$
+where $q^0_i = \qfunc(\pos_0(i))$, and $\pos_0(i)$ denotes the initial position of robot $i$.
+\end{assumption}
+
+This ensures that a robot doesn't violate the \emph{Individual soundness} requirement for a correct solution the mapping problem.
+
+\subsubsection{Planning and actuation}
+
+\begin{definition}
+    We say that $\Vec{x_n}\in D$ is \emph{accessible} from $\Vec{x_0}$ if there is a \emph{path} $p = \Vec{x_0},\Vec{x_1}, \Vec{x_2},\ldots, \Vec{x_n}$ , such that
+    \begin{itemize}
+        \item $\forall i \in [0..n],\world_Q(\qfunc{\Vec{x_i}}) = 0$
+        \item a robot can move from $\Vec{x_i}$ to $\Vec{x_{i+1}}$ for $i \in [0..n]$, while staying within $\qfunc(\Vec{x_i}) \cup \qfunc(\Vec{x_{i+1}})$.
+    \end{itemize}
+\end{definition}
+
+A grid rectangle $q\in Q$ is accessible in general, if $\exists \Vec{x}\in D, q = \qfunc(\Vec{x})$ such that $\Vec{x}$ is accessible from either \begin{inparaenum} [(a)] \item the initial position of a robot, or \item another accessible point $\Vec{x^\prime}\in D$. We denote the accessibility of a grid rectangle using a predicate $\Access : Q \mapsto \left\{\mathit{True}, \mathit{False}\right\}$, where $\Access(q) = \mathit{True}$ if its accessible,  $\mathit{False}$ otherwise.
+\end{inparaenum}
+
+\begin{assumption}
+    The path planner used by the $\lgname$ implementation of the $\dmap$ application returns a path $p = \Vec{x_0},\Vec{x_1}, \Vec{x_2},\ldots, \Vec{x_n}$ , such that the robot can traverse it while staying within $\qfunc(\Vec{x_i})$ for every $\Vec{x_i}\in p$.
+\end{assumption}
+
+This assumption can be shown to ensure for the \emph{Safe location} property of a solution, if for robot $i$, the path planner can be restricted to find paths within $\domain(\map_i)$.
+
+%\begin{definition}
+%    Given a sound occupancy mapping $\map_i$, the \emph{frontier} of $\map_i$, denoted by $\ff(\map_i)$ is defined as follows:
+%    $$ \left\{ q\in Q \mid \Access(q) \wedge \exists q \in \sensarea(\Vec{x}), q \notin \domain(\map_i)\right\} $$
+%\end{definition}
+
+%Assume that the planner returns a path if \begin{inparaenum}[(a)] \item the frontier is non-empty \item the grid rectangle picked on the frontier is reachable from the current point \end{inparaenum}. We also constrain the robots to move only on \emph{known} unoccupied grid rectangles, i.e $q\in Q, s_i.M.\lmap[q] = 0$. In implementation, we achieve this by ensuring that the path planner treats all the unknown ($q$ such that $s_i.M.\lmap[q] = -1$) grid rectangles as obstacles as well.
+
+
+\subsubsection{Synchronization and consistency}
+The following are the timing assumptions on $\lgname$ programs.
+\begin{assumption} A program step has zero logical execution time.
+\end{assumption}
+This assumption is reasonable if the time taken to complete a program transition step is negligible compared to $\delta$.  The $\lgname$ middleware ensures that the participating agents begin executing their events synchronously.
+
+\begin{assumption} Shared memory updates are propagated to all agents instantanously.
+\end{assumption}
+The $\lgname$ middleware uses message passing to implement shared memory, and compared to $\delta$, the time taken to observe a shared memory update as a received message from the time that it is sent is much smaller. We therefore can assume that in this setting, the shared memory semantics of $\lgname$ wherein an update is visible in the next round of program transitions, is a reasonable implementation deliverable. This assumption in this particular example, is required for \emph{Eventual Completeness}, but in other applications, it may be used to correctness.
+%$\marginpar{\scriptsize\sayan{MAke this a list of {\bf Assumptions} with discussion on why they hold, or what they mean in English.}}
+
 
 % \rg{We can \emph{combine} the elements of the set of \emph{local maps}, $\{\map_i\}_{i\in [N]}$ to form a \emph{global} occupancy mapping. }
 
-Having stated the problem, we now define the notion of soundness of a proposed occupancy map.
-\begin{definition}
-    \label{soundness}
-   
-\end{definition}
 
-
-These two statements collectively state that given a proposed occupancy map, \emph{any grid rectangle in the domain of the occupancy map marked as 0 is indeed obstacle free, and if it is marked as 1 then there is indeed an obstacle at least partially in it.}
-
-%We define $\mathit{Adj}_{q_{ij}}$ as the set $\{q_{i^\prime j^\prime}\mid i^\prime \in \{i, i+1,i-1\}\wedge j^\prime \in \{j,j+1,j-1\}\wedge q_{i^\prime j^\prime} \neq q_{ij}\}$
-
-
-A vacuously correct (sound) solution to $\mapprob$ given $D, \qfunc$ and $\world_Q$ is $\forall i \in [N]$, $$\map_i : Q_i \mapsto \left\{0,1\right\}, Q_i = \phi$$ To allow for potentially more interesting solutions than the one stated above, we assume that we are given that initially, each robot $i\in[N]$ starts at a grid rectangle with no obstacle, the sensed area of each robot $i$ is non empty
-$\forall i \in [N], \world_Q(q^0_i) = 0\wedge \sensarea(q^0_i) \neq \phi$
-where $q^0_i = \qfunc(\pos_0(i))$, and $\pos_0(i)$ denotes the initial position of robot $i$.
 
 %
 %\begin{definition}
 %    Given  $i , j \in [N]$, two proposed occupancy mappings $\map_i: Q_i\mapsto\left\{0,1\right\}$ and $\map_j: Q_j\mapsto \left\{0,1\right\}$, are consistent only if $\forall q \in Q_i \cup Q_j, \map_i(q) = \map_j(q)$.
 %\end{definition}
 
-    Given $\map_i$, $\map_j$, and $q\in Q_i \cup Q_j$ , let $\map_i(q) = 1$, and $\map_j(q) = 0$. Suppose $\map_i$ is sound, then $\world_Q(q) = 1$, which implies $\map_j$ is not sound. By the same argument, if $\map_j$ is sound, $\map_i$ is not. Each mapping in a set of proposed mappings $\left\{\map_i\right\}_{i\in [N]}$ can only be sound if they are pairwise consistent.
-
-Given a mapping $\map_i$, $\mathit{dom}(\map_i)$ denotes $ Q_i \subset Q$, such that $\forall q \in Q_i \map_i(q) = 0 \vee \map_i(q) = 1$.
-\begin{definition}
-    \label{cons}
-Consider a set of sound mappings $\left\{\map_i\right\}_{i\in[N]}$. The \emph{ combined mapping} described by $\map: Q^\prime \mapsto \left\{0,1\right\}$ where $Q^\prime = \bigcup_{i\in[N]} \mathit{dom}(\map_i)$ , and $\exists j \in [N], q\in \mathit{dom}(\map_j)\Rightarrow \map(q) = \map_j(q)$ is also sound.
-\end{definition}
-
-$\map$ is sound by construction, and consistency of the sound mappings it is constructed from.

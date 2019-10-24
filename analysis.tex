@@ -40,6 +40,17 @@ For all $i \in [N]$ ...
 For all $i \in [N]$ ... 	
 \end{invariant}
 
+    Given $\map_i$, $\map_j$, and $q\in Q_i \cup Q_j$ , let $\map_i(q) = 1$, and $\map_j(q) = 0$. Suppose $\map_i$ is sound, then $\world_Q(q) = 1$, which implies $\map_j$ is not sound. By the same argument, if $\map_j$ is sound, $\map_i$ is not. Each mapping in a set of proposed mappings $\left\{\map_i\right\}_{i\in [N]}$ can only be sound if they are pairwise consistent.
+
+%Given a mapping $\map_i$, $\domain(\map_i)$ denotes $ Q_i \subset Q$, such that $\forall q \in Q_i \map_i(q) = 0 \vee \map_i(q) = 1$.
+\begin{definition}
+    \label{cons}
+Consider a set of sound mappings $\left\{\map_i\right\}_{i\in[N]}$. The \emph{ combined mapping} described by $\map: Q^\prime \mapsto \left\{0,1\right\}$ where $Q^\prime = \bigcup_{i\in[N]} \domain(\map_i)$ , and $\exists j \in [N], q\in \domain(\map_j)\Rightarrow \map(q) = \map_j(q)$ is also sound.
+\end{definition}
+
+$\map$ is sound by construction, and consistency of the sound mappings it is constructed from.
+
+
 Now we proceed to show that each of the events preserve these invariants. 
 \paragraph{NewPoint}
 In this event, the robot first updates its value of $s_i.M.\lmap$ from the currently known value of $s_i.M.\gmap$ where the operator $\oplus$ is defined as follows:
@@ -47,39 +58,28 @@ $$\forall q \in Q, f[q] \oplus g[q] = \mathit{Max}(f[q], q[q])$$
 
 Given two sound maps $\lmap$ and $\gmap$, $\lmap \oplus \gmap$ corresponds to a combined map construction as outlined in \defn{cons}, and is sound. The event \emph{NewPoint} doesn't modify $s_i.M.\lmap$ further, and therefore, $\lmap$ remains \emph{sound} during the execution of this event.
 
-\begin{definition}
-    We say that $\Vec{x_n}\in D$ is \emph{reachable} from $\Vec{x_0}$ if there is a \emph{path} $p = \Vec{x_0},\Vec{x_1}, \Vec{x_2},\ldots, \Vec{x_n}$ , such that
-    \begin{itemize}
-        \item $\forall i \in [0..n],\world_Q(\qfunc{\Vec{x_i}}) = 0$
-        \item a robot can move from $\Vec{x_i}$ to $\Vec{x_{i+1}}$ for $i \in [0..n]$, while staying within $\qfunc(\Vec{x_i}) \cup \qfunc(\Vec{x_{i+1}})$.
-    \end{itemize}
-\end{definition}
+%\begin{definition}
+%    We say that $\Vec{x_n}\in D$ is \emph{reachable} from $\Vec{x_0}$ if there is a \emph{path} $p = \Vec{x_0},\Vec{x_1}, \Vec{x_2},\ldots, \Vec{x_n}$ , such that
+%    \begin{itemize}
+%        \item $\forall i \in [0..n],\world_Q(\qfunc{\Vec{x_i}}) = 0$
+%        \item a robot can move from $\Vec{x_i}$ to $\Vec{x_{i+1}}$ for $i \in [0..n]$, while staying within $\qfunc(\Vec{x_i}) \cup \qfunc(\Vec{x_{i+1}})$.
+%    \end{itemize}
+%\end{definition}
+%
+%A grid rectangle $q\in Q$ is reachable in general, if $\exists \Vec{x}\in D, q = \qfunc(\Vec{x})$ such that $\Vec{x}$ is reachable from either \begin{inparaenum} [(a)]
+%                                                                                                                                                   \item the initial position of a robot, or \item another reachable point $\Vec{x^\prime}\in D$. We denote the reachability of a grid rectangle using a predicate $\mathit{Reach} : Q \mapsto \left\{\mathit{True}, \mathit{False}\right\}$, where $\mathit{Reach}(q) = \mathit{True}$ if its reachable,  $\mathit{False}$ otherwise.
+%\end{inparaenum}
+%
+%\begin{definition}
+%    Given a sound occupancy mapping $\map_i$, the \emph{frontier} of $\map_i$, denoted by $\ff(\map_i)$ is defined as follows:
+%    $$ \left\{ q\in Q \mid Reach(q) \wedge \exists q \in \sensarea(\Vec{x}), q \notin \domain(\map_i)\right\} $$
+%\end{definition}
 
-A grid rectangle $q\in Q$ is reachable in general, if $\exists \Vec{x}\in D, q = \qfunc(\Vec{x})$ such that $\Vec{x}$ is reachable from either \begin{inparaenum} [(a)]
-                                                                                                                                                   \item the initial position of a robot, or \item another reachable point $\Vec{x^\prime}\in D$. We denote the reachability of a grid rectangle using a predicate $\mathit{Reach} : Q \mapsto \left\{\mathit{True}, \mathit{False}\right\}$, where $\mathit{Reach}(q) = \mathit{True}$ if its reachable,  $\mathit{False}$ otherwise.
-\end{inparaenum}
-
-\begin{definition}
-    Given a sound occupancy mapping $\map_i$, the \emph{frontier} of $\map_i$, denoted by $\ff(\map_i)$ is defined as follows:
-    $$ \left\{ q\in Q \mid Reach(q) \wedge \exists q \in \sensarea(\Vec{x}), q \notin \mathit{dom}(\map_i)\right\} $$
-\end{definition}
-
-In the event \emph{NewPoint}, the planner associated with the robot tries to find a path to a point on the \emph{frontier} of $s_i.M.\lmap$. Assume that the planner returns a path if \begin{inparaenum}[(a)]
-                                                                                                                                                                                           \item the frontier is non-empty \item the grid rectangle picked on the frontier is reachable from the current point
-\end{inparaenum}. We also constrain the robots to move only on \emph{known} unoccupied grid rectangles, i.e $q\in Q, s_i.M.\lmap[q] = 0$. In implementation, we achieve this by providing all the unknown ($q$ such that $s_i.M.\lmap[q] = -1$) grid rectangles as obstacles to the path planner.
-
+In the event \emph{NewPoint}, the planner associated with the robot tries to find a path to a point on the \emph{frontier} of $s_i.M.\lmap$.
 If the path is empty, then the robot does nothing, and attempts to execute this event in the next round. Otherwise, until the robot finishes traversing the path, the \emph{LUpdate} event is enabled.
 
 \paragraph{LUpdate}
-This event is enabled while the robot is traversing the path computed in \emph{NewPoint}: the robot hasn't finishing traversing the path. i.e the state $s_i$ of a robot satisfies that $s_i.\cp.\mathit{Motion.reached}  = \mathit{False}$. The sensors \emph{Motion.trace} and \emph{Lidar.ldata} are \emph{sampled} sensors. Given that $\delta$ is the duration of a \emph{round},
-\begin{itemize}
-    \item $\mathit{Motion.trace}: [0,\delta] \mapsto \mathit{Pos}$. Given a state $s_i$ of a robot,  $s_i.\cp.\mathit{Motion.trace} = \{(t_i, p_i)\}_{i \in [M]}$ where $p_i$ is the position of the robot at time $t_i$ from the beginning of the round.
-    \item  $\mathit{Lidar.ldata} : [0,\delta]\mapsto \mathit{Scan}$. Given a state $s_i$ of a robot, $\cp.\mathit{Lidar.ldata} = \{t_i^\prime, l_i^\prime\}_{i^\prime \in M^\prime}$ where $l_i^\prime$ is the LIDAR \emph{scan} at time $t_i^\prime$ from the beginning of the round.
-\end{itemize}
-The sampling frequencies of these sensors may be different, hence the potentially different number of readings, and potentially different timestamps of the readings. The function $\mathit{tSync}$ is used to \emph{synchronize} the readings, where we compute a mapping $\mathit{pScan}: \mathit{Pos} \mapsto \mathit{Scan}$, where given a state $s_i$ of a robot, $s_i.M.\mathit{pscan} = \{(p_i^{\prime\prime}, l_i^{\prime\prime})\}_{i^{\prime\prime} \in M ^{\prime\prime}}$, where  $(p, l) \in s_i.M.\mathit{pscan}$ if given $\epsilon > 0$,  $(t,p) \in s_i.\cp.\mathit{Motion.trace}, (t^\prime,l )\in s_i.\cp.\mathit{Lidar.ldata}, |t - t^\prime| \leq \epsilon$.\fTBD{define the data types in the software section}
-
-Given a small enough $\epsilon$, we can assume that we get a synchronized set of LIDAR scans at intermediate positions observed during each round while the robot is traversing the path. The function $\mathit{scanToMap}: \mathit{Scan} \times \mathit{Pos}\mapsto \mathit{GridMap}$, given a position $p_i$ and its corresponding scan $l_i$, computes the quantized domain function$\sensfunc$, in $\sensarea(\qfunc(p_i))$. By definition, this returns a \emph{sound} mapping. We stated earlier that the operator $\oplus$ applied to two sound mappings returns a sound mapping. Therefore, given $s_i^\prime$ such that $\mathit{s_i^\prime \in \mathit{trans}(s_i,\mathit{LUpdate})}$,  $s_i^\prime.M.\lmap$ is sound if $s_i.M.\lmap$ is sound.
-
+This event is enabled while the robot is traversing the path computed in \emph{NewPoint}: the robot hasn't finishing traversing the path. i.e the state $s_i$ of a robot satisfies that $s_i.\cp.\mathit{Motion.reached}  = \mathit{False}$.
 Once the robot finishes traversing the path picked in \emph{NewPoint}, the \emph{GUpdate} event is enabled.
 
 
@@ -90,7 +90,7 @@ In the $GUpdate$ event, robot attempts to \emph{atomically} or in a mutually exc
 \end{theorem}
 
 \begin{proof}
-    Given a robot $i$, its initial state $s_i$ satisfies $$\forall q \in Q, s_i.M.\gmap[q] = -1.$$ This represents a (vacuously) sound \qdfunc $\map$ where $\mathit{dom}(\map) = \phi$.
+    Given a robot $i$, its initial state $s_i$ satisfies $$\forall q \in Q, s_i.M.\gmap[q] = -1.$$ This represents a (vacuously) sound \qdfunc $\map$ where $\domain(\map) = \phi$.
 
 
     Consider a state $s_i^\prime$, where $s_i^\prime.M.\gmap$ is sound. If the soundness of $\gmap$ is preserved during the next round (i.e under execution of any enabled event), then by induction $\gmap$ always represents a sound mapping of the domain $Q$. \begin{itemize}
