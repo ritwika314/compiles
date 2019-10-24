@@ -59,6 +59,8 @@ As before, we can prove as that since \emph{LUpdate} preserves \inv{ind-sound}, 
 Since $\mathit{\gmap}$ is updated using the keyword \emph{atomic}, only one agent $i\in [N]$ writes to the shared variable $\gmap$.  $\vs.\lmap_i$ and $\vs.\gmap_i$ are sound, by definition of \emph{merge}, $\vs'.\gmap_i$ is also sound. By \asum{shared}, the same value is propagated to all other agents, meaning $\forall j \in [N], \vs'.\gmap_j$ is sound as well. Therefore, this event preserves \inv{sound}. \emph{GUpdate} preserves \inv{ind-sound} trivially as it doesn't modify $\vs.\lmap_i$, and as a result, it also preserves \inv{consistency}.
 
 
+
+
 %\begin{lemma}
 %    \label{ext}
 %    Given a robot $i$, suppose the mapping $\map_i:Q_i \mapsto \mathbb{B}$, where $Q_i\subseteq Q$, is sound. Suppose further, that the robot $i$ is is within $q'\in Q$. Consider a mapping, $\map^\prime_i: Q_i \cup \sensarea(q') \mapsto \mathbb{B}$
