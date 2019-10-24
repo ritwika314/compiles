@@ -29,6 +29,7 @@ The frequency of the synchronized data is then limited to the sensor with the lo
 In our simulation, the lowest frequency is 100 Hz for sensing the vehicle position and sufficient for updating the map.
 
 The Lidar scan data provided in the tool chain are pairs of a distance to obstacles and an angle with respect to the heading angle of the vehicle.
+For simplicity, we configure the vehicles so that they do not detect each other as obstacles.
 To implement \ScanToMap, it is then straightforward to compute the positions of obstacles and mark occupied grid rectangles,
 and to mark a rectangle obstacle free is to simply check if all four corners of a grid rectangle are covered in the scan.
 The time difference $\epsilon$ however can introduce an error between real and perceived distances to obstacles.
@@ -37,8 +38,8 @@ Our implementation of \ScanToMap therefore may falsely mark a grid rectangle as 
 
 \paragraph{Path to Frontier~(\PathToFrontier).}
 In the \CyPhyHouse tool chain, several path planning algorithms are already available.
-We select a particular Rapidly exploring Random Tree with near neighbor search and rewiring tree~(RRT*) algorithm,
-and it is able to avoid obstacles and is fine tuned to the car model for simulation.
+We particularly select the Rapidly exploring Random Tree with near neighbor search and rewiring tree~(RRT*) algorithm.
+It is able to avoid obstacles and is fine tuned to the car model for simulation.
 Our \PathToFrontier implementation hence only needs to choose a point in frontier grid rectangles and provide the positions of obstacles.
 To choose such a point, a basic solution is to use Breadth-First Search~(BFS) on the map and seek for a unexplored grid rectangle.
 BFS ensures that either all reachable grid rectangles are marked,
@@ -50,4 +51,14 @@ Our soundness claim still holds under such circumstance, but we may not be able 
 
 \subsection{Simulation Result}
 
+We design three different worlds with the same area of $20\times20$ square meters,
+and each can be quantized as a $20 \times 20$ map.
+To compare across different numbers of vehicles more easily,
+we ensure that all unoccupied rectangles are connected in each map,
+so every car can explore the whole map.
+Each car is equipped with a Lidar providing each scan with radius 2.5m and angles from $-\pi$ to $\pi$.
+The maximum speed of all cars is set to 3m/s.
+For each map, we run three simulations with 2, 3, or 4 cars for 20 minutes of simulation time.
+Our simulation is run on a computer with 8 Intel Core i7-6700HQ @ 2.60GHz CPU cores, 16 GB main memory, and a GeForce GTX 970M GPU.
 
+The result is show in Table~\ref{}.
