@@ -45,7 +45,7 @@ The mapping problem is defined in terms of the following parameters.
 		\right.
 \end{align}
 	\item A set $\qdom \subseteq D \cap \mathbb{Q}^2$ which is a quantized representation of $D$.
-	\item A Koord program variable, let us call it $\mathit{map}_i$, for each robot $i \in [N]$, that stores the $\qdom$-quantized, shared map.
+	\item A Koord\fTBD{should we say koord here, considering that it is a general statment} program variable, let us call it $\mathit{map}$, which is a shared view of the map for the system of robots $N$. Assume that each robot $i \in [N]$ has a quantized view of the map, let us call it $\map_i$. $\map$ is constructed by combining the views $\map_i$ in some way.
 \end{enumerate}
 %%
 %%
@@ -64,18 +64,20 @@ $$\world_Q(q) = \begin{cases}
 $$
 %
 
-For each robot $i$, the program variable $\mathit{map}_i$ will ideally store a qunantized restriction of $\world$. That is, the type of this variable will be $\mathit{map}_i: Q' \rightarrow \mathbb{B}$, for some $Q' \subseteq Q$.
+For each robot $i$,  program variable $\mathit{map}_i$ will ideally store a quantized restriction of $\world$. That is, the type of this variable will be $\mathit{map}_i: Q' \rightarrow \mathbb{B}$, for some $Q' \subseteq Q$. The robots \emph{collaboratively} construct a mapping $\mathit{map}_i: Q'' \rightarrow \mathbb{B}$, such that $Q'' = \bigcup_{i\in[N]} \domain(\map_i)$, stored in a \emph{shared} program variable $\map$.
+
+
 %
 Finally, we will assume that each robot $i$ occupies space within the arena $D$ and it's position is available from a sensor port $\mathit{pos}_i$ which takes values in $D$.
 
 Now we can formally state the desirable requirements of the mapping application.
 \begin{enumerate}
-	\item {\em (Individually sound)} Always, each robot's map is a quantized restriction of the ground truth. That is, $\map_i: Q_i \mapsto \mathbb{B}$, where $Q_i\subseteq Q$ and  $\map_i(q) = \world_Q(q)$ for every $q\in Q_i$.
-	\item {\em (Consistent)\/} Always, robot maps are consistent. That is, for any two robots $i,j \in [N]$,   $\map_i(q) = map_j(q)$  for any  $q\in \domain(\map_i)  \cap \domain(map_j)$.
+	\item {\em (Sound)\/} Always, the shared variable $\map$ is a quantized restriction of the ground truth. That is, $\map: Q' \mapsto\mathbb{B}$, where $Q'\subseteq Q$ and $\map(q) = \world_Q(q)$ for every $q \in Q'$.
+ \item {\em (Individually sound)\/} Always, each robot's map is a quantized restriction of the ground truth. That is, $\map_i: Q_i \mapsto \mathbb{B}$, where $Q_i\subseteq Q$ and  $\map_i(q) = \world_Q(q)$ for every $q\in Q_i$.
+	\item {\em (Consistent)\/} Always, the local robot maps are consistent. That is, for any two robots $i,j \in [N]$,  $\map_i(q) = map_j(q)$  for any  $q\in \domain(\map_i) \cap \domain(map_j)$.
 	\item {\em (Safe location)\/} Always, each robot is located in a part of the arena that is known to be free.
 	That is, for any  $i \in [N]$,  $\qfunc(\pos_i) = map_i(q)$  for any  $q\in \domain(\map_i) \cap \domain(map_j)$.
-
-	\item {\em (Eventual completeness)} Eventually, the constructed maps cover $\world$. That is, for each robot $i\in [N], \domain(\map_i) = Q$.
+	\item {\em (Eventually complete)} Eventually, the constructed maps cover $\world$. That is, for each robot $i\in [N], \domain(\map_i) = Q$.
 \end{enumerate}
 
 %\marginpar{\scriptsize\sayan{Say that we will prove 1,2 and why 3 is in general hard world may be partitioned. Path planning might hard. Quantization may be too coarse for finding safe paths...}}

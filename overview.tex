@@ -70,9 +70,9 @@ The robot also has access to two system-level \emph{constant} parameters (a) a u
 \subsection{Formal semantics of Koord}
 \label{sec:semantics}
 
-The (distributed) system of robots  executing the \dmap application written in $\lgname$ can be viewed as a nondeterministic, state machine automaton~\cite{TIOAmon, Mitra07PhD}. The detailed statement-level semantics of $\lgname$ has been developed in the $\mathbb{K}$ framework and will appear elsewhere. For the purpose of the analysis here, we briefly describe the ``big-step'' semantics of Koord which allows all the statements in an event of a single robotx to be executed as an instantaneous transition.
+The (distributed) system of robots  executing the \dmap application written in $\lgname$ can be viewed as a nondeterministic, state machine automaton~\cite{TIOAmon, Mitra07PhD}. The detailed statement-level semantics of $\lgname$ has been developed in the $\mathbb{K}$ framework and will appear elsewhere. For the purpose of the analysis here, we briefly describe the ``big-step'' semantics of Koord which allows all the statements in an event of a single robot to be executed as an instantaneous transition.
 
-Suppose we have $N$ robotxs or robots in the system each executing the same Koord application program. As mentioned earlier Koord middleware enforces a synchronous  \emph{round-by-round} execution, where each round lasts for $\delta$ time, where $\delta >0$ is a platform specific execution parameter.
+Suppose we have $N$ robots in the system each executing the same Koord application program. As mentioned earlier Koord middleware enforces a synchronous  \emph{round-by-round} execution, where each round lasts for $\delta$ time, where $\delta >0$ is a platform specific execution parameter.
 %
 In each round, each robot performs an  event.
 The state update performed by a single robot executing an  event is modeled as an  transition of the state machine updating the program variables, however,  different events executed by the different robots may interleave. In between the events of successive rounds, the program variables remain constant, but {\em all\/} the \sayan{sensor and actuator variables} of all the robots  change continuously with time.  These are modeled as the $\delta$-transitions that advance time as well as the \sayan{sensor and actuator variables}.
@@ -81,12 +81,12 @@ The state update performed by a single robot executing an  event is modeled as a
 Let the set of all program variables in the $\lgname$ application be $\Var$, and the set of all the sensor and actuator ports be $\mathit{Port}$. Let $\mathit{Event}_i$ be the set of events for the program for agent $i$.
 
 %
-The sets of variables and ports of an individual robotx $i$ are denoted by $\Var_i$ and  $\mathit{Port}_i$.
+The sets of variables and ports of an individual robot $i$ are denoted by $\Var_i$ and  $\mathit{Port}_i$.
 %
 A {\em valuation\/} of $\Var \cup \Port$ maps the names of the variables and ports to their types.
 We denote valuations using boldface letter like $\vs, \vs_1, \vs'$, etc.
 %
-Given a valuation $\vs$, the value of a subset of  variables (or ports) $X$ is denoted by $\vs.X$. For example, the  valuation of all the variables of robotx $i$ is $\vs.\Var_i$.
+Given a valuation $\vs$, the value of a subset of  variables (or ports) $X$ is denoted by $\vs.X$. For example, the  valuation of all the variables of robot $i$ is $\vs.\Var_i$.
 %
 %
 In the $\dmap$ $\lgname$ application,
@@ -98,14 +98,14 @@ In the $\dmap$ $\lgname$ application,
 %
 %values that the variables can take is $\Val$, the \emph{state} of a robot $i$ is a tuple $$s_i = ( M, cp), \mbox{ where}$$
 %
-For the purpose of this paper, we define the  semantics of the overall system with $N$ robots as discrete transition system $\A = (Q, Q_0, A, \D)$,
+For the purpose of this paper, we define the  semantics of the overall system with $N$ robots as discrete transition system $\A = (C, C_0, A, \D)$,
 where
-(1) $Q$ is the set of valuations of all the variables $\Var$ and all the ports $\mathit{Port}$ for each robot,
-(2) $Q_0 \subseteq Q$ is the set of initial values of the variables and port for each robot. All variables and ports have to be initialized,
+(1) $C$ is the set of valuations of all the variables $\Var$ and all the ports $\mathit{Port}$ for each robot,
+(2) $C_0 \subseteq Q$ is the set of initial values of the variables and port for each robot. All variables and ports have to be initialized,
 (3) $A = \{\delta\} \cup \left( \cup_{i \in [N]} \mathit{Events}_i \right)$ is the set of transition labels, and
-(4) $D \subseteq Q \times A \times Q$ is a set of transitions. The state of the system is a valuation $\vs \in Q$. There are two types of transitions, namely:
+(4) $D \subseteq C \times A \times C$ is a set of transitions. The state of the system is a valuation $\vs \in C$. There are two types of transitions, namely:
 \begin{enumerate}
-	\item {\em event transition}: Any $a \in \Event_i$ for some $i \in [N]$, and  given $\vs, \vs'\in Q$,   $(\vs,a,\vs') \in \D$ iff (i) $\vs'.\Var_i$ is obtained by applying the transition relation of $a$ to $\vs.\Var_i$, where $\vs.\Var_i$ refers to the mapping of all variables of robot $i$ to their values in the state $\vs$.
+	\item {\em event transition}: Any $a \in \Event_i$ for some $i \in [N]$, and  given $\vs, \vs'\in C$,   $(\vs,a,\vs') \in \D$ iff (i) $\vs'.\Var_i$ is obtained by applying the transition relation of $a$ to $\vs.\Var_i$, where $\vs.\Var_i$ refers to the mapping of all variables of robot $i$ to their values in the state $\vs$.
 		(ii) For all $j \neq i$,
 		$\vs'.\Var_j = \vs.\Var_j$.
 	\item {\em $\delta$-transition}: $a = \delta$, and $(\vs,a,\vs') \in \D$ iff $\vs'.\Var = \vs.\Var$.
@@ -115,11 +115,12 @@ where
 }
 
 
-A \emph{program step} is a sequence  $\vs_0 , a_0,  \vs_1, a_1, \ldots  ,a_N \vs_N$ of length $N$, where $(\vs_i , a , \vs_{i+1}) \in D$ is an event transition. Given a program step $\vs_0 , a_0,  \vs_1, a_1, \ldots  ,a_N \vs_N$, $s[i]$ refers to the state $\vs_i$. An \emph{execution} of a system is an alternating sequence of program steps and $\delta$-transitions $s_0, t_0 , s_1, t_1, \ldots$ where
+A \emph{program step} is a sequence  $\vs_0 , a_0,  \vs_1, a_1, \ldots  ,a_N \vs_N$ of length $N$, where $(\vs_i , a , \vs_{i+1}) \in D$ is an event transition. Given a program step $\ps = \vs_0 , a_0,  \vs_1, a_1, \ldots  ,a_N \vs_N$, $\ps[i]$ refers to the state $\vs_i$.
+An \emph{execution} of a system is an alternating sequence of program steps and $\delta$-transitions $\ps_0, d_0 , \ps_1, d_1, \ldots$ where
 \begin{itemize}
-\item $s_i$ is a program step and $t_i$ is a $\delta$-transition,
-\item $s_0$ is a program step $\vs_0, a_0, \vs_1, \ldots ,a_N, \vs_N $  where $\vs_0 \in Q_0$,
-\item Given a $\delta$-transition $t_i = \vs, a, \vs')$, and its preceding program step $s_i$,  $s_i[N] = \vs $
+\item $\ps_i$ is a program step and $d_i$ is a $\delta$-transition,
+\item $\ps_0$ is a program step $\vs_0, a_0, \vs_1, \ldots ,a_N, \vs_N $  where $\vs_0 \in C_0$,
+\item Given a $\delta$-transition $d_i = (\vs, a, \vs')$, and its preceding program step $\ps_i$,  $\ps_i[N] = \vs $
 \end{itemize}
 %
 %of each robot evolve to the 	controllers driving the robot according to the actuators that may have been set in the event. The program and sensor variables of the robot can be seen as the state variables for each robot.
@@ -131,7 +132,7 @@ A \emph{program step} is a sequence  $\vs_0 , a_0,  \vs_1, a_1, \ldots  ,a_N \vs
 %\end{enumerate}
 %The components of the tuple $s_i$ are accessed using the dot $`.'$ notation, for instance, $s_i.M$, etc. The value of a program variable $v$ at a state $s_i$ is denoted by $s_i.M.v$.
 
-We define the set of reachable states of a system $\A$ , $\Reach(\A) = \{q \mathit q \in Q_0 \vee \exists q^\prime \in \Reach(\A), (q^\prime, a, q) \in \D \}$. A predicate $\mathcal{P} : Q \mapsto \{\mathit{True}, \mathit{False}\}$ is an \emph{invariant} of the $\A$, if $\forall q \in \Reach(\A), \mathcal{P} = \mathit{True}$.
+We define the set of reachable states of a system $\A$ , $\Reach(\A) = \{c \mathit c \in C_0 \vee \exists c^\prime \in \Reach(\A), (c^\prime, a, c) \in \D \}$. A predicate $\mathcal{P} : C \mapsto \mathbb{B}$ is an \emph{invariant} of the $\A$, if $\forall q \in \Reach(\A), \mathcal{P} = \mathit{True}$.
 
 \subsection{Runtime system}
 
@@ -140,7 +141,7 @@ We define the set of reachable states of a system $\A$ , $\Reach(\A) = \{q \math
 To run a $\lgname$ program (hardware or simulation), the user has to provide a configuration file, with
 \begin{inparaenum}
     \item the number of robots,
-    \item in case of simulation, the initial positions of the robotxs and the length of the simulation and
+    \item in case of simulation, the initial positions of the robots and the length of the simulation and
     \item in case of hardware deployment their IP addresses,
     and the localization system.
 \end{inparaenum}

@@ -4,41 +4,73 @@
 \label{sec:analysis}
 
 
+In this section, we present an analysis of the $\lgname$ program for the mapping problem.
+% initial states of $\A$.
 
-% initial states of $\A$. 
 
 
-The individual soundness requirement of the mapping problem is then captured by the following invariant of $\A$. The variable $\gmap$ captures.
+
+Consider a state $\vs\in \Reach(\A)$. For $\vs$, the individual soundness, and the soundness requirements of the mapping problem are captured by the following invariants of $\A$ respectively.
+
+
 \begin{invariant}
-\label{inv:ind-sound}
-For all $i \in [N]$,  $\vs\in Q, \vs$
+\label{ind-sound}
+For all $i \in [N]$ $$\forall q_1 \in \domain(\vs.\lmap_i) , \vs.\lmap_i(q) =  \world_Q(q)$$
 \end{invariant}
 
-We omit the initialization of the mappings in the presentation of the program in \reffig{mapapp}. From our assumption on the initial conditions discussed in \refsect{prelims}, for each robot $i$, its initial state $s_i$, $s_i.M.\lmap[q_0] = 0$ where $q_0\in Q$ is the grid rectangle the robot starts in. We also assumed that $\sensarea(q_0)\neq \phi$, and assume that $s_i.M.\lmap(q) = \sensfunc(\sensarea(q))$ . $s_i.M.\gmap$ is initialized as $s_i.M.\gmap[q] = -1$ for all $q\in Q$. Thus, for an initial state $s_i$, both $s_i.M.\lmap$ and $s_i.M.\gmap$ are sound mappings.
-
-The consistency requirement of the mapping problem is captured by the following invariant of $\A$
 \begin{invariant}
-\label{inv:consistency}
-For all $i \in [N]$
+\label{sound}
+For all $i \in [N]$, $$\forall q_1 \in \domain(\vs.\gmap_i) , \vs.\gmap_i(q) =  \world_Q(q)$$
 \end{invariant}
 
-    Given $\map_i$, $\map_j$, and $q\in Q_i \cup Q_j$ , let $\map_i(q) = 1$, and $\map_j(q) = 0$. Suppose $\map_i$ is sound, then $\world_Q(q) = 1$, which implies $\map_j$ is not sound. By the same argument, if $\map_j$ is sound, $\map_i$ is not. Each mapping in a set of proposed mappings $\left\{\map_i\right\}_{i\in [N]}$ can only be sound if they are pairwise consistent.
+The consistency requirement of the mapping problem is captured as follows:
+\begin{invariant}
+\label{consistency}
+For all $i,j \in [N]$, for all $q \in \domain(\vs.\lmap_i)\cup \domain(\vs.\lmap_j)$, $$\vs.\lmap_i = \vs.\lmap_j$$
+\end{invariant}
+
+We omitted the initialization of the mappings in the presentation of the program in \reffig{mapapp}. From \asum{initval}, for each robot $i$, given its initial state $\vs\in C_0$, $\vs.\lmap_i$ is a sound mapping and $\vs.\gmap_j$ is initialized to be empty, Therefore all initial states satisfy \inv{ind-sound}, and \inv{sound}.
+
+
+Given $\map_i$, $\map_j$, and $q\in Q_i \cup Q_j$ , let $\map_i(q) = 1$, and $\map_j(q) = 0$. Suppose $\map_i$ is sound, then $\world_Q(q) = 1$, which implies $\map_j$ is not sound. By the same argument, if $\map_j$ is sound, $\map_i$ is not. This implies that $\vs\in C$ has individual soundness only if it also has consistency. Therefore, given $\vs\in C_0$, it satisfies \inv{consistency}.
+
+
+Suppose, a state of a system $\vs\in C$ satisfies \inv{sound}, \inv{ind-sound} and \inv{consistency} , we now prove that given a transition $(\vs, a, \vs')\in \D$, $\vs'$ also satisfies them. Since these statements are only about \emph{program} variables, $\delta$-transitions don't affect them. Hence, we only need to prove that each event transition preserves these invariants.
+
+\paragraph{NewPoint}
+For every robot $i$, $\vs.\gmap_i = \vs'.\gmap_i$. Thus, this event trivially preserves \inv{sound}. So far, we haven't described the \emph{merge} function in detail, but we do so now. Given two mappings $m:Q'\mapsto \mathbb{B}$ and $n:Q''\mapsto \mathbb{B}$, the $\mathit{merge}$ function returns a mapping $\mathit{mn}: Q'\cup Q'' \mapsto \mathbb{B}$ where, \begin{itemize}
+      \item for every $q \in Q'\setminus Q''$, $\mathit{mn}(q) = m(q)$
+      \item for every $q \in Q''\setminus Q'$, $\mathit{mn}(q) = n(q)$
+      \item for every $q \in Q \cap Q''$, $\mathit{mn}(q) = m(q) $
+\end{itemize}
+If $m$ and $n$ are sound, then $\mathit{merge}(m,n)$ also returns a sound mapping. Given that for every $i\in [N]$, $\vs'.\lmap_i = \mathit{merge}(\vs.\lmap_i,\vs.\gmap_i)$, and by assumption $\vs.\lmap_i$ and $\vs.\gmap_i$ are sound, $\vs'.\lmap_i$ is also sound. Therefore, this event preserves \inv{ind-sound}.
+
+Now suppose that \inv{consistency} is not preserved, i.e. there are robots  $i, j \in [N]$, and a common $q \in \domain(\vs'.\lmap_i)\cap\domain(\vs'.\lmap_j)$, such that $\vs'.\lmap_i[q] \neq \vs'.\lmap_j[q]$. However, since $\vs'$ satisfies \inv{ind-sound}, we have proved that this event preserves \inv{consistency} by contradiction.
+
+\paragraph{LUpdate}
+Again, for every robot $i$, $\vs.\gmap_i = \vs'.\gmap_i$. Thus, this event trivially preserves \inv(sound).
+
+As before, we can prove as that since \emph{LUpdate} preserves \inv{ind-sound}, it also preserves \inv{consistency}.
+
+\paragraph{GUpdate}
+Since for every robot $i$, $\vs.\lmap_i$ and $\vs.\gmap_i$ are sound, by definition of \emph{merge},  $\vs'.\gmap_i$ is also sound. Therefore, this event preserves \inv{sound}. \emph{GUpdate} preserves \inv{ind-sound} trivially as it doesn't modify $\vs.\lmap_i$, and as a result, it also preserves \inv{consistency}.
+
+
+%\begin{lemma}
+%    \label{ext}
+%    Given a robot $i$, suppose the mapping $\map_i:Q_i \mapsto \mathbb{B}$, where $Q_i\subseteq Q$, is sound. Suppose further, that the robot $i$ is is within $q'\in Q$. Consider a mapping, $\map^\prime_i: Q_i \cup \sensarea(q') \mapsto \mathbb{B}$
+%    such that, $\forall q\in Q_i, map^\prime_i(q) = map_i(q)$
+%    and $\forall q \in \sensarea(q'), \map^\prime_i(q) = \sensfunc(q)$. Then, $\map'_$
+%\end{lemma}
+%
+%The proof for this is straightforward and follows from the definition of $\map^\prime_i$ combined with \defn{soundness}.
+%
+%Recall from the definition of the sensing area of a robot $i$ at $\pos(i)$, that it can reliably compute the ground truth mapping $\world_Q$ for all $q \in \sensarea(\pos(i))$. This lemma essentially states that given a sound occupancy mapping $\map_i$, it can be used to compute to another \emph{sound} occupancy mapping $\map^\prime_i$ by setting the values of $\map^\prime_i(\sensarea(\pos(i)))$ to the ground truth function.
 
 %Given a mapping $\map_i$, $\domain(\map_i)$ denotes $ Q_i \subset Q$, such that $\forall q \in Q_i \map_i(q) = 0 \vee \map_i(q) = 1$.
-\begin{definition}
-    \label{cons}
-Consider a set of sound mappings $\left\{\map_i\right\}_{i\in[N]}$. The \emph{ combined mapping} described by $\map: Q^\prime \mapsto \left\{0,1\right\}$ where $Q^\prime = \bigcup_{i\in[N]} \domain(\map_i)$ , and $\exists j \in [N], q\in \domain(\map_j)\Rightarrow \map(q) = \map_j(q)$ is also sound.
-\end{definition}
-
-$\map$ is sound by construction, and consistency of the sound mappings it is constructed from.
 
 
-Now we proceed to show that each of the events preserve these invariants. 
-\paragraph{NewPoint}
-In this event, the robot first updates its value of $s_i.M.\lmap$ from the currently known value of $s_i.M.\gmap$ where the operator $\oplus$ is defined as follows:
-$$\forall q \in Q, f[q] \oplus g[q] = \mathit{Max}(f[q], q[q])$$
-
-Given two sound maps $\lmap$ and $\gmap$, $\lmap \oplus \gmap$ corresponds to a combined map construction as outlined in \defn{cons}, and is sound. The event \emph{NewPoint} doesn't modify $s_i.M.\lmap$ further, and therefore, $\lmap$ remains \emph{sound} during the execution of this event.
+%$Given two sound maps $\lmap$ and $\gmap$, $\lmap \oplus \gmap$ corresponds to a combined map construction as outlined in \defn{cons}, and is sound. The event \emph{NewPoint} doesn't modify $s_i.M.\lmap$ further, and therefore, $\lmap$ remains \emph{sound} during the execution of this event.
 
 %\begin{definition}
 %    We say that $\Vec{x_n}\in D$ is \emph{reachable} from $\Vec{x_0}$ if there is a \emph{path} $p = \Vec{x_0},\Vec{x_1}, \Vec{x_2},\ldots, \Vec{x_n}$ , such that
@@ -57,33 +89,11 @@ Given two sound maps $\lmap$ and $\gmap$, $\lmap \oplus \gmap$ corresponds to a 
 %    $$ \left\{ q\in Q \mid Reach(q) \wedge \exists q \in \sensarea(\Vec{x}), q \notin \domain(\map_i)\right\} $$
 %\end{definition}
 
-In the event \emph{NewPoint}, the planner associated with the robot tries to find a path to a point on the \emph{frontier} of $s_i.M.\lmap$.
-If the path is empty, then the robot does nothing, and attempts to execute this event in the next round. Otherwise, until the robot finishes traversing the path, the \emph{LUpdate} event is enabled.
-
-\paragraph{LUpdate}
-This event is enabled while the robot is traversing the path computed in \emph{NewPoint}: the robot hasn't finishing traversing the path. i.e the state $s_i$ of a robot satisfies that $s_i.\cp.\mathit{Motion.reached}  = \mathit{False}$.
-Once the robot finishes traversing the path picked in \emph{NewPoint}, the \emph{GUpdate} event is enabled.
-
-
-In the $GUpdate$ event, robot attempts to \emph{atomically} or in a mutually exclusive manner, update the value of $s_i.M.\gmap$ with  $s_i.M.\lmap$. Given that $\oplus$ preserves soundness, again, that given $s_i^\prime$ such that $\mathit{s_i^\prime \in \mathit{trans}(s_i,\mathit{GUpdate})}$,  $s_i^\prime.M.\gmap$ is sound if $s_i.M.\gmap$ and $s_i.M.\lmap$ are sound.
 
 \begin{theorem}
     For the system of robots $[N]$ executing the $\lgname$ program shown in \reffig{mapapp}, the shared variable $\gmap$ represents a sound mapping of the domain $Q$.
 \end{theorem}
 
-\begin{proof}
-    Given a robot $i$, its initial state $s_i$ satisfies $$\forall q \in Q, s_i.M.\gmap[q] = -1.$$ This represents a (vacuously) sound \qdfunc $\map$ where $\domain(\map) = \phi$.
-
-
-    Consider a state $s_i^\prime$, where $s_i^\prime.M.\gmap$ is sound. If the soundness of $\gmap$ is preserved during the next round (i.e under execution of any enabled event), then by induction $\gmap$ always represents a sound mapping of the domain $Q$. \begin{itemize}
-                                                                                                                                                                                                                                                                      \item $\forall s_i^{\prime\prime} \in \mathit{trans}(s_i^\prime,\mathit{NewPoint}), s_i^{\prime\prime}.M.\gmap = s_i^\prime.M.\gmap$. Thus, the soundness of $\gmap$ is preserved by this event.
-                                                                                                                                                                                                                                                                      \item $\forall s_i^{\prime\prime} \in \mathit{trans}(s_i^\prime,\mathit{LUpdate}), s_i^{\prime\prime}.M.\gmap = s_i^\prime.M.\gmap$. Thus, the soundness of $\gmap$ is preserved by this event.
-                                                                                                                                                                                                                                                                      \item $\forall s_i^{\prime\prime} \in \mathit{trans}(s_i^\prime,\mathit{GUpdate}), s_i^{\prime\prime}.M.\gmap = s_i^\prime.M.\gmap \oplus s_i^\prime.M.\lmap$. By definition of $\oplus$, if $s_i^\prime.M.\lmap$ is sound, then $s_i^{\prime\prime}.M.\gmap$ is also sound.
-    \end{itemize}
-
-    Therefore, to prove that all events preserve the soundness of $\gmap$, we must prove that $\lmap$ also represents a sound mapping of $Q$.\rg{Circular proof coming in here, need restatement, will work on it post comments}
-
-\end{proof}
 %\begin{lemma}
 %    \label{ext}
 %    Suppose robot $i$ is at $\pos(i)\in D$, and $\exists(q^\prime)\in \sensarea(\pos(i))$,
@@ -122,7 +132,6 @@ In the $GUpdate$ event, robot attempts to \emph{atomically} or in a mutually exc
 %
 %
 %
-\subsubsection{External (Library) Functions}
 
 % restriction of the world function for sensing. accuracy of sensor statement.
 % domain of mapping function for which value is 0 or 1.

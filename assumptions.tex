@@ -14,15 +14,15 @@ The formal semantics of $\lgname$ is defined under certain timing and system inf
 The sensors used by a robot for perception of the ground truth around it are \emph{Motion.trace} and \emph{Lidar.ldata}, which are \emph{sampled} sensors. Given that $\delta$ is the duration of a \emph{round},
 
 \begin{itemize}
-    \item $\mathit{Motion.trace}: [0,\delta] \mapsto \mathit{Pos}$. Given a state $\vs\in Q$ ,  $\forall i \in [N]\vs.\mathit{Motion.trace}_i = \{(t_j, p_j)\}_{j \in [M]}$ where $p_j$ is the position of the robot $i$ at time $t_j$ from the beginning of the round.
-    \item  $\mathit{Lidar.ldata} : [0,\delta]\mapsto \mathit{Scan}$. Given a state $\vs\in Q$ , $\forall i \in [N], \vs.\mathit{Lidar.ldata}_i = \{t_j^\prime, l_j^\prime\}_{j^\prime \in M^\prime}$ where $l_j^\prime$ is the LIDAR \emph{scan} at time $t_j^\prime$ from the beginning of the round.
+    \item $\mathit{Motion.trace}: [0,\delta] \mapsto \mathit{Pos}$. Given a state $\vs\in C$ ,  $\forall i \in [N]\vs.\mathit{Motion.trace}_i = \{(t_j, p_j)\}_{j \in [M]}$ where $p_j$ is the position of the robot $i$ at time $t_j$ from the beginning of the round.
+    \item  $\mathit{Lidar.ldata} : [0,\delta]\mapsto \mathit{Scan}$. Given a state $\vs\in C$ , $\forall i \in [N], \vs.\mathit{Lidar.ldata}_i = \{t_j^\prime, l_j^\prime\}_{j^\prime \in M^\prime}$ where $l_j^\prime$ is the LIDAR \emph{scan} at time $t_j^\prime$ from the beginning of the round.
 \end{itemize}
 
 \begin{assumption}
-    Given a point $p_i$, if there is a corresponding lidar scan $l_i$ when the robot is in $\qfunc(p_i)$, then there is a function $\sensfunc$ such that $\forall q\in Q$ such that $q \in \domain(\sensfunc), \sensfunc(q) = \world_Q(q)$.
+    Given a point $p_i$, if there is a corresponding lidar scan $l_i$ when the robot is in $\qfunc(p_i)$, then there is a function $\sensfunc$ such that $\forall q \in \domain(\sensfunc), \sensfunc(q) = \world_Q(q)$.
 \end{assumption}
 
-$\domain(\sensfunc)$ of a robot is defined as its sensing area. This assumption is required to ensure the \emph{Individual soundess} of a mapping updated using LIDAR scan information.
+This assumption is required to ensure the \emph{Individual soundess} of a mapping updated using LIDAR scan information.$\domain(\sensfunc)$ of a robot is defined as its sensing area.
 \fTBD{\rg{Need to figure out how to write the assumptions so that the sensor and actuator ports don't do unexpected things during $\delta$ transitions}}
 %The sampling frequencies of these sensors may be different, hence the potentially different number of readings, and potentially different timestamps of the readings.
 
@@ -34,7 +34,7 @@ $\domain(\sensfunc)$ of a robot is defined as its sensing area. This assumption 
 
 
 \begin{definition}
-   Given a robot at a position $\Vec{x}\in D, \qfunc{\Vec{x}} = q$, the \emph{sensing area} around $q$ is a function $\sensarea: Q \mapsto 2^{Q}$ where $\forall q^\prime \in \sensarea(q), \sensfunc(q) = \world_Q(q)$.
+   Given a robot at a position $\Vec{x}\in D, \qfunc(\Vec{x}) = q$, the \emph{sensing area} around $q$ is a function $\sensarea: Q \mapsto 2^{Q}$ where $\forall q^\prime \in \sensarea(q), \sensfunc(q) = \world_Q(q)$.
 \end{definition}
 
 %\fTBD{define the data types in the software section}
@@ -45,14 +45,23 @@ $\domain(\sensfunc)$ of a robot is defined as its sensing area. This assumption 
 
 \subsubsection{Problem Setup}
 
-A vacuously correct (sound) solution to $\mapprob$ given $D, \qfunc$ and $\world_Q$ is $\forall i \in [N]$, $$\map_i : Q_i \mapsto \left\{0,1\right\}, Q_i = \phi$$ To allow for potentially more interesting solutions than the one stated above, we make the following assumption on the
+A vacuously correct (sound) solution to the mapping problem given $D, \qfunc$ and $\world_Q$ is $\forall i \in [N]$, $$\map_i : Q_i \mapsto \mathbb{B}, Q_i = \phi$$ To allow for potentially more interesting solutions than the one stated above, we make the following assumption on the
 \begin{assumption}
+    \label{init}
 Initially, each robot $i\in[N]$ starts at a grid rectangle with no obstacle, the sensed area of each robot $i$ is non empty
 $\forall i \in [N], \world_Q(q^0_i) = 0\wedge \sensarea(q^0_i) \neq \phi$
 where $q^0_i = \qfunc(\pos_0(i))$, and $\pos_0(i)$ denotes the initial position of robot $i$.
 \end{assumption}
 
-This ensures that a robot doesn't violate the \emph{Individual soundness} requirement for a correct solution the mapping problem.
+We also assume that the initialization of the $\lmap$ variable for each robot is \emph{sound}, and $\gmap$ is initially an empty mapping.
+\begin{assumption}
+    \label{initval}
+\begin{itemize}\item   $\forall \vs \in C_0, \forall i \in [N], \forall q \in \sensarea(q^0_i), \vs.\lmap_i(q) = \sensfunc(q)$ ,
+    \item $\forall \vs \in C_0, \forall i \in [N], \vs.\gmap = \phi$
+\end{itemize}
+\end{assumption}
+
+These two assumptions ensure that a robot doesn't violate the \emph{Individual soundness} and \emph{ soundness} requirements for a correct solution the mapping problem.
 
 \subsubsection{Planning and actuation}
 
@@ -87,9 +96,12 @@ The following are the timing assumptions on $\lgname$ programs.
 \end{assumption}
 This assumption is reasonable if the time taken to complete a program transition step is negligible compared to $\delta$.  The $\lgname$ middleware ensures that the participating agents begin executing their events synchronously.
 
-\begin{assumption} Shared memory updates are propagated to all agents \sayan{within one round\/}.
+\begin{assumption} Shared memory updates are propagated to all agents within one round. That is, given a state $\vs\in C$, for every  $i,j \in [N]$, for a shared variable $v$, $\vs.v_i = \vs.v_j$.
 \end{assumption}
-The $\lgname$ middleware uses message passing to implement shared memory, and compared to $\delta$, the time taken to observe a shared memory update as a received message from the time that it is sent is much smaller. We therefore can assume that in this setting, the shared memory semantics of $\lgname$ wherein an update is visible in the next round of program transitions, is a reasonable implementation deliverable. This assumption in this particular example, is required for \emph{Eventual Completeness}, but in other applications, it may be used for correctness.
+The $\lgname$ middleware uses message passing to implement shared memory, and compared to $\delta$, the time taken to observe a shared memory update as a received message from the time that it is sent is much smaller. We therefore can assume that in this setting, the shared memory semantics of $\lgname$ wherein an update is visible in the next round of program transitions, is a reasonable implementation deliverable. This assumption is required for \emph{soundness} and \emph{individual soundness}.
+
+
+
 %$\marginpar{\scriptsize\sayan{MAke this a list of {\bf Assumptions} with discussion on why they hold, or what they mean in English.}}
 
 
