@@ -64,8 +64,9 @@ Our simulation is run on a computer with 8 Intel Core i7-6700HQ @ 2.60GHz CPU co
 
 \begin{figure*}[t]
 \includegraphics[width=0.3\textwidth]{figs/exp-empty.png}
+\includegraphics[width=0.3\textwidth]{figs/exp-u-shape.png}
 \includegraphics[width=0.3\textwidth]{figs/exp-i-shape.png}
-\caption{Percentagefor map without obstacles~(Left).}\label{fig:percent}
+\caption{Percentage of exploration for map without obstacles~(\emph{Left}), with U-shape~(\emph{Mid}), and with I-shape~(\emph{Right}).}\label{fig:percent}
 \end{figure*}
 
 \begin{figure*}
@@ -73,7 +74,7 @@ Our simulation is run on a computer with 8 Intel Core i7-6700HQ @ 2.60GHz CPU co
 \includegraphics[width=0.22\textwidth]{figs/exp-progress-1.png}
 \includegraphics[width=0.22\textwidth]{figs/exp-progress-2.png}
 \includegraphics[width=0.22\textwidth]{figs/exp-progress-3.png}
-\caption{Four cars in U-shape world in simulator~(\emph{Left}). Visualization of the global map at three different time stamps~(\emph{Right})}\label{fig:I-map-progress}
+\caption{Four cars in U-shape world in simulator~(\emph{Left}). Visualization of the global map at three different time stamps~(\emph{Right})}\label{fig:U-map-progress}
 \end{figure*}
 
 Figure~\ref{fig:percent} shows that more cars explore more percentages in any given amount of time in all maps.
@@ -81,6 +82,9 @@ It is not surprising because more cars start with more areas explored initially 
 A more interesting result is that the final saturating percentages by more cars are higher as well.
 From our observation in the visualization, one major reason is due to the aforementioned limitations in finding paths to frontier.
 When there are only few unexplored grid rectangles remaining,
-it becomes much more difficult to find such paths,
-and the chance to succeed with more cars is simply higher.
-
+it becomes much more difficult to find such paths.
+The chance to successfully find such path with more cars is simply higher.
+The U-shaped obstacle in Figure~\ref{fig:U-map-progress} is designed to demonstrate this problem.
+Note that only the car at the top can reach the center of the map without much trouble.
+However, we deliberately place it to face the boundary wall.
+As a consequence, the center of the map is much less explored.
