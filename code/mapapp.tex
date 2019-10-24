@@ -38,7 +38,7 @@ LUpdate:$\label{lup}$
    eff :
           pscan $=$ tSync(Motion.trace, Lidar.ldata)
          for pos, scan in pscan:
-             $\lmap$ $=$ merge(\lmap,scanToMap(pos, scan))
+             $\lmap$ $=$ merge($\lmap$,scanToMap(pos, scan))
 
 GUpdate: $\label{gup}$
   pre Motion.reached
