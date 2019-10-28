@@ -6,6 +6,7 @@
 **/*.log
 **/~*
 **/*.synctex.gz
+.idea/*
 main.i*
 main.n*
 StyleInd.ist
