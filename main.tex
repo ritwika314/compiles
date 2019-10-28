@@ -1,160 +1,228 @@
+%% For double-blind review submission, w/o CCS and ACM Reference (max submission space)
+\documentclass[sigplan,10pt,review,anonymous]{acmart}
+\settopmatter{printfolios=true,printccs=false,printacmref=false}
+%% For double-blind review submission, w/ CCS and ACM Reference
+%\documentclass[sigplan,review,anonymous]{acmart}\settopmatter{printfolios=true}
+%% For single-blind review submission, w/o CCS and ACM Reference (max submission space)
+%\documentclass[sigplan,review]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
+%% For single-blind review submission, w/ CCS and ACM Reference
+%\documentclass[sigplan,review]{acmart}\settopmatter{printfolios=true}
+%% For final camera-ready submission, w/ required CCS and ACM Reference
+%\documentclass[sigplan]{acmart}\settopmatter{}
 
-\documentclass[sigconf]{acmart}
-\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08emT\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
-\copyrightyear{2018}
-\acmYear{2018}
+
+%% Conference information
+%% Supplied to authors by publisher for camera-ready submission;
+%% use defaults for review submission.
+\acmConference[]{}{}{}
+\acmYear{}
+\acmISBN{} % \acmISBN{978-x-xxxx-xxxx-x/YY/MM}
+\acmDOI{} % \acmDOI{10.1145/nnnnnnn.nnnnnnn}
+\startPage{1}
+
+%% Copyright information
+%% Supplied to authors (based on authors' rights management selection;
+%% see authors.acm.org) by publisher for camera-ready submission;
+%% use 'none' for review submission.
+%\setcopyright{none}
+%\setcopyright{acmcopyright}
 \setcopyright{acmlicensed}
-\acmConference[]{}
-\acmBooktitle{}
-\acmPrice{15.00}
-\acmDOI{10.1145/1122445.1122456}
-\acmISBN{978-1-4503-9999-9/18/06}
+%\setcopyright{rightsretained}
+%\copyrightyear{2018}           %% If different from \acmYear
 
-\usepackage{caption}
-\DeclareCaptionFont{white}{\color{white}}
-\DeclareCaptionFormat{listing}{%
-  \parbox{\textwidth}{\colorbox{gray}{\parbox{\textwidth}{#1#2#3}}\vskip-4pt}}
-\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
-
-
-\usepackage{amssymb}
-%\usepackage{bm}
-\usepackage{mdframed}
-\usepackage{lipsum}
-\usepackage{amsfonts}
-\usepackage{paralist}
-\usepackage{enumerate}
-\usepackage{enumitem}
-\usepackage{bbding}
-\usepackage{pifont}
-%\usepackage[fleqn]{amsmath}
-\usepackage{fancyvrb}
-\usepackage{wrapfig}
-\usepackage{subfig}
-\usepackage{color}
-\usepackage[T1]{fontenc}% http://ctan.org/pkg/fontenc
-\usepackage[outline]{contour}% http://ctan.org/pkg/contour
-\usepackage{xcolor}% http://ctan.org/pkg/xcolor
-\usepackage{amsmath}
-\usepackage{mathtools}
-\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
-\usepackage{hyperref}
-\hypersetup{
-	colorlinks=true,
-	citecolor={blue},
-	linkcolor = {blue},
-	bookmarksopen=false,
-	bookmarksnumbered=true
-}
+%% Bibliography style
+\bibliographystyle{ACM-Reference-Format}
+%% Citation style
+%\citestyle{acmauthoryear}  %% For author/year citations
+%\citestyle{acmnumeric}     %% For numeric citations
+%\setcitestyle{nosort}      %% With 'acmnumeric', to disable automatic
+                            %% sorting of references within a single citation;
+                            %% e.g., \cite{Smith99,Carpenter05,Baker12}
+                            %% rendered as [14,5,2] rather than [2,5,14].
+%\setcitesyle{nocompress}   %% With 'acmnumeric', to disable automatic
+                            %% compression of sequential references within a
+                            %% single citation;
+                            %% e.g., \cite{Baker12,Baker14,Baker16}
+                            %% rendered as [2,3,4] rather than [2-4].
 
 
-\usepackage[mathscr]{euscript}
-\usepackage{nameref}
-% Package to generate and customize Algorithm as per ACM style
-\usepackage[vlined]{algorithm2e}
-\usepackage{adjustbox}
-\usepackage{mathpartir,xparse}
-\usepackage{bbm}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Note: Authors migrating a paper from traditional SIGPLAN
+%% proceedings format to PACMPL format must update the
+%% '\documentclass' and topmatter commands above; see
+%% 'acmart-pacmpl-template.tex'.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+%% Some recommended packages.
+\usepackage{booktabs}   %% For formal tables:
+                        %% http://ctan.org/pkg/booktabs
+\usepackage{subcaption} %% For complex figures with subfigures/subcaptions
+                        %% http://ctan.org/pkg/subcaption
 \usepackage{listings}
-%\SetAlFnt{\algofont}
-%\SetAlCapFnt{\algofont}
-%\SetAlCapNameFnt{\algofont}
-%\SetAlCapHSkip{0pt}
-%\IncMargin{-\parindent}
-%\renewcommand{\algorithmcfname}{ALGORITHM}
-\definecolor{light-blue}{rgb}{0.4,0,0.9}
-\newcommand{\starl}[1]{\textcolor{light-blue}{#1}}
-\makeatletter % allow us to mention @-commands
-\def\arcr{\@arraycr}
-\makeatother
-\newcommand{\smnew}[1]{\textcolor{blue}{#1}}
-\usepackage{wasysym}
-\usepackage{verbatim}
-\usepackage{epstopdf}
+\usepackage{paralist}
 \usepackage{tikz}
-\usetikzlibrary{calc,patterns,decorations.pathmorphing,decorations.markings,shapes, arrows}
+\usetikzlibrary{calc,patterns,decorations.pathmorphing,decorations.markings,shapes,arrows}
 
-
-
+\usepackage{xspace}
 \input{macros.tex}
 
-% For code listings
-\lstset{frame=lrb,xleftmargin=\fboxsep,xrightmargin=-\fboxsep}
-\DeclareCaptionFont{white}{\color{white}}
-\DeclareCaptionFormat{listing}{%
-  \parbox{\textwidth}{\colorbox{gray}{\parbox{0.478\textwidth}{#1#2#3}}\vskip-4pt}}
-\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
-\lstset{frame=lrb,xleftmargin=\fboxsep,xrightmargin=-\fboxsep,language=koordNums}
-
-% end of the preamble, start of the body of the document source.
 \begin{document}
 
-%
-% The "title" command has an optional parameter, allowing the author to define a "short title" to be used in page headers.
-\title{Programming and formally analyzing a distributed coordination and mapping system using CyPhyHouse}
+%% Title information
+\title[Short Title]{Programming and formally analyzing a distributed coordination and mapping system using CyPhyHouse}         %% [Short Title] is optional;
+                                        %% when present, will be used in
+                                        %% header instead of Full Title.
+%\titlenote{with title note}             %% \titlenote is optional;
+                                        %% can be repeated if necessary;
+                                        %% contents suppressed with 'anonymous'
+%\subtitle{Subtitle}                     %% \subtitle is optional
+%\subtitlenote{with subtitle note}       %% \subtitlenote is optional;
+                                        %% can be repeated if necessary;
+                                        %% contents suppressed with 'anonymous'
 
 
+%% Author information
+%% Contents and number of authors suppressed with 'anonymous'.
+%% Each author should be introduced by \author, followed by
+%% \authornote (optional), \orcid (optional), \affiliation, and
+%% \email.
+%% An author may have multiple affiliations and/or emails; repeat the
+%% appropriate command.
+%% Many elements are not rendered, but should be provided for metadata
+%% extraction tools.
 
-%
-% The abstract is a short summary of the work to be presented in the article.
+%% Author with single affiliation.
+\author{First1 Last1}
+\authornote{with author1 note}          %% \authornote is optional;
+                                        %% can be repeated if necessary
+\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
+\affiliation{
+  \position{Position1}
+  \department{Department1}              %% \department is recommended
+  \institution{Institution1}            %% \institution is required
+  \streetaddress{Street1 Address1}
+  \city{City1}
+  \state{State1}
+  \postcode{Post-Code1}
+  \country{Country1}                    %% \country is recommended
+}
+\email{first1.last1@inst1.edu}          %% \email is recommended
+
+%% Author with two affiliations and emails.
+\author{First2 Last2}
+\authornote{with author2 note}          %% \authornote is optional;
+                                        %% can be repeated if necessary
+\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
+\affiliation{
+  \position{Position2a}
+  \department{Department2a}             %% \department is recommended
+  \institution{Institution2a}           %% \institution is required
+  \streetaddress{Street2a Address2a}
+  \city{City2a}
+  \state{State2a}
+  \postcode{Post-Code2a}
+  \country{Country2a}                   %% \country is recommended
+}
+\email{first2.last2@inst2a.com}         %% \email is recommended
+\affiliation{
+  \position{Position2b}
+  \department{Department2b}             %% \department is recommended
+  \institution{Institution2b}           %% \institution is required
+  \streetaddress{Street3b Address2b}
+  \city{City2b}
+  \state{State2b}
+  \postcode{Post-Code2b}
+  \country{Country2b}                   %% \country is recommended
+}
+\email{first2.last2@inst2b.org}         %% \email is recommended
+
+
+%% Abstract
+%% Note: \begin{abstract}...\end{abstract} environment must come
+%% before \maketitle command
 \begin{abstract}
-We present the design and implementation of a  new programming  language for distributed cyberphysical systems (CPS) called $\lgname$ that separates the platform-independent  computations from platform-specific concerns of sensing, communication, and low-level  control. $\lgname$ raises the level of abstraction in programming CPS by providing distributed shared memory for coordination; it allows parameterized controllers for portability across different physical platforms, and it is based on a familiar  event-triggered concurrent programming model. We present the formal semantics of $\lgname$ in the \K executable semantic framework. This  narrows the gap between the theoretical model of $\lgname$  and its implementation. We  present an implementation of $\lgname$ that generates executable Python code, which has been deployed on robotic platforms.  Finally, we  introduce a high-fidelity simulator and show how it can be used to test, visualize, and debug large deployments of $\lgname$ applications.  
-%The same application code can  be verified through bounded model-checking using a verification tool. Finally, 
+We present the design and implementation of a new programming language for distributed cyberphysical systems (CPS) called \lgname
+that separates the platform-independent computations from platform-specific concerns of sensing, communication, and low-level  control.
+\lgname raises the level of abstraction in programming CPS by providing distributed shared memory for coordination;
+it allows parameterized controllers for portability across different physical platforms,
+and it is based on a familiar event-triggered concurrent programming model.
+We present the formal semantics of \lgname in the \K executable semantic framework.
+This narrows the gap between the theoretical model of \lgname and its implementation.
+We present an implementation of \lgname that generates executable Python code, which has been deployed on robotic platforms.
+Finally, we introduce a high-fidelity simulator and show how it can be used to test, visualize, and debug large deployments of \lgname applications.  
 We illustrate the various features and the design decisions involved through applications such as platooning, formation flight, and distributed task allocation. 
 \end{abstract}
 
-%
-% The code below is generated by the tool at http://dl.acm.org/ccs.cfm.
-% Please copy and paste the code instead of the example below.
-%
-%\begin{CCSXML}
-%<ccs2012>
-% <concept>
-%  <concept_id>10010520.10010553.10010562</concept_id>
-%  <concept_desc>Computer systems organization~Embedded systems</concept_desc>
-%  <concept_significance>500</concept_significance>
-% </concept>
-% <concept>
-%  <concept_id>10010520.10010575.10010755</concept_id>
-%  <concept_desc>Computer systems organization~Redundancy</concept_desc>
-%  <concept_significance>300</concept_significance>
-% </concept>
-% <concept>
-%  <concept_id>10010520.10010553.10010554</concept_id>
-%  <concept_desc>Computer systems organization~Robotics</concept_desc>
-%  <concept_significance>100</concept_significance>
-% </concept>
-% <concept>
-%  <concept_id>10003033.10003083.10003095</concept_id>
-%  <concept_desc>Networks~Network reliability</concept_desc>
-%  <concept_significance>100</concept_significance>
-% </concept>
-%</ccs2012>
-%\end{CCSXML}
-%
-%\ccsdesc[500]{Computer systems organization~Embedded systems}
-%\ccsdesc[300]{Computer systems organization~Redundancy}
-%\ccsdesc{Computer systems organization~Robotics}
-%\ccsdesc[100]{Networks~Network reliability}
 
-\keywords{mobile robotics, swarms, simulation, semantics}
+%% 2012 ACM Computing Classification System (CSS) concepts
+%% Generate at 'http://dl.acm.org/ccs/ccs.cfm'.
+\begin{CCSXML}
+<ccs2012>
+<concept>
+<concept_id>10011007.10011006.10011008</concept_id>
+<concept_desc>Software and its engineering~General programming languages</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+<concept>
+<concept_id>10003456.10003457.10003521.10003525</concept_id>
+<concept_desc>Social and professional topics~History of programming languages</concept_desc>
+<concept_significance>300</concept_significance>
+</concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Software and its engineering~General programming languages}
+\ccsdesc[300]{Social and professional topics~History of programming languages}
+%% End of generated code
 
 
+%% Keywords
+%% comma separated list
+\keywords{keyword1, keyword2, keyword3}  %% \keywords are mandatory in final camera-ready submission
+
+
+%% \maketitle
+%% Note: \maketitle command must come after title commands, author
+%% commands, abstract environment, Computing Classification System
+%% environment and commands, and keywords command.
 \maketitle
 
 
 \input{intro.tex}
-%\input{overview.tex}
 \input{overview.tex}
 \input{preliminaries.tex}
 \input{assumptions.tex}
 \input{analysis.tex}
 \input{experiments.tex}
 \input{conclusions.tex}
-%\newpage\newpage
-\bibliographystyle{abbrv-fr}
-\bibliography{cyphyhouse.bib,sayan1.bib}
-\input{appendix.tex}
-\end{document}
 
+%% Acknowledgments
+\begin{acks}                            %% acks environment is optional
+                                        %% contents suppressed with 'anonymous'
+  %% Commands \grantsponsor{<sponsorID>}{<name>}{<url>} and
+  %% \grantnum[<url>]{<sponsorID>}{<number>} should be used to
+  %% acknowledge financial support and will be used by metadata
+  %% extraction tools.
+  This material is based upon work supported by the
+  \grantsponsor{GS100000001}{National Science
+    Foundation}{http://dx.doi.org/10.13039/100000001} under Grant
+  No.~\grantnum{GS100000001}{nnnnnnn} and Grant
+  No.~\grantnum{GS100000001}{mmmmmmm}.  Any opinions, findings, and
+  conclusions or recommendations expressed in this material are those
+  of the author and do not necessarily reflect the views of the
+  National Science Foundation.
+\end{acks}
+
+
+%% Bibliography
+\bibliography{cyphyhouse,sayan1}
+
+
+%% Appendix
+\appendix
+
+\input{appendix.tex}
+
+
+\end{document}

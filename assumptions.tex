@@ -75,7 +75,13 @@ These two assumptions ensure that a robot doesn't violate the \emph{Individual s
     \end{itemize}
 \end{definition}
 
-A grid rectangle $q\in Q$ is accessible in general, if $\exists \Vec{x}\in D, q = \qfunc(\Vec{x})$ such that $\Vec{x}$ is accessible from either \begin{inparaenum} [(a)] \item the initial position of a robot, or \item another accessible point $\Vec{x^\prime}\in D$. We denote the accessibility of a grid rectangle using a predicate $\Access : Q \mapsto \left\{\mathit{True}, \mathit{False}\right\}$, where $\Access(q) = \mathit{True}$ if its accessible,  $\mathit{False}$ otherwise.
+A grid rectangle $q\in Q$ is accessible in general, if $\exists \Vec{x}\in D, q = \qfunc(\Vec{x})$ such that $\Vec{x}$ is accessible from either
+
+\begin{inparaenum} [(a)]
+    \item the initial position of a robot, or
+    \item another accessible point $\Vec{x^\prime}\in D$.
+          We denote the accessibility of a grid rectangle using a predicate $\Access : Q \mapsto \left\{\mathit{True}, \mathit{False}\right\}$,
+          where $\Access(q) = \mathit{True}$ if its accessible, $\mathit{False}$ otherwise.
 \end{inparaenum}
 
 \begin{assumption}
