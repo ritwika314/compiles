@@ -1,0 +1,221 @@
+Review 1
+ 
+Strengths of the paper
+---------------------------------------------------------------------------
++ Modeling and implementation of CPS that are correct by construction is pretty important and timely.
+ 
++ Having formal operation semantics is a necessity and a point of strength.
+ 
++ The paper is generally well written.
+---------------------------------------------------------------------------
+ 
+ 
+Weaknesses of the paper
+---------------------------------------------------------------------------
+- The notion of distribution is pretty superficial.
+ 
+ 
+- The paper lacks proper comparison with important related work.
+ 
+ 
+- The experimental results are very weak.
+ 
+ 
+ 
+Detailed Comments
+---------------------------------------------------------------------------
+* The paper ignores to important lines of work directly related to this paper: the tools BIP (Verimag) and ptolemy (UC-Berkeley). Both offer actractions and also ways to encode platform-dependent constraints.
+
+ 
+* The BMC results are pretty week and hand waving. For example, UPPAAL can also verify Fischer's algorithm in dense time and is faster the results reported in this paper. I am not sure why the authors found their observations interesting to report.
+ 
+* Distribution using share variables in a CPS is pretty superficial even in simulation mode. Distributed mutual exclusion is a hard problem and Koord is ignoring the real problem.
+ 
+* The simulation results do not show anything interesting. They also don't show why they statistically significant.
+---------------------------------------------------------------------------
+ 
+Review 2
+ 
+ 
+Strengths of the paper
+---------------------------------------------------------------------------
+The work addresses relevant concerns in CPS design: managing complexity by abstraction, portability,  and heterogeneity.
+ 
+The paper is well written and easy to follow. 
+ 
+Examples chosen in this paper are appealing and the evaluation results interesting.
+ 
+The implementation is open sourced.
+---------------------------------------------------------------------------
+ 
+ 
+Weaknesses of the paper
+---------------------------------------------------------------------------
+I am a bit uncertain about the status of prior publication of this work, since prior work is omitted from this paper, yet available online: 
+- Koord Language Development Team, “A design and analysis framework for distributed cps.” [Online]. Available: https://cyphyhouse.github.io/papers/koord.pdf
+- Ritwika Ghosh, Sasa Misailovic, and Sayan Mitra. 2018. Language Semantics Driven Design and Formal Analysis for Distributed Cyber-Physical Systems: [Extended Abstract]. In Proceedings of the 2018 Workshop on Advanced Tools, Programming Languages, and PLatforms for Implementing and Evaluating Algorithms for Distributed systems (ApPLIED '18). ACM, New York, NY, USA, 41-44. DOI: https://doi.org/10.1145/3231104.3231958
+ 
+ 
+The language proposed here is not suitable for arbitrary CPS but those that consist of a set of agents that execute in iterations of negligible execution times. 
+ 
+Several presentation issues should be addressed.
+---------------------------------------------------------------------------
+ 
+ 
+Detailed Comments
+---------------------------------------------------------------------------
+You bring up domain specific languages in the introduction. What languages are you thinking of? Languages are typically not platform dependent, implementations are. Also, isn’t Koord a domain specific language? Or would you categorize it as a general purpose language? 
+  
+The authors argue that an agents execution time is negligible. This seems rather restrictive, removing systems with computationally intensive tasks from the set of applications that can use Koord. What about systems where some agents are more computationally intensive than others? For instance, ground vehicles vs. drones, working together towards a common goal? In this case, the ground vehicles would perform lots of computations using data provided by drones, which do not have as much computational power.
+ 
+Some clarifications would help the paper be more stand-alone. For instance, what are “Dubin-like vehicle models”?
+ 
+  
+Revision Instructions
+---------------------------------------------------------------------------
+I would like to understand the type of applications addressed here better. In particular, I am concerned about the restriction that all agents are assumed to have negligible execution times.
+---------------------------------------------------------------------------
+
+ 
+
+Review 3
+ 
+Strengths of the paper
+---------------------------------------------------------------------------
+- Original high-level, cross-platform design
+- Executable semantics in the K framework, ensuring correctness
+- Convincing applications
+---------------------------------------------------------------------------
+ 
+ 
+Weaknesses of the paper
+---------------------------------------------------------------------------
+- Very little justification on the choices of the design: why event-triggered? why discrete time? etc.
+- Weak related work section, especially regarding programming languages for cyber-physical / hybrid systems
+---------------------------------------------------------------------------
+
+ 
+Detailed Comments
+---------------------------------------------------------------------------
+This paper presents a very interesting design for the Koord language. I just wish it justified its choices a little more.
+ 
+ it is unclear to me how you simulate/model the environment for both simulations and bounded model checking. It is a crucial aspect of a system that interacts with the physical world, but I don't understand how you do it.
+ 
+ 
+The Related Work section is somewhat lacking, especially. Here are some pointers you may want to look at:
+- the Ptolemy platform by Ed Lee et al. https://ptolemy.berkeley.edu/
+- the Zelus programming language, see Bourke and Pouzet, Zélus: A synchronous language with ODEs, HSCC'13 and other papers at http://zelus.di.ens.fr/papers.html
+- for an event-triggered design that interacts with the external world, the following paper may be related: Newcomb et al., a Calculus for Internet of Things Automation, SPLASH Onward!'17
+ 
+ 
+Minor:
+- bring back syntax of language in the main body of the paper, do not leave it in the Appendix
+---------------------------------------------------------------------------
+ 
+ 
+Revision Instructions
+---------------------------------------------------------------------------
+- Provide some justifications on the choices of the design, especially the fact that the language is even-triggered and discrete time. This should come with a thorough comparison with related work that makes similar or different choices.
+- Expand Related work with comparison with other CPS languages, especially the ones looking at Hybrid Systems.
+- Clarify how environment is simulated and modeled.
+---------------------------------------------------------------------------
+ 
+ 
+ 
+============================================================================
+                            REVIEWER #4
+============================================================================
+ 
+ 
+---------------------------------------------------------------------------
+Strengths of the paper
+---------------------------------------------------------------------------
+I found most of the paper to be an easy read thanks to the clear writing style
+used in its informal sections. I also think its structure balances theory and
+practice nicely.
+---------------------------------------------------------------------------
+ 
+ 
+ 
+Detailed Comments
+---------------------------------------------------------------------------
+1. The choice of a nondeterministic bulk-synchronous semantics may be appealing
+   for various reasons, but its implementation raises tough questions in a
+   concurrent and distributed setting. This is briefly commented upon at the end
+   of §4.1, but only in very vague terms.
+ 
+   a. What about fairness and fault-tolerance?  Certainly, in a real-world
+      situation, a robot may fail for contingent reasons (e.g., hardware
+      failure). Does it lead to the whole swarm grinding to a halt?  As far as I
+      see, this is never addressed in the paper.
+  
+   b. The semantics assumes a sampled execution, where environment steps take δ
+      time, with δ a parameter of the semantics. But, since the environment step
+      includes message propagation, is this assuming that message propagation
+      time is bounded? This seems like a strong assumption to me.
+  
+2. I cannot make sense of some of the proposed semantics rules. Let me give some
+   examples:
+ 
+   - In rule EVENT (p. 5), the "pre" symbol is used as both concrete syntax (it
+     is in typewriter font) and as a metavariable (it is passed to the eval()
+     predicate). I also do not understand where "ev" comes from.
+ 
+   - Why is RUN formulated in "big step" style, with an ellipsis in its premise?
+ 
+   - As far as I see, RUN is supposed to do a complete bulk-synchronous step and
+     leave the system in a state where the environment can react. But then, how
+     can ENVTRANS fire, since it can only start in a the "prog" state?
+ 
+   - It seems to me that (up to the previous issue), the only way to execute
+     environment transitions is by performing RUN, ENVTRANS, AGENT-ENV-TO-PROG,
+     and ENV-TO-PROG transition in sequence. But then, why formulate several
+     rule rather than a bigger one? In my opinion, having many "small" rules
+     here obfuscates the dynamics of the rewriting system for no good reason.
+ 
+   Note: my confusion might stem from the notations, which are very different
+   from the ones I am used to in programming language research. For instance,
+   premises do not need explicit conjunctions, and superfluous equalities should
+   be substituted away. While these might seem like minor quibbles, I believe
+   they make the rules hard to review for experts.
+ 
+ 
+3. The model-checking effort does not contain any original research:
+   it simply relies on the generic bounded model-checker offered by
+   the K framework.  What is specific to Koord that would makes the
+   model checking simpler or easier to solve? The paper does not give
+   an example nor intuition.
+ 
+
+4. Is shared memory a satisfying programming model for actual applications? I
+   understand that this is one of the standard conceptual models used in
+   distributed algorithms, but am concerned about concrete software engineering
+   issues. For instance, what happens if there is a data race in a Koord
+   program? If several nodes write to the same "allread" array cell? Do you
+   expect Koord programmers to use a full-blown concurrent separation logic to
+   formally prove their programs?
+ 
+   It is said that the compiler generates Python code that is
+   distributed. What happen if a deadline (the period) is missed? How the
+   round robin policy and the interleaving semantics is ensured? Does the
+   distributed implementation uses locks? In case of a fault, what happens?
+   Is the whole system blocked? 
+ 
+5. While the conclusion of the paper, in a somewhat grandiose fashion, presents
+   Koord as a "unified approach to bridging" "the divide between theory and
+   implementation concerns of cyber-physical systems" (p. 9), I don't think this
+   is really the case. The environment part of the system is not addressed by
+   Koord (its formal semantics models it as an externally-given mathematical
+   function). As far as I understand, Koord users cannot test their programs
+   against specific environment models, except by delving into the
+   implementation.
+ 
+6. A comparison with the state-of-the art modeling/programming
+   languages for reactive systems is lacking, e.g., what can be
+   written in tools like Simulink or synchronous languages, like Lustre.
+   Ensuring that determinacy is preserved by
+   composition and that the generated code runs in bounded time and
+   space has been a long research questions in the field of
+   synchronous languages. There have also been several works on the
+   generation of distributed code from a synchronous model (in
+   particular the work by Caspi, Girault, etc.).

@@ -1,0 +1,48 @@
+PAPER: 173
+TITLE: Koordinator: A verification framework of distributed CPS applications
+AUTHORS: Ritwika Ghosh, Sasa Misailovic and Sayan Mitra
+
+Overall evaluation: 0 (borderline paper)
+
+----------- Overall evaluation -----------
+
+This paper proposes Koordinator that is a language for robots applications independent from the platform in where it is running. The first part of the paper is dedicated to the presentation
+of the language, while the second one is dedicated to the presentation of a symbolic and a concrete verification tool. Depending on which verification toolset is used, one has to "estimate the behavior" of the environment or to have it explicitly. A large part of the paper is dedicated to either show a reduction to the bounded model checking problem (in which case the environment does not need to be explicit), or to the symbolic computation (where the environment has to be). The
+authors then show the scalability and the power of the language on a bench of ten case studies. The paper is of interest, and it would be of interest to compare its content to tools like UPPAAL that also allows to verify timed system with abstracted information on the environment.
+
+The paper presents some interesting work. It is a bit hard to understand the impact of having to propose the invariant and some better info about the new applications mentioned in the conclusion
+would have been great.
+
+
+----------------------- REVIEW 2 ---------------------
+PAPER: 173
+TITLE: Koordinator: A verification framework of distributed CPS applications
+AUTHORS: Ritwika Ghosh, Sasa Misailovic and Sayan Mitra
+
+Overall evaluation: -1 (weak reject)
+
+----------- Overall evaluation -----------
+The paper describes the Koordinator tool for analysing and verifying CPS applications. The main ingredients of the tool are:  (i) KoordBMC supporting verification of bounded executions/instances and (ii) KoordProver for proving inductive invariants. While Figure 2 overviews the main components of the tool, the paper does not detail how these components are connected, nor how the infomation exchange between the main parts are done. As a tool paper, I would have liked to see a usage-specific description: what are the main options and commands for using the tool? As such, a running example would have helped illustrating the tool's usage, and the iput/output of KoorBMC and KoordProver.
+In the case of KoordProver, I found no formal description of the used invariants, so I could not understand the synthax in which the invariants are written and the proving challenges on KoordProver. Which logic is supported by KoordProver? In addition to proving invariants, does Koordinator also support generating invariants?
+
+When it comes to experimental evaluation, it would have been better to also compare Koordinator to other state-of-the-art tools. This would have highlighted advantages/impact!
+
+Overall, the paper should have given more tool-specific details, allowing both experts and non-experts to get familiar with Koordinator.
+
+
+----------------------- REVIEW 3 ---------------------
+PAPER: 173
+TITLE: Koordinator: A verification framework of distributed CPS applications
+AUTHORS: Ritwika Ghosh, Sasa Misailovic and Sayan Mitra
+
+Overall evaluation: 0 (borderline paper)
+
+----------- Overall evaluation -----------
+This paper describes Koordinator, a verification toolbox for cyber-physical systems (as the title indicates!).  The discussion in the paper indicates that the target application domain is (distributed) robotics, although the case studies involve distributed applications outside this domain.  The tool is built around the Koord programming notation, which is described elsewhere: a high-level summary is given here.  A key advance in the Koord formalism is to separate platform-independent computation (the Koord program) from the controller and plant components, as a means of achieving reusability in the robotics domain (which is indeed notoriously platform-specific).  The new contributions in the paper include a description of the Koordinator tool; the development of a bounded model checker, KoordBMC, for checking n-invariants of Koord applications, and a report on the results of applying KoordBMC to a variety of (interesting) case studies.  There is also a presentation of a sym!
+ bolic tool, KoordProver, for checking symbolic invariants of Koord programs; it is distinguished from KoordBMC in not requiring full model or plant models.  Case study results are also presented for this new component of Koordinator.
+
+The paper is very messy, unfortunately.  There are numerous typos (including missing author list, missing first reference to DryVR, and use of \geq in the invariant in Fig. 3 when \leq was intended; this was especially frustrating to me, as I spent a number of minutes trying to understand the example).  I also could not understand how the semantics of Koord could be translated into timed automata, when the state space appears to be continuous even if time is discrete.  This influences understanding of subsequent technical developments.
+
+I also would have liked some discussion about use cases involving KoordBMC and KoordProver:  when do you use each, and why?
+
+Having said all this, it appears that there are sound technical contributions underlying the work, and I love the case studies.
