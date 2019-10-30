@@ -4,19 +4,24 @@
 Programming applications for distributed cyberphysical systems is challenging.
 Enumerate some of the challenges.
 
+\rg{Motivation : \emph{expressive} Language design for  applications
+}
+
+
 Brief introduction to CyPhyHouse~\cite{ghosh2019cyphyhouse}.
-\lgname language, simulator.
-Shared variable.
-Little bit about semantics.
+\lgname language
+Shared variable, synchronization ,
+semantics, \rg{and executable semantics}
+simulator, hardware.
 
+\rg{Outline implementation issues }
+Synchronization, Timing, multithreading, controllers, sensor fusion  : motivates nailing down exact assumptions for any sort of guarantee.
 
-In this paper, we develop and analyze a new distributed mapping application using CyPhyHouse.
 %
-Define the mapping problem; challenges---sensing, perception,  coordination. Short discussion of previous related work.
+Define the mapping problem, \rg{and the task problem}; challenges---sensing, perception,  coordination. Short discussion of previous related work.
 
 \subsection{Simulation of Multi robot systems}
 %A further source of concern is the gap between the system model with and the executable code that is actually .
-
 
 
 
@@ -31,24 +36,55 @@ Define the mapping problem; challenges---sensing, perception,  coordination. Sho
 %\end{figure}
 %
 \subsection*{Contributions}
-The key contributions of the paper are as follows.
+\begin{itemize}
+\item Koord, an event-based language for modeling distributed CPS
+\begin{itemize}
+\item Formally specified execution semantics in K for discrete distributed part with synchronous shared memory model
+\item Simple (and formally defined?) interfaces to interact with black-box modules thru sensor/actuator variables for continuous dynamics
+\begin{itemize}
+\item Separate device-specific from device-independent
+\item Trade-off between exposing more low level details and simplicity of the language
+\end{itemize}
+\item Enable (manual) formal analysis (for example, on DMap or Task)
+\begin{itemize}
+\item Expose assumptions over the black-box modules that need to be satisfied for proving
+\end{itemize}
+\item Difficulties: All of the above have to deal with time. Eg., cycle time in synchronous communication, sensor sampling frequency, synchronize data from different sensors (sensor fusion), etc.
+\end{itemize}
+\item  A compiler translates Koord to Python and a device-independent middle-ware implements the memory model and module interfaces
+\begin{itemize}
+\item Achieve distributed shared memory thru round base synchronous message passing
+\item Convert pub-sub based message passing to black-box module interface
+\begin{itemize}
+\item Allow configurations to use different device-specific implementations
+\end{itemize}
+\end{itemize}
+\item A Gazebo based simulation environment for testing (and data driven verification?)
+\begin{itemize}
+\item Wrap around black-box modules (ROS packages) to satisfy assumptions identified in formal analysis : Most technically challenging but difficult to sell
+\item Visualization
+\end{itemize}
+\item An application deployed to heterogeneous devices :How to let readers know this is cool?
+\item \sayan{An intended useful outcome of this methodology  is a list of formal assumptions for the \sayan{sensors, schedulers, ...}. In the end-to-end safety assurance cases~\cite{} for complex cyber-physical systems, these assumptions  can serve as contracts for sensing devices, drivers, hardware platforms,  and operating system modules that are often outside the control of the application programmer.}
+\item Finally, \sayan{experimental evaluation. What did we learn that can generalize beyond this specific application? How did we extend CyPhyHouse capabilities generally?}
 
-First, we illustrate how a complex distributed mapping application can be programmed using the CyPhyHouse infrastructure~\cite{ghosh2019cyphyhouse}.
-The application program \dmap is X lines of \lgname code with a \sayan{handful} external functions.
+\end{itemize}
+
+%The application program \dmap is X lines of \lgname code with a \sayan{handful} external functions.
+%%
+%The application program, takes full advantage of the \lgname language's features shared memory semantics.
+%Individual robots update their local maps using LIDAR scans, and a \sayan{single line of \lgname code} merges the local maps to update the shared global map.
+%\sayan{Similar sentence about path planning and sensing.}
 %
-The application program, takes full advantage of the \lgname language's features shared memory semantics.
-Individual robots update their local maps using LIDAR scans, and a \sayan{single line of \lgname code} merges the local maps to update the shared global map.
-\sayan{Similar sentence about path planning and sensing.}
-
-
-Second, the modular structure and semantics of the \dmap application makes it possible to formally reason about its correctness. We illustrate this by proving key correctness and consistency properties of the application, namely that, \sayan{write informally.}
 %
-An intended useful outcome of this methodology  is a list of formal assumptions for the \sayan{sensors, schedulers, ...}. In the end-to-end safety assurance cases~\cite{} for complex cyber-physical systems, these assumptions  can serve as contracts for sensing devices, drivers, hardware platforms,  and operating system modules that are often outside the control of the application programmer.
+%Second, the modular structure and semantics of the \dmap application makes it possible to formally reason about its correctness. We illustrate this by proving key correctness and consistency properties of the application, namely that, \sayan{write informally.}
+%%
+%
 
 
 %Define abstraction for sampled sensing. (refine this)
 
-Finally, \sayan{experimental evaluation. What did we learn that can generalize beyond this specific application? How did we extend CyPhyHouse capabilities generally?}
+
 
 
 
