@@ -4,28 +4,39 @@
 Programming applications for distributed cyberphysical systems is challenging.
 Enumerate some of the challenges.
 
-\rg{Motivation : \emph{expressive} Language design for  applications
-}
+\subsection{Challenges and Motivations~(0.5-1 page)}
+
+\paragraph{Continuous time involved in both physics and synchronous communication}
+E.g., cycle time in synchronous communication, sensor sampling frequency, synchronize data from different sensors (sensor fusion), etc.
+
+Motivates a simplified language semantics that abstract away continuous time
 
 
-Brief introduction to CyPhyHouse~\cite{ghosh2019cyphyhouse}.
-\lgname language
-Shared variable, synchronization ,
-semantics, \rg{and executable semantics}
-simulator, hardware.
+\paragraph{Incomplete model for environment}
+
+Need explicit language constructs for black-box parts.
+
+Allow trade-off between exposing more low level details and simplicity of the language constructs
+
+For formal analysis, requires specifying assumptions over black-box parts.
+
+
+\paragraph{Implement trusted run-time environment}
 
 \rg{Outline implementation issues }
-Synchronization, Timing, multithreading, controllers, sensor fusion  : motivates nailing down exact assumptions for any sort of guarantee.
+Synchronization, Timing, multi-threading, controllers, sensor fusion:
+motivates nailing down exact assumptions for any sort of guarantee.
+
+[EuroSys'17] An Empirical Study on the Correctness of Formally Verified Distributed Systems.
+One root cause for the bugs is because the assumptions over the underlying run-time environment. Even the systems is formally proven.
+
+Need to validate that the abstraction over continuous time is realistic.
+Why we can really use the model of zero time computation and delta time environment turn.
+
+Need to validate the assumptions over black box parts
 
 %
-Define the mapping problem, \rg{and the task problem}; challenges---sensing, perception,  coordination. Short discussion of previous related work.
-
-\subsection{Simulation of Multi robot systems}
-%A further source of concern is the gap between the system model with and the executable code that is actually .
-
-
-
-
+Define the mapping problem, \rg{and the task problem}; challenges---sensing, perception, coordination. Short discussion of previous related work.
 
 %
 %\begin{figure}[h!]
@@ -35,7 +46,7 @@ Define the mapping problem, \rg{and the task problem}; challenges---sensing, per
 %\label{fig:arch}
 %\end{figure}
 %
-\subsection*{Contributions}
+\subsection{Contributions~(0.5 page)}
 \begin{itemize}
 \item Koord, an event-based language for modeling distributed CPS
 \begin{itemize}
