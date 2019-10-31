@@ -4,7 +4,7 @@
 Programming applications for distributed cyberphysical systems is challenging.
 Enumerate some of the challenges.
 
-\subsection{Challenges and Motivations~(0.5-1 page)}
+\subsection{Challenges and Motivations~\chiao{(0.5\textasciitilde 1 page)}}
 
 \paragraph{Continuous time involved in both physics and synchronous communication}
 E.g., cycle time in synchronous communication, sensor sampling frequency, synchronize data from different sensors (sensor fusion), etc.
@@ -24,11 +24,12 @@ For formal analysis, requires specifying assumptions over black-box parts.
 \paragraph{Implement trusted run-time environment}
 
 \rg{Outline implementation issues }
-Synchronization, Timing, multi-threading, controllers, sensor fusion:
-motivates nailing down exact assumptions for any sort of guarantee.
 
 [EuroSys'17] An Empirical Study on the Correctness of Formally Verified Distributed Systems.
 One root cause for the bugs is because the assumptions over the underlying run-time environment. Even the systems is formally proven.
+
+Synchronization, Timing, multi-threading, controllers, sensor fusion:
+motivates nailing down exact assumptions for any sort of guarantee.
 
 Need to validate that the abstraction over continuous time is realistic.
 Why we can really use the model of zero time computation and delta time environment turn.
@@ -46,11 +47,16 @@ Define the mapping problem, \rg{and the task problem}; challenges---sensing, per
 %\label{fig:arch}
 %\end{figure}
 %
-\subsection{Contributions~(0.5 page)}
+\subsection{Contributions~\chiao{(<= 0.5 page)}}
+An application deployed to heterogeneous devices and runs reliably.
+This is cool and difficult to achieve without our contributions.
 \begin{itemize}
 \item Koord, an event-based language for modeling distributed CPS
 \begin{itemize}
 \item Formally specified execution semantics in K for discrete distributed part with synchronous shared memory model
+\begin{itemize}
+    \item Abstract away continuous time in language while provide guarantees by the carefully designed memory model
+\end{itemize}
 \item Simple (and formally defined?) interfaces to interact with black-box modules thru sensor/actuator variables for continuous dynamics
 \begin{itemize}
 \item Separate device-specific from device-independent
@@ -75,7 +81,6 @@ Define the mapping problem, \rg{and the task problem}; challenges---sensing, per
 \item Wrap around black-box modules (ROS packages) to satisfy assumptions identified in formal analysis : Most technically challenging but difficult to sell
 \item Visualization
 \end{itemize}
-\item An application deployed to heterogeneous devices :How to let readers know this is cool?
 \item \sayan{An intended useful outcome of this methodology  is a list of formal assumptions for the \sayan{sensors, schedulers, ...}. In the end-to-end safety assurance cases~\cite{} for complex cyber-physical systems, these assumptions  can serve as contracts for sensing devices, drivers, hardware platforms,  and operating system modules that are often outside the control of the application programmer.}
 \item Finally, \sayan{experimental evaluation. What did we learn that can generalize beyond this specific application? How did we extend CyPhyHouse capabilities generally?}
 
@@ -140,6 +145,15 @@ Define the mapping problem, \rg{and the task problem}; challenges---sensing, per
 
 
 \section{Related work}\label{sec:related}
+
+\chiao{<= 0.5 page}
+
+\chiao{Some other works mentioned by the reviewers.
+BIP (Verimag),
+ptolemy (UC-Berkeley),
+Zelus programming language,
+Newcomb et al., a Calculus for Internet of Things Automation, SPLASH Onward!'17
+}
 
 Modern programming languages like C\# and Swift, and   compiler infrastructures like LLVM~\cite{llvm} have revolutionized the application development ecosystem in mobile computing.
 %\paragraph*{D.}
