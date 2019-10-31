@@ -6,8 +6,10 @@
 \newcommand{\TSync}{\ensuremath{\mathit{tSync}}\xspace}
 \newcommand{\PathToFrontier}{\ensuremath{\mathit{pickPathToFrontier}}\xspace}
 
-\section{Case study: Distributed Mapping application}
+\section{Experiments}
 \label{sec:experiments}
+
+\chiao{1\textasciitilde1.5 pages. Include figures.}
 
 For our case study, we test the \dmap application using the simulator from \CyPhyHouse~\cite{ghosh2019cyphyhouse} for distributed \Koord applications.
 We choose the MIT RACECAR model~\cite{MIT_RACECAR} with Lidar sensor included in \CyPhyHouse for our experiment.
@@ -15,38 +17,6 @@ To implement external functions defined in~\ref{sec:analysis},
 we extend the \CyPhyHouse tool chain and examine our assumptions over sensor data and implemented functions.
 In the section, we first discuss our implementation of external functions;
 then we present the simulation result of \dmap with multiple vehicles.
-
-
-\subsection{Implementation of External Functions}
-
-\paragraph{Sound Mapping from Synchronized Sensor Data~(\ScanToMap).}
-To generate a 2D map from the scan data,
-it is required to synchronize the current vehicle position and the Lidar scan data~(\TSync).
-An existing solution is to filter the time stamps of both sensor data streams
-and only choose pairs of data within a given time difference threshold $\epsilon$.
-This can be achieved by \texttt{ApproximateTimeSynchronizer} in the ROS package named \texttt{message\_filter}.
-The frequency of the synchronized data is then limited to the sensor with the lowest frequency.
-In our simulation, the lowest frequency is 100 Hz for sensing the vehicle position and sufficient for updating the map.
-
-The Lidar scan data provided in the tool chain are pairs of a distance to obstacles and an angle with respect to the heading angle of the vehicle.
-To implement \ScanToMap, it is then straightforward to compute the positions of obstacles and mark occupied grid rectangles,
-and to mark a rectangle obstacle free is to simply check if all four corners of a grid rectangle are covered in the scan.
-The time difference $\epsilon$ however can introduce an error between real and perceived distances to obstacles.
-Reducing this error is beyond the scope of this work.
-Our implementation of \ScanToMap therefore may falsely mark a grid rectangle as occupied when obstacles are in nearby grids.
-
-\paragraph{Path to Frontier~(\PathToFrontier).}
-In the \CyPhyHouse tool chain, several path planning algorithms are already available.
-We particularly select the Rapidly exploring Random Tree with near neighbor search and rewiring tree~(RRT*) algorithm.
-It is able to avoid obstacles and is fine tuned to the car model for simulation.
-Our \PathToFrontier implementation hence only needs to choose a point in frontier grid rectangles and provide the positions of obstacles.
-To choose such a point, a basic solution is to use Breadth-First Search~(BFS) on the map and seek for a unexplored grid rectangle.
-BFS ensures that either all reachable grid rectangles are marked,
-or there are connected unoccupied rectangles to an unexplored rectangle, and hence a path must exist.
-Nonetheless, it does not guarantee that the underlying path planner can always find a path because,
-for instance, the car is incapable of make sharp turns.
-Our soundness claim still holds under such circumstance, but we may not be able to progress even when paths to frontier exist.
-
 
 \subsection{Simulation Result}
 

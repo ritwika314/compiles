@@ -1,7 +1,3 @@
-\section{Formal modeling and analysis}
-\label{sec:formal}
-In this section, we present the formal definition of the distributed mapping problem. Then we develop a state machine model of the \dmap application executing in the physical environment, and finally, using this model we show that the it meet the key requirements of the mapping problem. One of the outcomes of this analysis is the identification of a list of precise
- assumptions of sensors, CyPhyHouse middleware implementation, quantization, and \sayan{fill in}, that need to be checked separately for obtaining end-to-end, system-level guaranteed.
 
 \subsection{Formal definition of mapping problem}
 \label{sec:prelims}
@@ -45,7 +41,7 @@ The mapping problem is defined in terms of the following parameters.
 		\right.
 \end{align}
 	\item A set $\qdom \subseteq D \cap \mathbb{Q}^2$ which is a quantized representation of $D$.
-	\item A Koord\fTBD{should we say koord here, considering that it is a general statment} program variable, let us call it $\mathit{map}$, which is a shared view of the map for the system of robots $N$. Assume that each robot $i \in [N]$ has a quantized view of the map, let us call it $\map_i$. $\map$ is constructed by combining the views $\map_i$ in some way.
+	\item A \lgname\fTBD{should we say \lgname here, considering that it is a general statment} program variable, let us call it $\mathit{map}$, which is a shared view of the map for the system of robots $N$. Assume that each robot $i \in [N]$ has a quantized view of the map, let us call it $\map_i$. $\map$ is constructed by combining the views $\map_i$ in some way.
 \end{enumerate}
 %%
 %%

@@ -1,0 +1,45 @@
+\section{Case Study: \appname}
+\label{sec:formal}
+
+\chiao{<= 3 pages}
+
+In this section, we present the formal definition of \appname problem.
+Then we develop a state machine model executing in the physical environment,
+and finally, using this model we show that it meets the key requirements of the problem.
+One of the outcomes of this analysis is the identification of a list of precise assumptions of sensors,
+quantization, and \sayan{fill in}, that need to be checked separately for obtaining end-to-end, system-level guaranteed.
+
+%\input{preliminaries.tex}
+\input{assumptions.tex}
+\input{analysis.tex}
+
+
+\subsection{Implementation of Modules}
+
+\paragraph{Sound Mapping from Synchronized Sensor Data~(ScanToMap).}
+To generate a 2D map from the scan data,
+it is required to synchronize the current vehicle position and the Lidar scan data.
+An existing solution is to filter the time stamps of both sensor data streams
+and only choose pairs of data within a given time difference threshold $\epsilon$.
+This can be achieved by \texttt{ApproximateTimeSynchronizer} in the ROS package named \texttt{message\_filter}.
+The frequency of the synchronized data is then limited to the sensor with the lowest frequency.
+In our simulation, the lowest frequency is 100 Hz for sensing the vehicle position and sufficient for updating the map.
+
+The Lidar scan data provided in the tool chain are pairs of a distance to obstacles and an angle with respect to the heading angle of the vehicle.
+To implement ScanToMap, it is then straightforward to compute the positions of obstacles and mark occupied grid rectangles,
+and to mark a rectangle obstacle free is to simply check if all four corners of a grid rectangle are covered in the scan.
+The time difference $\epsilon$ however can introduce an error between real and perceived distances to obstacles.
+Reducing this error is beyond the scope of this work.
+Our implementation of ScanToMap therefore may falsely mark a grid rectangle as occupied when obstacles are in nearby grids.
+
+\paragraph{Path to Frontier~(PathToFrontier).}
+In the \toolname tool chain, several path planning algorithms are already available.
+We particularly select the Rapidly exploring Random Tree with near neighbor search and rewiring tree~(RRT*) algorithm.
+It is able to avoid obstacles and is fine tuned to the car model for simulation.
+Our implementation hence only needs to choose a point in frontier grid rectangles and provide the positions of obstacles.
+To choose such a point, a basic solution is to use Breadth-First Search~(BFS) on the map and seek for a unexplored grid rectangle.
+BFS ensures that either all reachable grid rectangles are marked,
+or there are connected unoccupied rectangles to an unexplored rectangle, and hence a path must exist.
+Nonetheless, it does not guarantee that the underlying path planner can always find a path because,
+for instance, the car is incapable of make sharp turns.
+Our soundness claim still holds under such circumstance, but we may not be able to progress even when paths to frontier exist.
