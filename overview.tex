@@ -1,9 +1,19 @@
-\section{Overview of mapping problem and CyPhyHouse}
+\section{Motivating Example}
 \label{sec:overview}
 
-We first give an overview of the mapping problem, and the CyPhyHouse toolchain which we use to approach its solution. The features of the programming language $\lgname$ provided by CyPhyHouse enable us to design a succinct application for this problem, and set up terminology and formalization to aid in a correctness analysis. We also discuss at a high level, the features of CyPhyHouse toolchain that enable us to simulate and test this application for a multi-robot system under various deployment scenarios.
+\chiao{1\textasciitilde1.5 pages}
 
-\subsection{Mapping problem }
+\chiao{
+Use the example to informally introduce \lgname syntax.
+Bring out how the distributed memory, abstraction on time, and black-box modules help simplify the design.
+Discuss verbally what are the assumptions over run-time environment for proving the given example correct.
+Need to decide whether to use Task or DMap
+}
+
+We first give an overview of the mapping problem and the features of the programming language \lgname that enables us to design a succinct application for this problem.
+We also discuss at a high level, how to use \toolname to simulate and test this application for a multi-robot system under various deployment scenarios.
+
+\subsection{Mapping problem}
 \sayan{
 Informally, the problem requires a set of robots to collaboratively mark the position of static \emph{obstacles} within a given area $D$, which any robot should avoid while moving in $D$.The key difference between distributed SLAM and this application is that we assume that the robots know their \emph{global coordinates} within the area of deployment. They are only attempting to map the static obstacles within this area. We currently assume that the only sensors available for sensing obstacles are LIDAR based, and the robots are constrained to move in a 2-D space.
 }
@@ -53,104 +63,8 @@ $\lgname$ provides \emph{shared} variables to allow robots within a system to co
 In the design of the $\dmap$ application, we employ the use of \emph{sampled} sensors, which is essentially a sequence of timestamped sensor readings between rounds. The \emph{LUpdate} event can occur while each robot is traversing a path and hasn't reached the final destination, during which the robot uses a sampled sensor reading of the positions $\mathit{Motion.trace}$, of type $\mathit{PosStamped}[]$, which denotes an array of timestamped positions; and a sampled sensor reading of LIDAR scans $\mathit{Lidar.ldata}$ of type $\mathit{ScanStamped}$, which denotes an array of timestamped LIDAR scans. These sampled sensor readings are then synchronized to associate a LIDAR scan with a position.
 
 
-Mutual exclusion is an essential feature required in a distribtued system with shared variables. The robot updates the shared variable $\gmap$ in the event \emph{GUpdate} using the value of its $\lmap$, which may have been updated with newly detected obstacles
+Mutual exclusion is an essential feature required in a distributed system with shared variables. The robot updates the shared variable $\gmap$ in the event \emph{GUpdate} using the value of its $\lmap$, which may have been updated with newly detected obstacles
 
 %Also, should
 The robot also has access to two system-level \emph{constant} parameters (a) a unique integer identifier $\myuin$ for itself and (b) a list $\UINS$ of identifiers of all participating robots\footnote{Our current system implementation assumes that the set of possible participating robots is known, but this assumption can be relaxed on a per application basis.}
-
-
-\section{Koord Software Stack}
-\label{sec:software}
-
-
-
-\subsection{Formal semantics of Koord}
-\label{sec:semantics}
-
-The (distributed) system of robots  executing the \dmap application written in $\lgname$ can be viewed as a nondeterministic, state machine automaton~\cite{TIOAmon, Mitra07PhD}. The detailed statement-level semantics of $\lgname$ has been developed in the $\mathbb{K}$ framework and will appear elsewhere. For the purpose of the analysis here, we briefly describe the ``big-step'' semantics of Koord which allows all the statements in an event of a single robot to be executed as an instantaneous transition.
-
-Suppose we have $N$ robots in the system each executing the same Koord application program. As mentioned earlier Koord middleware enforces a synchronous  \emph{round-by-round} execution, where each round lasts for $\delta$ time, where $\delta >0$ is a platform specific execution parameter.
-%
-In each round, each robot performs an  event.
-The state update performed by a single robot executing an  event is modeled as an  transition of the state machine updating the program variables, however,  different events executed by the different robots may interleave. In between the events of successive rounds, the program variables remain constant, but {\em all\/} the \sayan{sensor and actuator variables} of all the robots  change continuously with time.  These are modeled as the $\delta$-transitions that advance time as well as the \sayan{sensor and actuator variables}.
-
-%
-Let the set of all program variables in the $\lgname$ application be $\Var$, and the set of all the sensor and actuator ports be $\mathit{Port}$. Let $\mathit{Event}_i$ be the set of events for the program for agent $i$.
-
-%
-The sets of variables and ports of an individual robot $i$ are denoted by $\Var_i$ and  $\mathit{Port}_i$.
-%
-A {\em valuation\/} of $\Var \cup \Port$ maps the names of the variables and ports to their types.
-We denote valuations using boldface letter like $\vs, \vs_1, \vs'$, etc.
-%
-Given a valuation $\vs$, the value of a subset of  variables (or ports) $X$ is denoted by $\vs.X$. For example, the  valuation of all the variables of robot $i$ is $\vs.\Var_i$.
-%
-%
-In the $\dmap$ $\lgname$ application,
-\begin{inparaenum}
-\item $\Var = \left\{ \gmap, \lmap, \mathit{newPoint}, \mathit{pscan}, \mathit{obstacles} \right\}$
-\item $\Port = \left\{\mathit{ldata}, \mathit{trace}, \mathit{pos}, \mathit{trace}, \mathit{reached}, \mathit{target} \right\}$. \footnote{The syntax of $\lgname$ requires each \emph{actuator} and \emph{sensor} variable $v$ defined in a module $M$ to be referred to as $M.v$.}
-\item For each robot $i$, $\mathit{Event}_i = \left\{ \mathit{NewPoint}, \mathit{LUpdate}, \mathit{GUpdate}\right\}$
-\end{inparaenum}
-%
-%values that the variables can take is $\Val$, the \emph{state} of a robot $i$ is a tuple $$s_i = ( M, cp), \mbox{ where}$$
-%
-For the purpose of this paper, we define the  semantics of the overall system with $N$ robots as discrete transition system $\A = (C, C_0, A, \D)$,
-where
-(1) $C$ is the set of valuations of all the variables $\Var$ and all the ports $\mathit{Port}$ for each robot,
-(2) $C_0 \subseteq Q$ is the set of initial values of the variables and port for each robot. All variables and ports have to be initialized,
-(3) $A = \{\delta\} \cup \left( \cup_{i \in [N]} \mathit{Events}_i \right)$ is the set of transition labels, and
-(4) $D \subseteq C \times A \times C$ is a set of transitions. The state of the system is a valuation $\vs \in C$. There are two types of transitions, namely:
-\begin{enumerate}
-	\item {\em event transition}: Any $a \in \Event_i$ for some $i \in [N]$, and  given $\vs, \vs'\in C$,   $(\vs,a,\vs') \in \D$ iff (i) $\vs'.\Var_i$ is obtained by applying the transition relation of $a$ to $\vs.\Var_i$, where $\vs.\Var_i$ refers to the mapping of all variables of robot $i$ to their values in the state $\vs$.
-		(ii) For all $j \neq i$,
-		$\vs'.\Var_j = \vs.\Var_j$.
-	\item {\em $\delta$-transition}: $a = \delta$, and $(\vs,a,\vs') \in \D$ iff $\vs'.\Var = \vs.\Var$.
-\end{enumerate}
-\rg{We assume that the event transitions are computational steps, and take zero logical time, whereas the $\delta$-transitions denote the evolution of the sensor and the actuator ports with time, and take $\delta$ time.}\fTBD{restate in assumptions}.
-\sayan{This formalization allows the ports to behave arbitrarily over $\delta$-transitions. In order to establish invariant properties of applications, therefore, we will need to constrain the behavior of the sensor and actuator ports with additional assumptions.
-}
-
-
-A \emph{program step} is a sequence  $\vs_0 , a_0,  \vs_1, a_1, \ldots  ,a_N \vs_N$ of length $N$, where $(\vs_i , a , \vs_{i+1}) \in D$ is an event transition. Given a program step $\ps = \vs_0 , a_0,  \vs_1, a_1, \ldots  ,a_N \vs_N$, $\ps[i]$ refers to the state $\vs_i$.
-An \emph{execution} of a system is an alternating sequence of program steps and $\delta$-transitions $\ps_0, d_0 , \ps_1, d_1, \ldots$ where
-\begin{itemize}
-\item $\ps_i$ is a program step and $d_i$ is a $\delta$-transition,
-\item $\ps_0$ is a program step $\vs_0, a_0, \vs_1, \ldots ,a_N, \vs_N $  where $\vs_0 \in C_0$,
-\item Given a $\delta$-transition $d_i = (\vs, a, \vs')$, and its preceding program step $\ps_i$,  $\ps_i[N] = \vs $
-\end{itemize}
-%
-%of each robot evolve to the 	controllers driving the robot according to the actuators that may have been set in the event. The program and sensor variables of the robot can be seen as the state variables for each robot.
-
-
-%\begin{enumerate}
-%    \item $M : \Var \mapsto \Val$ is the mapping of all program variables in the application known by the robot to their values.
-%    \item $cp : \Var \mapsto \Val$ is the mapping of actuator and sensor variables to their values.
-%\end{enumerate}
-%The components of the tuple $s_i$ are accessed using the dot $`.'$ notation, for instance, $s_i.M$, etc. The value of a program variable $v$ at a state $s_i$ is denoted by $s_i.M.v$.
-
-We define the set of reachable states of a system $\A$ , $\Reach(\A) = \{c \mathit c \in C_0 \vee \exists c^\prime \in \Reach(\A), (c^\prime, a, c) \in \D \}$. A predicate $\mathcal{P} : C \mapsto \mathbb{B}$ is an \emph{invariant} of the $\A$, if $\forall q \in \Reach(\A), \mathcal{P} = \mathit{True}$.
-
-\subsection{Runtime system}
-
-
-
-To run a $\lgname$ program (hardware or simulation), the user has to provide a configuration file, with
-\begin{inparaenum}
-    \item the number of robots,
-    \item in case of simulation, the initial positions of the robots and the length of the simulation and
-    \item in case of hardware deployment their IP addresses,
-    and the localization system.
-\end{inparaenum}
-
-
-
-\subsection{Simulator}
-\subsubsection{gazebo environment}
-\subsubsection{car model}
-\subsubsection{lidar}
-\subsubsection{positioning}
-\subsubsection{sampled sensing}
-\subsubsection{synchronization issues}
-
 
