@@ -8,55 +8,241 @@
 }
 
 \subsection{Formal syntax and semantics}
+\rg{Labels for rules are wrong, will fix later.}
 \label{sec:semantics}
 \sayan{SM: The main piece for this section will be the semantic rules as formalized in K in 1 page. Let us write those first (from OOPSLA paper) and then add whatever is necessary to explain them clearly. The final ``theorem'' might be the bounded reachability soundness. }
+
+
+\section{Koord Language and Semantics}
+\subsection{Koord model for distributed CPS}
+
+
+
 The (distributed) system of robots  executing the \dmap application written in $\lgname$ can be viewed as a nondeterministic, state machine automaton~\cite{TIOAmon, Mitra07PhD}. The detailed statement-level semantics of $\lgname$ has been developed in the $\mathbb{K}$ framework and will appear elsewhere. For the purpose of the analysis here, we briefly describe the ``big-step'' semantics of \lgname which allows all the statements in an event of a single robot to be executed as an instantaneous transition.
 
 Suppose we have $N$ robots in the system each executing the same \lgname application program. As mentioned earlier \lgname middleware enforces a synchronous \emph{round-by-round} execution, where each round lasts for $\delta$ time, where $\delta >0$ is a platform specific execution parameter.
 %
 In each round, each robot performs an  event.
-The state update performed by a single robot executing an  event is modeled as an  transition of the state machine updating the program variables, however,  different events executed by the different robots may interleave. In between the events of successive rounds, the program variables remain constant, but {\em all\/} the \sayan{sensor and actuator variables} of all the robots  change continuously with time.  These are modeled as the $\delta$-transitions that advance time as well as the \sayan{sensor and actuator variables}.
+The state update performed by a single robot executing an  event is modeled as an  transition of the state machine updating the program variables, however,  different events executed by the different robots may interleave. In between the events of successive rounds, the program variables remain constant, but {\em all\/} the \sayan{sensor and actuator variables} of all the robots  change continuously with time.  These are modeled as  $\delta$-transitions that advance time as well as the \sayan{sensor and actuator variables}.
 
 %
-Let the set of all program variables in the $\lgname$ application be $\Var$, and the set of all the sensor and actuator ports be $\mathit{Port}$. Let $\mathit{Event}_i$ be the set of events for the program for agent $i$.
+%Let the set of all program variables in the $\lgname$ application be $\Var$, and the set of all the sensor and actuator ports be $\mathit{Port}$. Let $\mathit{Event}_i$ be the set of events for the program for agent $i$.
+%
+%%
+%The sets of variables and ports of an individual robot $i$ are denoted by $\Var_i$ and  $\mathit{Port}_i$.
+%%
+%A {\em valuation\/} of $\Var \cup \Port$ maps the names of the variables and ports to their types.
+%We denote valuations using boldface letter like $\vs, \vs_1, \vs'$, etc.
+%%
+%Given a valuation $\vs$, the value of a subset of  variables (or ports) $X$ is denoted by $\vs.X$. For example, the  valuation of all the variables of robot $i$ is $\vs.\Var_i$.
+%%
+%%
+%In the $\dmap$ $\lgname$ application,
+%\begin{inparaenum}
+%\item $\Var = \left\{ \gmap, \lmap, \mathit{newPoint}, \mathit{pscan}, \mathit{obstacles} \right\}$
+%\item $\Port = \left\{\mathit{ldata}, \mathit{trace}, \mathit{pos}, \mathit{trace}, \mathit{reached}, \mathit{target} \right\}$. \footnote{The syntax of $\lgname$ requires each \emph{actuator} and \emph{sensor} variable $v$ defined in a module $M$ to be referred to as $M.v$.}
+%\item For each robot $i$, $\mathit{Event}_i = \left\{ \mathit{NewPoint}, \mathit{LUpdate}, \mathit{GUpdate}\right\}$
+%\end{inparaenum}
+%%
+%%values that the variables can take is $\Val$, the \emph{state} of a robot $i$ is a tuple $$s_i = ( M, cp), \mbox{ where}$$
+%%
+%For the purpose of this paper, we define the  semantics of the overall system with $N$ robots as discrete transition system $\A = (C, C_0, A, \D)$,
+%where
+%(1) $C$ is the set of valuations of all the variables $\Var$ and all the ports $\mathit{Port}$ for each robot,
+%(2) $C_0 \subseteq Q$ is the set of initial values of the variables and port for each robot. All variables and ports have to be initialized,
+%(3) $A = \{\delta\} \cup \left( \cup_{i \in [N]} \mathit{Events}_i \right)$ is the set of transition labels, and
+%(4) $D \subseteq C \times A \times C$ is a set of transitions. The state of the system is a valuation $\vs \in C$. There are two types of transitions, namely:
+%\begin{enumerate}
+%	\item {\em event transition}: Any $a \in \Event_i$ for some $i \in [N]$, and  given $\vs, \vs'\in C$,   $(\vs,a,\vs') \in \D$ iff (i) $\vs'.\Var_i$ is obtained by applying the transition relation of $a$ to $\vs.\Var_i$, where $\vs.\Var_i$ refers to the mapping of all variables of robot $i$ to their values in the state $\vs$.
+%		(ii) For all $j \neq i$,
+%		$\vs'.\Var_j = \vs.\Var_j$.
+%	\item {\em $\delta$-transition}: $a = \delta$, and $(\vs,a,\vs') \in \D$ iff $\vs'.\Var = \vs.\Var$.
+%\end{enumerate}
+%\rg{We assume that the event transitions are computational steps, and take zero logical time, whereas the $\delta$-transitions denote the evolution of the sensor and the actuator ports with time, and take $\delta$ time.}\fTBD{restate in assumptions}.
+%\sayan{This formalization allows the ports to behave arbitrarily over $\delta$-transitions. In order to establish invariant properties of applications, therefore, we will need to constrain the behavior of the sensor and actuator ports with additional assumptions.
+%}
+%%
+ In the rest of this section, we present the formal semantics of the $\lgname$ programming language. The complete formalization of the semantics in \K is available from~\cite{} \sayan{webpage/github}. The syntax of the language is presented through examples.
+%
+%\subsection{Program (cyber) variables and physical variables}
+%
+%
+%We first discuss the types of variables used by the $\lgname$ programs. Throughout this section we refer to the $\mathit{Task}$ application for discussion.
+%
+%\paragraph{Program variables}
+%%$\lgname$ provides several types of access for program variables.
+%An agent's $\lgname$ program can access three typed of variables.
+%\begin{enumerate}
+%
+%\item 	{\em Local program variables\/} record the state of the program. For example, the local variable $p$ of type $\mathit{path}$ (Line~\ref{pathvar}) stores a path for the agent. \\
+%
+%\item {\em Distributed shared variables\/} are used for coordination across agents.  For example, {\bf allwrite} $\mathit{taskList}$ (Line~\ref{awvar}) is a multi-writer list of tasks which can be updated by any participating agent. Shared variables variables can also be single-writer ({\bf allread}). \\
+%
+%\item {\em Sensor and actuator variables\/} are used to read from sensor ports and to write to actuator ports.
+%\end{enumerate}
+%
+%
+%Mutual exclusion is always an essential feature when shared variables are involved. $\lgname$ provides a locking mechanism using the keyword $\mathit{atomic}$, which the $\mathit{Assign}$ event uses to update the shared list of tasks $\mathit{taskList}$ safely. $\lgname$ supports two types of shared variables, multiwriter-multireader (\emph{allwrite}), and singlewriter-multireader (\emph{allread}) shared variables, whose functionality is as their names suggest.
+%
+%\fTBD{Motion related vars}
+%
+%The agent program specifies the controller which determines the dynamic behavior of each agent and its interaction with the environment. \reffig{arch} shows how  each controller has sensor ports and actuator ports which the agent programs use to interact with the controller and consequently, with the physical environment. The agent program can read from the sensor ports read and write to the actuator ports during the program transition. The sensor ports are updated during the environment transition according to the controller dynamics.
+%
+%The $\mathit{Task}$ app  uses a controller called $\mathit{Motion}$ which is expected to drive the robots through a route, as directed by the position value set at its actuator port $\mathit{Motion.route}$. The sensor ports that $\mathit{Motion}$ makes available to the $\mathit{Task}$ program are: \begin{inparaenum}[i)]\item $\mathit{Motion.psn}$: the robot position in a fixed coordinate system (provided by either GPS or an indoor positioning system) \item $\mathit{Motion.done}$: A flag indicating whether the $\mathit{Motion}$ controller is active, or finished reaching the previous $\mathit{route}$ target points.\end{inparaenum}The implementation of $\mathit{Motion}$ controller involves, for example, path planners, and platform-specific steering and throttle controllers, and drivers for specific positioning systems.
+% Each agent program also has access to two simulation parameters (a) a unique integer identifier $\myuin$ for itself and (b)  a list $\UINS$ of identifiers of all participating agents. \footnote{This set of participating agents is known and constant.} We now describe the system state, or \emph{configurations} which we use to formalize $\lgname$ semantics.
 
-%
-The sets of variables and ports of an individual robot $i$ are denoted by $\Var_i$ and  $\mathit{Port}_i$.
-%
-A {\em valuation\/} of $\Var \cup \Port$ maps the names of the variables and ports to their types.
-We denote valuations using boldface letter like $\vs, \vs_1, \vs'$, etc.
-%
-Given a valuation $\vs$, the value of a subset of  variables (or ports) $X$ is denoted by $\vs.X$. For example, the  valuation of all the variables of robot $i$ is $\vs.\Var_i$.
-%
-%
-In the $\dmap$ $\lgname$ application,
-\begin{inparaenum}
-\item $\Var = \left\{ \gmap, \lmap, \mathit{newPoint}, \mathit{pscan}, \mathit{obstacles} \right\}$
-\item $\Port = \left\{\mathit{ldata}, \mathit{trace}, \mathit{pos}, \mathit{trace}, \mathit{reached}, \mathit{target} \right\}$. \footnote{The syntax of $\lgname$ requires each \emph{actuator} and \emph{sensor} variable $v$ defined in a module $M$ to be referred to as $M.v$.}
-\item For each robot $i$, $\mathit{Event}_i = \left\{ \mathit{NewPoint}, \mathit{LUpdate}, \mathit{GUpdate}\right\}$
-\end{inparaenum}
-%
-%values that the variables can take is $\Val$, the \emph{state} of a robot $i$ is a tuple $$s_i = ( M, cp), \mbox{ where}$$
-%
-For the purpose of this paper, we define the  semantics of the overall system with $N$ robots as discrete transition system $\A = (C, C_0, A, \D)$,
-where
-(1) $C$ is the set of valuations of all the variables $\Var$ and all the ports $\mathit{Port}$ for each robot,
-(2) $C_0 \subseteq Q$ is the set of initial values of the variables and port for each robot. All variables and ports have to be initialized,
-(3) $A = \{\delta\} \cup \left( \cup_{i \in [N]} \mathit{Events}_i \right)$ is the set of transition labels, and
-(4) $D \subseteq C \times A \times C$ is a set of transitions. The state of the system is a valuation $\vs \in C$. There are two types of transitions, namely:
+\subsection{System configurations}
+
+
+A {\em system configuration\/} with sampling parameter $\delta$ is a tuple
+$\gconfig_\delta = (\lset,{S},\tau,\turn)$, where
+\flushleft
+
 \begin{enumerate}
-	\item {\em event transition}: Any $a \in \Event_i$ for some $i \in [N]$, and  given $\vs, \vs'\in C$,   $(\vs,a,\vs') \in \D$ iff (i) $\vs'.\Var_i$ is obtained by applying the transition relation of $a$ to $\vs.\Var_i$, where $\vs.\Var_i$ refers to the mapping of all variables of robot $i$ to their values in the state $\vs$.
-		(ii) For all $j \neq i$,
-		$\vs'.\Var_j = \vs.\Var_j$.
-	\item {\em $\delta$-transition}: $a = \delta$, and $(\vs,a,\vs') \in \D$ iff $\vs'.\Var = \vs.\Var$.
+
+\item ${L} = \{\lconfig{i}\}_{i\in\UINS}$ is a list of {\em agent configurations\/}--one for each participating agent, where $\UINS$ is the known set of participating agents. $\lconfig{i}$ refers to the configuration of the $i$th element in the list $L$, or the $i$th agent in the system.   \\
+\item ${S} : Var \mapsto Val$ is the {\em global context\/}, mapping all shared variable names to their values. \\
+%Why we need this becomes clear in the next section.
+\item $\tau\in \mathbb{R}^{+}$ is the {\em global time\/}.
+\item $\turn\in\{\mathtt{prog,env}\}$ is a binary \emph{bookkeeping} variable determining whether  program or environment transitions are being processed.
 \end{enumerate}
-\rg{We assume that the event transitions are computational steps, and take zero logical time, whereas the $\delta$-transitions denote the evolution of the sensor and the actuator ports with time, and take $\delta$ time.}\fTBD{restate in assumptions}.
-\sayan{This formalization allows the ports to behave arbitrarily over $\delta$-transitions. In order to establish invariant properties of applications, therefore, we will need to constrain the behavior of the sensor and actuator ports with additional assumptions.
-}
+
+Bookkeeping variables are invisible in the language syntax, and only used in the semantics. We now define the \emph{agent configurations}, which are used to specify the semantics of each agent.
 
 
-A \emph{program step} is a sequence  $\vs_0 , a_0,  \vs_1, a_1, \ldots  ,a_N \vs_N$ of length $N$, where $(\vs_i , a , \vs_{i+1}) \in D$ is an event transition. Given a program step $\ps = \vs_0 , a_0,  \vs_1, a_1, \ldots  ,a_N \vs_N$, $\ps[i]$ refers to the state $\vs_i$.
-An \emph{execution} of a system is an alternating sequence of program steps and $\delta$-transitions $\ps_0, d_0 , \ps_1, d_1, \ldots$ where
+Given that $\mathbb{P}$ is the set of all the productions in the $\lgname$grammar, $\Var$ is the set of variables, $Val$ be is set of values that an expression in the $\lgname$ can evaluate to, $\Cfield$ is the set of sensor and actuator ports of the controller being used in $P$, the configuration of an agent is a tuple $ l = (P, {M},{w},\cp,\turn)$, where
+
+\begin{enumerate}[i)]
+\item $p \in \mathbb{P}$ is the current syntactic production,
+\item ${M} : \Var \mapsto \Val$ is its {\em local context\/} mapping all variables in $P$ to agent local values.
+\item $\mathit{sm} : \mathit{Sens} \mapsto \Val$ is the mapping of sensor variables to values.
+\item $\turn \in \{\mathtt{prog,env}\}$ is a bookkeeping variable indicating whether the agent should be executing a program or environment transition.
+\end{enumerate}
+
+The components of an agent configuration in the tuple $l$ are accessed
+using the dot (``$.$'') notation, for example, $l.M\equiv
+\pi_2(l)$ and $l.w \equiv \pi_3(l)$.
+\subsection{Big step semantics}
+We provide the semantics for some of the syntactic productions in $\lgname$, which will help us discuss the semantics of program and environment transitions. The statement semantics are given by update rules of the type
+$$\stmtrule\ \subseteq (\pws \times \pwl\times \pwstmt \cup \{\cdot\}) \times \mathscr{P}(\pws\times \pwl \times \pwstmt \cup \{\cdot\}),$$
+\fTBD{$\pwstmt$ is very clunky looking, need to change it perhaps?}where $\pwstmt$ refers to the set of all possible statements allowed by language syntax. We introduce the symbol `$\cdot$' to indicate an ``empty" statement, which does not affect the configurations. The update relation takes as input a tuple of (1) an agent configuration, (2) a global context, and (3) a statement, and maps it to a set of such tuples.
+
+%\subsubsection{Program variable/program statement updates}
+%
+%The following rules display the variable lookup and assignment semantics for $\lgname$. The variable lookup rule \textsc{Var-Lookup-rule} states that every agent has a local copy of every variable in the program, and if an agent is evaluating an expression involving variable $x$, it will replace $x$ with the current value $v$ from the local context $M$. $M[x\mapsto v]$ here refers to the fact that in the map $M$, the key $x$ maps to the value $v$. \textsc{Lvar-assign} describe the semantics of variable assignment. If the right side of the assignment is not a constant, then it is first evaluated, and then substituted.
+%\begin{mdframed}
+%\scriptsize
+%\begin{mathpar}
+%%
+%  \hspace{-1in}\inferrule*[Right=\textsc{Var-Lookup}]
+%    {\agnt.M[x\mapsto v_1]}
+%    {\langle{S},\agnt, x \rangle \exprule  \langle{S},\agnt, v \rangle } \label{vl1} \and \qquad\qquad
+%  \\
+%
+%\hspace{-1in} \inferrule*[Right=\sc{lvar-assign}]
+%    {\begin{array}{l}
+%    x \notin \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\agnt .{M}) \cr \wedge {\agnt = (P, {M},\mathit{sm},\mathtt{prog})\ \wedge\ \agnt^\prime = (P,{M}[x\mapsto c],\mathit{sm},  \mathtt{prog})}\end{array} }
+%    {\langle{S},\agnt, x = c \rangle {\rightarrow_{S}}  \langle{S},\agnt^\prime,\cdot\rangle}\label{va2} \and \qquad\qquad \\
+%    \end{mathpar}
+%\end{mdframed}
+%
+%\noindent
+%
+%\subsubsection{Shared memory updates}
+%
+% The set of all copies of the local copies shared variables can be seen as the \emph{distributed shared memory}. The correctness of a program relies on consistent values of the agents' local values of shared variables. When an agent writes to a variable, it updates its local copy and our implementation of the $\lgname$ framework uses message passing to inform the other agents of the change.
+%%
+%\begin{mdframed}
+%\scriptsize
+%\begin{mathpar}
+%\hspace{-.5in}\inferrule*[Right=\sc{svar-assign}]
+%    {\begin{array}{l}
+%    x \in \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\agnt .{M}) \wedge x \in \agnt.w
+%    \wedge\ \agnt = (P, {M},\mathit{sm},\mathtt{prog}) \cr
+%    \wedge {S}^\prime = {S}[x \mapsto v]
+%    \wedge\ \agnt^\prime = (P,{M}[x\mapsto v],\mathit{sm}, \mathtt{prog})
+%    \end{array}
+%    }
+%    {\langle{S},\agnt, x = v \rangle {\rightarrow_{S}}  \langle{S}^\prime,\agnt^\prime,\cdot\rangle}\label{va1} \\
+%    \end{mathpar}
+%\end{mdframed}
+
+
+When an event is executed, the $\turn$ of the agent is set to $\mathtt{env}$ indicating that after this execution, an environment transition occurs. The system can display non deterministic behaviors arising from different agents executing their events in different orders. \fTBD{task app will not show non determinism because of atomic, perhaps use braking or lineform here?}
+\begin{mdframed}
+\scriptsize
+\begin{mathpar}
+\hspace{-.5in}
+\inferrule*[Right=\sc{event}]
+    {\begin{array}{l} \mathit{ev} = \s{pre } \mathit{Cond} \s{ eff }\mathit{Ss} \cr \wedge {\agnt= (P,{M},\mathit{sm},\mathtt{prog}) \wedge\ \agnt^\prime =  (P,{M},\mathit{sm},\mathtt{env})\wedge \mathit{eval(\s{pre}, L.M)} }\end{array}}
+    {\langle{S},\agnt, \cdot \rangle {\rightarrow_{S}}  \langle{S},\agnt^\prime, \mathit{Ss} \rangle }\label{e1}\\
+        \end{mathpar}
+\end{mdframed}
+%
+%\noindent We now present some rules for control flow in the program. The rules \ref{ss1} ensures that a statement are processed completely before moving on to processing the next statement, and \ref{ss2} ensures that once a statement that has been processed completely, the next statement comes up for processing.
+%\begin{mdframed}
+%	\scriptsize
+%\begin{mathpar}
+%\inferrule*[Right=\sc{stmt-seq-1}]
+%    {\langle{S},\agnt, St_1 \rangle {\rightarrow_{S}}  \langle{S}^\prime,\agnt^\prime, St_1^\prime\rangle}
+%    {\langle{S},\agnt, St_1\ St_2 \rangle {\rightarrow_{S}}  \langle{S}^\prime,\agnt^\prime, St_1^\prime\ St_2 \rangle}\label{ss1} \and \qquad \\
+%\inferrule*[Right=\sc{stmt-seq-2}]
+%   {\;}
+%    {\langle{S},\agnt, \cdot \ St_2 \rangle {\rightarrow_{S}}  \langle{S},\agnt, St_2 \rangle}\label{ss2}\and \qquad \qquad \qquad \qquad \\
+%
+%\end{mathpar}
+%\end{mdframed}
+
+
+\noindent The advancement of time and environment transitions govern the changes in the system configuration. The rewrite rule is a mapping from an initial system configuration to a set of configurations. It has the type
+$$\rightarrow_G\ \subseteq (\mathbb{L}\times \pws \times \mathbb{R}^+\times \mathbb{R}^+\times \{\mathtt{prog,env}\}) \times \mathscr{P}(\mathbb{L}\times\pws \times \mathbb{R}^+\times \mathbb{R}^+ \times \{\mathtt{prog,env}\}) $$
+
+First, we present the semantics of executing the events for each agent. A $\lgname$ program can be seen as sequences of $\stmtrule$ rules, which determine event executions followed by an environment transition. To express this, we define a rule that shows the the changes in the configuration of the overall system due to all the agents executing their program just before an environment transition is applicable.
+
+
+\begin{mdframed}
+\scriptsize
+\begin{mathpar}
+\hspace{0.2in}\inferrule*[Right=\sc{SR},Left={$\forall i\in\UINS$}]
+{ (S,\lconfig{i},\lconfig{i}.p)\stmtrule(S^\prime,\lconfig{i}^\prime,p^\prime)\stmtrule\ldots\stmtrule (S^{\prime\prime},\lconfig{i}^{\prime\prime},\ \cdot\ )\wedge \lconfig{i}^{\prime\prime}.\turn=\mathtt{env}}
+{({L}, S, \tau,  \mathtt{prog})\rightarrow_G ({L^{\prime\prime}}, S^{\prime\prime}, \tau, \mathtt{prog})}\label{runsys}
+\end{mathpar}
+\end{mdframed}
+
+
+\fTBD{FIXING Rule REFERENCES}The rule \ref{runsys} expresses that starting from a global configuration $c = ({L}, S, \tau, \mathtt{env})$, each agent $i$ with local configuration $\lconfig{i}$ processes its program $p$ using a sequence of $\stmtrule$ rewrites, until its event is executed, and its $\turn$ set to $\mathtt{env}$ at the end of the event execution. Overall, the system goes from a configuration $c$ to $c^{\prime\prime}= ({L^{\prime\prime}}, S^{\prime\prime}, \tau, \mathtt{env})$, with possibly different agent configurations and global context depending on whether any of the events executed resulted in writes to shared variables.
+
+
+
+\fTBD{Agent local states and propagation over messages.}
+Suppose the function $f:\mathit{Sens} \times Val \times \mathbb{R} \mapsto \Val$ captures the behavior of the controller, and can be used to update the sensor ports after time $\delta$. The rule \ref{env} shows the semantics of the system configuration after the rule \ref{runsys}.
+\begin{mdframed}
+    	\scriptsize
+    \begin{mathpar}
+    \inferrule*[Right=\sc{envtrans}]{ \forall i \in \UINS,\lconfig{i}^\prime.\mathit{sm} = \agnt.\mathit{f}(\lconfig{i}.\mathit{sm},\delta) \wedge\ \forall x \in \mathit{Keys}({S}),\lconfig{i}'.{M}[x \mapsto S[x]] \wedge \lconfig{i}.\turn = \mathtt{env}}
+    { (L, {S}, \tau,\mathtt{prog})\rightarrow_G ({L}^\prime, {S}, \tau + \delta,\mathtt{env}) \label{env}     }
+
+ \inferrule*[Right=\sc{agent-env-to-prog}]
+     {\begin{array}{l} \forall i \in \UINS , \lconfig{i}.\turn = \mathtt{env} \wedge \lconfig{i}^\prime.\turn = \mathtt{prog} \end{array}}
+     {  ({L}, S, \tau, \mathtt{env})\rightarrow_G ({L^\prime}, S, \tau, \mathtt{env}) \label{agntenvturn}     }\\
+
+
+
+     \inferrule*[Right=\sc{env-to-prog}]
+     { \forall i \in \UINS , \lconfig{i}.\turn = \mathtt{prog} }
+     {  ({L}, S,\tau, \mathtt{env})\rightarrow_G ({L}, S, \tau, \mathtt{prog}) \label{envturn}     }
+\noindent
+\end{mathpar}
+    \end{mdframed}
+
+Rule \ref{agntenvturn} is the semantic rule for setting the $\mathit{turn}$ of each agent back to $\mathtt{prog}$ from $\mathtt{env}$ after the environment transition has been completed. The semantics synchronizes the program transitions of each agent, ensuring that the event executions for each happen every $\delta$ time.
+
+
+Rule \ref{env} captures the fact that the global context $S$ is copied into local context of each agent $i \ (\lconfig{i}.M)$, thus ensuring that all agents have consistent shared variable values before the next program transition. After that, rule \ref{envturn} changes the turn of each agent back to program. In an actual execution, the controller  would run the program on hardware, whose sensor ports evolve for $\delta$ time between program transitions.
+
+\rg{ Formally,
+A \emph{program transition} is a sequence  $\vs_0 , a_0,  \vs_1, a_1, \ldots  ,a_N \vs_N$ of length $N$, where $(\vs_i , a , \vs_{i+1}) \in D$ is an event execution rule. Given a program step $\ps = \vs_0 , a_0,  \vs_1, a_1, \ldots  ,a_N \vs_N$, $\ps[i]$ refers to the state $\vs_i$.
+An \emph{execution} of a system is an alternating sequence of program steps and $\delta$-transitions $\ps_0, d_0 , \ps_1, d_1, \ldots$ where}
 \begin{itemize}
 \item $\ps_i$ is a program step and $d_i$ is a $\delta$-transition,
 \item $\ps_0$ is a program step $\vs_0, a_0, \vs_1, \ldots ,a_N, \vs_N $  where $\vs_0 \in C_0$,
@@ -73,6 +259,46 @@ An \emph{execution} of a system is an alternating sequence of program steps and 
 %The components of the tuple $s_i$ are accessed using the dot $`.'$ notation, for instance, $s_i.M$, etc. The value of a program variable $v$ at a state $s_i$ is denoted by $s_i.M.v$.
 
 We define the set of reachable states of a system $\A$ , $\Reach(\A) = \{c \mathit c \in C_0 \vee \exists c^\prime \in \Reach(\A), (c^\prime, a, c) \in \D \}$. A predicate $\mathcal{P} : C \mapsto \mathbb{B}$ is an \emph{invariant} of the $\A$, if $\forall q \in \Reach(\A), \mathcal{P} = \mathit{True}$.
+
+
+
+\fTBD{Relate this to assumptions}
+
+
+ We implemented $\lgname$ semantics in \K, which a rewriting-based executable framework for defining language semantics. One can view a language semantics naturally as a set of reduction rules over configurations. Components of a configuration are called {\em cells} in \K. To implement the semantics discussed in \refsect{semantics}, the configuration in \K includes several bookkeeping variables as well.
+
+
+%Semantics in \K is expressed using configurations, which organize the components in elements called {\em cells}. Cells are labelled, have types indicating what kind of elements can be contained in them, and help specify the rewrite rule in context. \K allows underspecification of rewrite rules, meaning, only the rewrite rules affecting part of the configurations need to be specified if the rule doesn't affect the other parts of the rule. Our notion of configurations translate in a straightforward manner to \K configurations. We present a couple of example rewrite rules in \K to demonstrate how the executable semantics is implemented.
+%
+%
+%We use a top level {\em system} cell with nested cells corresponding to the elements discussed in \refsect{semantics}, as well as other cells which are used to store information like number of agents in the system, simulation parameters of the program, and other bookkeeping information we used to implement the semantics. There is a special cell called the {\em k} cell, which is used to store the current computation in the program. Each agent has a {\em k} cell to store its computation. Recall that a local variable is updated only in the local memory. The rule for this checks whether the variable is not in the keys of the map {\em sysLoc} from shared variables to their locations. The following rule in \K that corresponds to our \textsc{lvar-assign} rule in the semantics.
+%\vspace{2pt}
+%\begin{mdframed}
+%\begin{Verbatim}[fontsize=\tiny]
+%<agent> ... <k> V:Id = I:Val => .  ... </k>
+%            <loc> ... V |-> L ... </loc>
+%            <locstore> ... L |-> _ => I ... </locstore>
+%        ... </agent>
+%<sysloc> Rho </sysloc>                    when L notBool inKeys(Rho)
+%\end{Verbatim}
+%\end{mdframed}
+%
+%We use bookkeeping variables in the \K configuration to ensure that all agents have their turn set to \texttt{env} before the system environment transition.We also  ensure that an agent has updated its sensor ports after the environment transition, to implement the rule \textsc{agent-env-to-prog}. Once all the agents in the system are ready to perform the next program transition, the rule \textsc{env-to-prog} is implemented as follows. If the number of agents which have set their $\mathit{turn}$ to $\mathit{env}$ (indicated by the cell {\em envToProg}) is the same as the number of all agents in the system, then the system sets its turn from $\mathit{Env}$ to $\mathit{Prog}$.
+%\vspace{2pt}
+%\begin{mdframed}
+%\begin{Verbatim}[fontsize=\tiny]
+%<system>...
+% <envToProg> N </envToProg>
+% <numAgents> N </numAgents>
+% <turn> Env => Prog </turn> ...
+%</system>
+%\end{Verbatim}
+%\end{mdframed}
+
+
+
+
+
 
 
 \subsection{Synchronous Distributed Shared Memory}
