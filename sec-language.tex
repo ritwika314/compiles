@@ -9,7 +9,7 @@
 
 \subsection{Formal syntax and semantics}
 \label{sec:semantics}
-
+\sayan{SM: The main piece for this section will be the semantic rules as formalized in K in 1 page. Let us write those first (from OOPSLA paper) and then add whatever is necessary to explain them clearly. The final ``theorem'' might be the bounded reachability soundness. }
 The (distributed) system of robots  executing the \dmap application written in $\lgname$ can be viewed as a nondeterministic, state machine automaton~\cite{TIOAmon, Mitra07PhD}. The detailed statement-level semantics of $\lgname$ has been developed in the $\mathbb{K}$ framework and will appear elsewhere. For the purpose of the analysis here, we briefly describe the ``big-step'' semantics of \lgname which allows all the statements in an event of a single robot to be executed as an instantaneous transition.
 
 Suppose we have $N$ robots in the system each executing the same \lgname application program. As mentioned earlier \lgname middleware enforces a synchronous \emph{round-by-round} execution, where each round lasts for $\delta$ time, where $\delta >0$ is a platform specific execution parameter.
