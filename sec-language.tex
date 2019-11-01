@@ -8,12 +8,27 @@
 }
 
 \subsection{Formal syntax and semantics}
-\rg{Labels for rules are wrong, will fix later.}
+\rg{Labels for rules are wrong, will fix later, SYNTAX IS WRONG, WILL FIX LATER}
 \label{sec:semantics}
 \sayan{SM: The main piece for this section will be the semantic rules as formalized in K in 1 page. Let us write those first (from OOPSLA paper) and then add whatever is necessary to explain them clearly. The final ``theorem'' might be the bounded reachability soundness. }
 
 
 \section{Koord Language and Semantics}
+\subsection{Syntax}
+
+\reffig{syntax} shows the BNF grammar syntax of the agent programs. Each agent program consists of
+\begin{enumerate}
+\item declarations of the interface between the programs and the controller module,
+\item declarations of program variables and \item events, consisting of preconditions and effects.
+\end{enumerate}
+Agent programs (rule \emph{Program}) can import a controller module. The module import grammar production specifies the interface of the controllers: it contains all input and output ports for actuators (\emph{APorts}) and sensors (\emph{SPorts}) that the program uses. The program can also contain shared and local declarations. There can be an initialization process which sets certain program variable values. The program also includes events (rule \emph{Event}) which include a boolean \textbf{pre}condition, which may be tagged \textbf{urgent}, and an \textbf{eff}ect, which includes statements. The effect of an event may include the standard control flow constructs including a sequence of instructions, conditional statements, as well as atomic blocks of statements for mutual exclusion, function calls and assignment statements. The user is also allowed to define functions and abstract data types(which are tuples of the basic data types $\lgname$ supports).
+
+In the syntax presented in \reffig{syntax}, an element enclosed in square brackets (other than array related syntax) means that it is optional in the syntax at that position. $\mathit{NT}^+$ refers to one or more occurrences of the nonterminal $NT$, and the expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$ in the enumeration list.
+
+
+\input{syntax.tex}
+
+
 \subsection{Koord model for distributed CPS}
 
 
@@ -62,7 +77,9 @@ The state update performed by a single robot executing an  event is modeled as a
 %\sayan{This formalization allows the ports to behave arbitrarily over $\delta$-transitions. In order to establish invariant properties of applications, therefore, we will need to constrain the behavior of the sensor and actuator ports with additional assumptions.
 %}
 %%
- In the rest of this section, we present the formal semantics of the $\lgname$ programming language. The complete formalization of the semantics in \K is available from~\cite{} \sayan{webpage/github}. The syntax of the language is presented through examples.
+
+
+ In the rest of this section, we present the formal semantics of the $\lgname$ programming language. %The complete formalization of the semantics in \K is available from~\cite{} \sayan{webpage/github}. The syntax of the language is presented through examples.
 %
 %\subsection{Program (cyber) variables and physical variables}
 %
@@ -146,7 +163,7 @@ $$\stmtrule\ \subseteq (\pws \times \pwl\times \pwstmt \cup \{\cdot\}) \times \m
 %    \end{mathpar}
 %\end{mdframed}
 %
-%\noindent
+%
 %
 %\subsubsection{Shared memory updates}
 %
@@ -179,7 +196,7 @@ When an event is executed, the $\turn$ of the agent is set to $\mathtt{env}$ ind
         \end{mathpar}
 \end{mdframed}
 %
-%\noindent We now present some rules for control flow in the program. The rules \ref{ss1} ensures that a statement are processed completely before moving on to processing the next statement, and \ref{ss2} ensures that once a statement that has been processed completely, the next statement comes up for processing.
+% We now present some rules for control flow in the program. The rules \ref{ss1} ensures that a statement are processed completely before moving on to processing the next statement, and \ref{ss2} ensures that once a statement that has been processed completely, the next statement comes up for processing.
 %\begin{mdframed}
 %	\scriptsize
 %\begin{mathpar}
@@ -194,7 +211,7 @@ When an event is executed, the $\turn$ of the agent is set to $\mathtt{env}$ ind
 %\end{mdframed}
 
 
-\noindent The advancement of time and environment transitions govern the changes in the system configuration. The rewrite rule is a mapping from an initial system configuration to a set of configurations. It has the type
+ The advancement of time and environment transitions govern the changes in the system configuration. The rewrite rule is a mapping from an initial system configuration to a set of configurations. It has the type
 $$\rightarrow_G\ \subseteq (\mathbb{L}\times \pws \times \mathbb{R}^+\times \mathbb{R}^+\times \{\mathtt{prog,env}\}) \times \mathscr{P}(\mathbb{L}\times\pws \times \mathbb{R}^+\times \mathbb{R}^+ \times \{\mathtt{prog,env}\}) $$
 
 First, we present the semantics of executing the events for each agent. A $\lgname$ program can be seen as sequences of $\stmtrule$ rules, which determine event executions followed by an environment transition. To express this, we define a rule that shows the the changes in the configuration of the overall system due to all the agents executing their program just before an environment transition is applicable.
@@ -226,12 +243,10 @@ Suppose the function $f:\mathit{Sens} \times Val \times \mathbb{R} \mapsto \Val$
      {\begin{array}{l} \forall i \in \UINS , \lconfig{i}.\turn = \mathtt{env} \wedge \lconfig{i}^\prime.\turn = \mathtt{prog} \end{array}}
      {  ({L}, S, \tau, \mathtt{env})\rightarrow_G ({L^\prime}, S, \tau, \mathtt{env}) \label{agntenvturn}     }\\
 
-
-
      \inferrule*[Right=\sc{env-to-prog}]
      { \forall i \in \UINS , \lconfig{i}.\turn = \mathtt{prog} }
      {  ({L}, S,\tau, \mathtt{env})\rightarrow_G ({L}, S, \tau, \mathtt{prog}) \label{envturn}     }
-\noindent
+
 \end{mathpar}
     \end{mdframed}
 
@@ -240,32 +255,95 @@ Rule \ref{agntenvturn} is the semantic rule for setting the $\mathit{turn}$ of e
 
 Rule \ref{env} captures the fact that the global context $S$ is copied into local context of each agent $i \ (\lconfig{i}.M)$, thus ensuring that all agents have consistent shared variable values before the next program transition. After that, rule \ref{envturn} changes the turn of each agent back to program. In an actual execution, the controller  would run the program on hardware, whose sensor ports evolve for $\delta$ time between program transitions.
 
-\rg{ Formally,
-A \emph{program transition} is a sequence  $\vs_0 , a_0,  \vs_1, a_1, \ldots  ,a_N \vs_N$ of length $N$, where $(\vs_i , a , \vs_{i+1}) \in D$ is an event execution rule. Given a program step $\ps = \vs_0 , a_0,  \vs_1, a_1, \ldots  ,a_N \vs_N$, $\ps[i]$ refers to the state $\vs_i$.
-An \emph{execution} of a system is an alternating sequence of program steps and $\delta$-transitions $\ps_0, d_0 , \ps_1, d_1, \ldots$ where}
-\begin{itemize}
-\item $\ps_i$ is a program step and $d_i$ is a $\delta$-transition,
-\item $\ps_0$ is a program step $\vs_0, a_0, \vs_1, \ldots ,a_N, \vs_N $  where $\vs_0 \in C_0$,
-\item Given a $\delta$-transition $d_i = (\vs, a, \vs')$, and its preceding program step $\ps_i$,  $\ps_i[N] = \vs $
-\end{itemize}
+Given a system configuration $C$, we define
+ \begin{inparaenum}[(i)]
+     \item$\Post(C,i)$ as the set of configurations which can be reached by agent $i$ executing one of its enabled or urgent events from a configuration in $C$,
+     \item$\Post(C,p)$: the set of configurations reached during a program transition, when agents execute their events in the order $p$, where $p$ is a sequence of agent $\mathit{pids}$,
+     \item $\Post(C)$: the union over all possible orders $p$ in $\Post(C,p)$,
+     \item$\Final(C)$: the set of configurations reached from $C$ \emph{after} all agents have had a chance to execute an event: \end{inparaenum}
+\begin{mdframed}
+\footnotesize
+\begin{align*}
+\Post(C,i) :=& \{ c^\prime\mid \exists c\in \pwg,  \ \ c\rightarrow_{S}^{+} c^\prime  \\
+                  &\wedge c.L_i.\turn = \prog \wedge c^\prime.L_i.\turn = \env & \\
+                  & \wedge \forall j, j\neq i, c.L_j.\turn = c^\prime.L_j.\turn \},\\
+\Post(C,(i_1,i_2,\ldots ,i_p)) := & \ \Post(\Post(C,i_1),(i_2,i_3,\ldots,i_p))\\ & \cup \Post(C,i_1)\\
+\Post(C) :=& \bigcup_{p\in \mathit{perms}(\UINS)} \Post(C,p), \\
+\Final(C) :=& \left\{ c\in \Post(C)\mid \forall i \in \UINS, c.L_i.\turn = \env \right\}.
+\end{align*}
+\end{mdframed}
+
+Here $\mathit{perms}(\UINS)$ is the set of permutations of $\UINS$.
+The function $\traj: \pwg \times \left[0,\delta\right]$ represents the \emph{trajectory} of the system, or the intermediate values of the sensor ports during a environment transition.
 %
-%of each robot evolve to the 	controllers driving the robot according to the actuators that may have been set in the event. The program and sensor variables of the robot can be seen as the state variables for each robot.
+Given a $c\in \pwg, t\in \left[0,\delta\right]$, $\traj(c,t)$ is the configuration at time $t$. $\pt(C)$ is  the set of configurations over the interval $[0,\delta]$.
+$$\pt(C) := \left\{c^\prime \mid \exists c\in C, t\leq \delta , c^\prime = \traj(c,t)\right\}, \ \ft(C) := \Post_{[\delta,\delta]}(C).$$
+A \emph{frontier} set of configurations represents the set of configurations that can be reached from an initial configuration $C$ after a system transition.
+$$\frontier(C,0) := C; \frontier(C,n) := \ft(\Final(\frontier(C,n-1))).$$
+The \emph{frontier} set of configurations given that the order of execution of events is $p$, is $\frontier(C,n,p) :=\ft(\Final(\frontier(C,n-1,p),p))$. Given an initial set of configurations $C_0\subset\pwg$,
+the set $\Reach(C_0,n)$ of  states reachable with executions of length $n$ can be defined inductively as: $\Reach(C_0,0) := C_0$,
+\begin{align*}
+\Reach(C_0,n) &:= \Post(\frontier(C_0,n-1) \cup \pt(\Post(\frontier(C_0,n-1)))
+\end{align*}
 
 
-%\begin{enumerate}
-%    \item $M : \Var \mapsto \Val$ is the mapping of all program variables in the application known by the robot to their values.
-%    \item $cp : \Var \mapsto \Val$ is the mapping of actuator and sensor variables to their values.
-%\end{enumerate}
-%The components of the tuple $s_i$ are accessed using the dot $`.'$ notation, for instance, $s_i.M$, etc. The value of a program variable $v$ at a state $s_i$ is denoted by $s_i.M.v$.
-
-We define the set of reachable states of a system $\A$ , $\Reach(\A) = \{c \mathit c \in C_0 \vee \exists c^\prime \in \Reach(\A), (c^\prime, a, c) \in \D \}$. A predicate $\mathcal{P} : C \mapsto \mathbb{B}$ is an \emph{invariant} of the $\A$, if $\forall q \in \Reach(\A), \mathcal{P} = \mathit{True}$.
 
 
+The tool outputs `safe' if the $\mathit{inv}$ is indeed an $n$-invariant, `unsafe' if it finds a counter-example execution of length $n$. In some cases, it can return `unknown' as will be discussed in the following section.
 
+
+ Algorithm~\ref{ag1}  computes reachable states of a given system based on the above functions and check $n$-invariance.
+$\mathit{Unique}(\mathit{Perms}(\UINS), P_\mathit{events})$ is the set of permutations of the agents that may result in unique behaviors, and we compute this set by analyzing the shared variables written to during enabled and urgent events of each agent during a round of program transitions.  The input to \refalg{ag1} is \begin{inparaenum}[(i)]
+    \item $P$: the program,
+    \item $\mathit{inv}$: a candidate invariant function,
+    \item {\UINS}: set of agents,
+    \item $\delta$: time step size and
+    \item $n$: length executions to check.
+\end{inparaenum}
+
+%
+
+\begin{algorithm}
+\scriptsize
+\textbf{Input}: $P$, $\mathit{inv}$, $\UINS$, $\delta$, $n$\\
+$c\leftarrow \mathit{Init}(P,N)$\quad$p \leftarrow \mathit{Unique}(\mathit{Perms}(\UINS),P_{\mathit{events}})$\\
+\lIf{
+$ \mathit{Sat}(c,\neg\mathit{inv})$} { \Return `unsafe'}
+$C \leftarrow$ \{c\} \\
+\For{$i = 0$ \KwTo n}{
+\For{$j = 0$ \KwTo $\mathit{len}(p)$ }{
+$C^\prime\leftarrow\Post(C,p[j])$\\
+\For{$c$ $\mathbf{in}$ $C'$} {
+\lIf{
+$ \mathit{Sat}(c,\neg\mathit{inv})$} { \Return (`unsafe',c)}
+}
+$C^\prime \leftarrow \Final(C,p[j])$\\
+\rg{\emph{continuous reachability here}}
+}}
+\Return `safe'
+\caption{Bounded invariant checking algorithm}\label{ag1}
+\end{algorithm}
+
+
+
+ Then, for every order of program transitions in $p$, the algorithm uses the $\lgname$ semantics to compute $C^\prime$, the set of all configurations reached by the system during that round of program transitions. The algorithm first checks $\mathit{inv}$ is valid for configurations in $C^\prime$, or that the negation of $\mathit{inv}$ is unsatisfiable, using the procedure $\mathit{Sat}$. If it finds an unsafe configuration $c$, then it returns `unsafe' along with $c$.
+  In the next iteration, $C$ is set to be the frontier set of configurations.
+Theorem~\ref{thm:bmcsound} summarizes the soundness of \refalg{ag1}.
+
+\begin{theorem}
+    \label{thm:bmcsound}
+    If Algorithm~\ref{ag1}  returns `unsafe' then there exists a counter-example to \emph{inv} of length at most $n$, \rg{state assumption on continuous behavior here}.
+    if Algorithm~\ref{ag1} returns `safe' then \emph{inv} is an $n$-invariant.
+\end{theorem}
+\begin{proof}
+{\em Sketch.} If algorithm \ref{ag1} returns {\em safe}, then for the $n$ loop iterations of the outer loop, given a set of states $C$ and the property \texttt{inv}, according to the algorithm $\forall c \in \Post(C), c \models \texttt{inv}$. $\Post(C)$ is the set of configurations that can be reached from $C$ using any possible sequence of rewrite rules allowed by the system before an environment transition. Therefore, if the algorithm returns safe, then the set of configurations reached from $C$ before an environment transition is also safe. \rg{continue proof of soundness of reachability of continuous behavior}
+\end{proof}
 \fTBD{Relate this to assumptions}
 
 
  We implemented $\lgname$ semantics in \K, which a rewriting-based executable framework for defining language semantics. One can view a language semantics naturally as a set of reduction rules over configurations. Components of a configuration are called {\em cells} in \K. To implement the semantics discussed in \refsect{semantics}, the configuration in \K includes several bookkeeping variables as well.
+
+
 
 
 %Semantics in \K is expressed using configurations, which organize the components in elements called {\em cells}. Cells are labelled, have types indicating what kind of elements can be contained in them, and help specify the rewrite rule in context. \K allows underspecification of rewrite rules, meaning, only the rewrite rules affecting part of the configurations need to be specified if the rule doesn't affect the other parts of the rule. Our notion of configurations translate in a straightforward manner to \K configurations. We present a couple of example rewrite rules in \K to demonstrate how the executable semantics is implemented.

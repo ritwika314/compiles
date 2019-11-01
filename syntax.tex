@@ -1,0 +1,86 @@
+\newcommand{\pgm}{\mathit{Program}}
+\newcommand{\im}{\mathit{Module^+}}
+\newcommand{\db}{\mathit{DeclBlock}}
+\newcommand{\defs}{\mathit{Defs}}
+\newcommand{\init}{\mathit{Init}}
+\newcommand{\evnts}{\mathit{Event^+}}
+\newcommand{\evnt}{\mathit{Event}}
+\newcommand{\fdefs}{\mathit{FuncDef}}
+\newcommand{\adefs}{\mathit{AdtDef}}
+\newcommand{\args}{\mathit{Arg}^+}
+\newcommand{\mterm}[1]{\mbox{ \textbf{#1} }}
+\newcommand{\stmts}{\mathit{Stmt}^+}
+\newcommand{\stmt}{\mathit{Stmt}}
+\newcommand{\asgn}{\mathit{Assign}}
+\newcommand{\cndnl}{\mathit{Ite}}
+\newcommand{\floop}{\mathit{Loop}}
+\newcommand{\fncall}{\mathit{FnCall}}
+\newcommand{\atmc}{\mathit{Atomic}}
+\newcommand{\decls}{\mathit{Decl}^+}
+\newcommand{\decl}{\mathit{Decl}}
+\newcommand{\var}{\mathit{Var}}
+\newcommand{\val}{\mathit{Val}}
+\newcommand{\type}{\mathit{Type}}
+\newcommand{\awd}{\mathit{AWDecls}}
+\newcommand{\ard}{\mathit{ARDecls}}
+\newcommand{\ld}{\mathit{LocDecls}}
+\newcommand{\cnd}{\mathit{Cond}}
+\newcommand{\params}{\mathit{Param}^+}
+\newcommand{\param}{\mathit{Param}}
+\newcommand{\aports}{\mathit{APorts}}
+\newcommand{\sports}{\mathit{SPorts}}
+\newcommand{\expr}{\mathit{Expr}}
+\newcommand{\aexpr}{\mathit{AExpr}}
+\newcommand{\bexpr}{\mathit{BExpr}}
+\newcommand{\id}{\left\langle\mathit{identifier}\right\rangle}
+\newcommand{\aval}{\mathit{AVal}}
+\newcommand{\bval}{\mathit{BVal}}
+\newcommand{\ret}{\mathit{Return}}
+\begin{figure*} \begin{mdframed}
+\scriptsize
+\begin{align*}
+\begin{split}
+\pgm &::= \defs\ [\im]\ \db\ [\init]\ \evnts\  \\\\
+\defs &::= [\fdefs^+]\ [\adefs^+]\\
+\fdefs &::= \mterm{def}\mterm{fun} \id ( \params ):\ \stmts\\  
+\adefs &::= \mterm{def}\mterm{adt} \id :\ \decls\\
+\param &:: \type\ \id \\\\
+\mathit{Module} &::= \mterm{using}\mterm{module}\id : \sports\ \aports\\
+\sports &::= \mterm{sensors}:\decls \\ 
+\aports &::= \mterm{actuators}:\decls\\\\
+\decl &:: \type\ \id \mid \type\ \id \ \mterm{=} \val \\
+\type &::= \mterm{int}\mid \mterm{float}\mid\mterm{bool}\mid \mterm{pos}\mid \mathit{adt} \\ &\ \mid \type [\mathit{Int}]\mid \mterm{List}\left\langle\type\right\rangle \mid \mterm{Queue}\left\langle\type\right\rangle\\\\
+\db &::= \awd\ \ard\ \ld\\
+\awd &::= \mterm{allwrite}:\ \decls\\ 
+\ard &::= \mterm{allread}:\ \decls\\ 
+\ld &::= \mterm{local}:\ \decls\\\\
+\init &::= \mterm{init}:\ \stmts\\
+\evnt &::= \id: \mterm{pre}\ [\mterm{urgent}]\ (\cnd)\mterm{;}\mterm{eff}:\ \stmts\\
+\end{split}\begin{split}
+\expr &::= \aexpr | \bexpr \\
+\aexpr &::= \aexpr\ \mathit{AOp}\ \aexpr\\  
+&\mid \expr \mterm{++} \mid \mterm{-} \aexpr \mid \var \mid \aval \\
+\mathit{AOp} &::= +\mid-\mid*\mid / \\ 
+\bexpr &::=  \expr\ \mathit{RelOp}\ \expr | \expr\ \mathit{COp}\ \expr\\
+&\mid \mterm{not} \expr \mid \var\mid \bval\\
+\mathit{RelOp} &::=  \geq \mid \leq \mid \geq \mid == \mid > \mid < \mid \neq\\ 
+\mathit{COp} &::=  \mterm{and} \mid \mterm{or} \\\\ 
+\stmt &::= \asgn \mid \fncall\mid\atmc  \\ 
+      & \mid\cndnl\mid \floop \mid \ret \\
+\asgn &::= \var\ \mterm{=}\  \expr \\
+\cndnl &::= \mterm{if} \bexpr\ \stmts \ [\mterm{else} \stmts]\\
+\fncall &::= \id ([\aexpr\mid\bexpr]^+) \\
+\atmc &::= \mterm{atomic}: \stmts\\
+\floop &::= \mterm{For} \id \mterm{in} \aexpr : \stmts\\
+\ret &::= \mterm{return} \expr \mid \mterm{return} \\\\
+\var &::= \id \mid \id [\expr] \\ &\mid \id \mterm{.} \id \\
+\val &::= \aval \mid \bval \\
+\aval &::= \mathit{Int} \mid \mathit{Float}  \\
+\bval &::= \mathit{Bool} 
+\end{split}
+\end{align*}\end{mdframed}
+\caption{$\lgname$ program syntax.}
+\label{fig:syntax}
+\end{figure*}
+
+
