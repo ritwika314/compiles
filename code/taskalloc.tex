@@ -1,0 +1,39 @@
+using Motion:
+  actuators:
+    pos[] path
+  sensors:
+    pos psn
+    boolean reached
+local:
+  boolean isOnTask
+  Task myTask
+  pos[] testRoute
+  int i
+
+allread:
+  pos[] route
+allwrite:
+  Task[] tasks
+
+Assign:
+  pre: isOnTask == false
+  eff: if allAssigned(tasks): stop
+    else: atomic:
+      for i = 0, length(tasks):
+        if task.assigned$==$false:
+          myTask$=$tasks[i]
+            testRoute$=$findPath(Motion.psn, myTask.loc)
+            if pathIsClear(route, testRoute, pid):
+              isOnTask$=$true
+              assign(myTask, pid)
+              tasks[i]$=$myTask
+              route[pid]$=$testRoute
+              Motion.path$=$testRoute
+            else:
+              isOnTask$=$false
+              route[pid]$=$[Motion.psn]
+
+Complete:
+    pre: isOnTask and Motion.reached
+    eff: isOnTask$=$false
+         route[pid]$=$[Motion.psn[]
