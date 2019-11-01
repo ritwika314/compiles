@@ -43,17 +43,14 @@ Why we can really use the model of zero time computation and delta time environm
 
 Need to validate the assumptions over black box parts
 
-%
-Define the mapping problem, \rg{and the task problem}; challenges---sensing, perception, coordination. Short discussion of previous related work.
 
-%
-%\begin{figure}[h!]
-%\centering
-%\includegraphics[width=0.48\textwidth]{figs/arch.png}
-%\caption{\small CyPhyHouse framework. Major tools shown in blue.}
-%\label{fig:arch}
-%\end{figure}
-%
+\begin{figure}[h!]
+\centering
+\includegraphics[height=5cm]{figs/arch.png}
+\caption{\toolname framework.}
+\label{fig:arch}
+\end{figure}
+
 \subsection{Contributions~\chiao{(<= 0.5 page)}}
 An application deployed to heterogeneous devices and runs reliably.
 This is cool and difficult to achieve without our contributions.
@@ -161,6 +158,27 @@ ptolemy (UC-Berkeley),
 Zelus programming language,
 Newcomb et al., a Calculus for Internet of Things Automation, SPLASH Onward!'17
 }
+
+\begin{table*}[!ht]
+    \footnotesize
+    \centering
+    \caption{}
+    \label{tab:summary}
+    \begin{tabular}{|l| c c c c c c c|}
+        \hline
+        & \tb{HW}    & \tb{Dist.} & \tb{Hetero-} & \tb{Sim}   & \tb{Prog.}         & \tb{Comp.} & \tb{V\&V}  \\
+        \tb{Name}                            & \tb{Depl.} & \tb{Sys.}  & \tb{geneous} &            & \tb{Lang.}         &            &            \\ \hline
+        ROS~\cite{ros}                       & \checkmark &            & \checkmark   & \checkmark & C++/Python/...     &            &            \\
+        ROSBuzz~\cite{ROSBuzz}               & \checkmark & \checkmark & \checkmark   & \checkmark & Buzz               & \checkmark &            \\
+        PythonRobotics                       &            &            & \checkmark   & \checkmark & Python             &            &            \\
+        PyRobot~\cite{pyrobot2019}           & \checkmark &            & \checkmark   & \checkmark & Python             &            &            \\
+        MRPT~\cite{MRPT}                     & \checkmark &            & \checkmark   &            & C++                &            &            \\
+        Robotarium~\cite{robotarium}         & \checkmark &            & \checkmark   & \checkmark & Matlab             &            &            \\
+        Drona~\cite{desai2017drona}          & \checkmark & \checkmark &              & \checkmark & P~\cite{Planguage} & \checkmark & \checkmark \\
+        Live~\cite{campusanofabry:lrp2016}   & \checkmark &            & \checkmark   &            & LPR                & \checkmark &            \\
+        \toolname                            & \checkmark & \checkmark & \checkmark   & \checkmark & \lgname            & \checkmark & \checkmark \\ \hline
+    \end{tabular}
+\end{table*}
 
 Modern programming languages like C\# and Swift, and   compiler infrastructures like LLVM~\cite{llvm} have revolutionized the application development ecosystem in mobile computing.
 %\paragraph*{D.}
