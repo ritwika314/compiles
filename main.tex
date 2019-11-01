@@ -157,11 +157,11 @@
 % Why
 A program for a robot in an ensemble has to interact with its physical environment using sensors and actuators, and with other robots, using over a network, in addition to implementing the control and coordination algorithm. While various impressive applications have been demonstrated with robotic ensembles, developing, debugging, and testing these applications typically require months to years. Developing these applications require detailed knowledge of control theory, path planning, network protocols, and various platform specific details. The languages and tools used to develop robot programs provide no portability of code across platforms. 
 
-Koord is a domain-specific language for distributed robotics applications. It separates the platform-independent control and coordination code from platform-specific concerns of sensing, communication, and low-level  control.
-Koord raises the level of abstraction in programming  by providing distributed shared memory for coordination;
+\lgname is a domain-specific language for distributed robotics applications. It separates the platform-independent control and coordination code from platform-specific concerns of sensing, communication, and low-level  control.
+\lgname raises the level of abstraction in programming  by providing distributed shared memory for coordination;
 it allows parameterized controllers for portability across different physical platforms,
 and it is based on a familiar event-triggered concurrent programming model.
-We present the formal semantics of Koord in the \K executable semantic framework.
+We present the formal semantics of \lgname in the \K executable semantic framework.
 This narrows the gap between the theoretical model of \lgname and its implementation and allows \sayan{formal reasoning/BMC}.
 We present an implementation of \lgname that generates executable Python code, which has been deployed on robotic platforms.
 Finally, we introduce a high-fidelity simulator and show how it can be used to test, visualize, and debug large deployments of \lgname applications.  
