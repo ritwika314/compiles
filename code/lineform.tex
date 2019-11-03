@@ -1,13 +1,11 @@
 using Motion:
-  sensors Pose pose  // Pose is a tuple of Position and Orientation
-  actuators
-    Position target
-    Boolean reached
+  sensors Position pos
+  actuators Position target
 
-allread: Position [] x $\label{lineformp}$
+allread: Position [] x $\label{lineform-allread}$
 
 TargetUpdate:
   pre True
-  eff if not(pid == $\NMAX$ - 1 or pid == 0):
+  eff if ~(pid == $\NMAX$ - 1 or pid == 0):
      Motion.target = mid(x[pid+1], x[pid-1])
-     x[pid] = Motion.pose.position
+     x[pid] = Motion.pos
