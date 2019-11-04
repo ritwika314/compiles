@@ -20,8 +20,8 @@ Assign:
   eff: if allAssigned(tasks): stop
     else: atomic:
       for i = 0, length(tasks):
-        if task.assigned$==$false:
           myTask$=$tasks[i]
+        if mytask.assigned$==$false:
             testRoute$=$findPath(Motion.psn, myTask.loc)
             if pathIsClear(route, testRoute, pid):
               isOnTask$=$true
