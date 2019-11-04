@@ -102,132 +102,137 @@
 		\parbox[t]{#2\columnwidth}{#5}%
 	}}
 	
-	\lstdefinelanguage{Koord}{
-		basicstyle=\scriptsize,
-		keywordstyle=\bf,
-		identifierstyle=\it,
-		emphstyle=\tt,
-		mathescape=true,
-		tabsize=20,
-		sensitive=false,
-		columns=fullflexible,
-		keepspaces=true,
-		flexiblecolumns=true,
-		basewidth=0.05em,
-		moredelim=[il][\rm]{//},
-		moredelim=[is][\sf ]{!}{!},
-		moredelim=[is][\bf ]{*}{*},
-		keywords={
-            and, module,
-			agent, sensors, actuators, allread, allwrite, atomic, actuator, assume,
-			else,elseif,end,eff,
-			atomic,for, foreach,forget,
-			input,internal,if,import,in,invariant,
-			local,
-			or,
-			pre,
-			return,
-			sensor,
-			then,def,type,types,thread,to,tasks,
-			using,module
-			variables, vocabulary,
-			when,where, with,while},
-		emph={replaceList,findTask,finishTask,beginTask,doMove, doReach, doReachA, forget, getOdometer, getInput, getMotion, getPos, getxPos, getPosition, getNeighbors, setMotion, inMotion, sharedsw, sharedmw, tuple, array, enumeration},
-		literate=
-		{(}{{$($}}1
-		{)}{{$)$}}1
-		% LaTeX math symbols
-		{\\in}{{$\in\ $}}1
-		{\\preceq}{{$\preceq\ $}}1
-		{\\subset}{{$\subset\ $}}1
-		{\\subseteq}{{$\subseteq\ $}}1
-		{\\supset}{{$\supset\ $}}1
-		{\\supseteq}{{$\supseteq\ $}}1
-		{\\forall}{{$\forall$}}1
-		{\\le}{{$\le\ $}}1
-		{\\ge}{{$\ge\ $}}1
-		{\\gets}{{$\gets\ $}}1
-		{\\cup}{{$\cup\ $}}1
-		{\\cap}{{$\cap\ $}}1
-		{\\langle}{{$\langle$}}1
-		{\\rangle}{{$\rangle$}}1
-		{\\exists}{{$\exists\ $}}1
-		{\\bot}{{$\bot$}}1
-		{\\rip}{{$\rip$}}1
-		{\\emptyset}{{$\emptyset$}}1
-		{\\notin}{{$\notin\ $}}1
-		{\\not\\exists}{{$\not\exists\ $}}1
-		{\\ne}{{$\ne\ $}}1
-		{\\to}{{$\to\ $}}1
-		{\\implies}{{$\implies\ $}}1
-		% LSL symbols (one-character)
-		{<*>}{{$\langle*\rangle$}}1
-%		{<}{{$<\$}}1
-%		{>}{{$>\$}}1
-		{=}{{$=\ $}}1
-		{~}{{$\neg\ $}}1
-		{|}{{$\mid$}}1
-		{'}{{$^\prime$}}1
-		% LSL symbols (two characters)
-		{\\A}{{$\forall\ $}}1
-		{\\E}{{$\exists\ $}}1
-		{\\/}{{$\vee\,$}}1
-		{\\vee}{{$\vee\,$}}1
-		{/\\}{{$\wedge\,$}}1
-		{\\wedge}{{$\wedge\,$}}1
-		{=>}{{$\Rightarrow\ $}}1
-		{->}{{$\rightarrow\ $}}1
-		{<=}{{$\ \leq\ $}}1
-		{<-}{{$\leftarrow\ $}}1
-		{==}{{$=\mathrel{\mkern-3mu}=\ $}}1
-		%        {<=}{{$\leq$}}1
-		%        {>=}{{$\geq$}}1
-		{_}{{\_}}1
-		{~=}{{$\neq\ $}}1
-		{\\U}{{$\cup\ $}}1
-		{\\I}{{$\cap\ $}}1
-		{|-}{{$\vdash\ $}}1
-		{-|}{{$\dashv\ $}}1
-		{<<}{{$\ll\ $}}2
-		{>>}{{$\gg\ $}}2
-		{||}{{$\|$}}1
-		%%       {\[\]}{{\[\,\]}}2 {\{\}}{{\{\,\}}}2
-		{[[}{{$\langle$}}1
-		{]]}{{$\rangle$}}1
-		{[}{{$[$}}1
-		{]}{{$\,]$}}1
-		%        {[[}{{$\langle$}}1
-		{]]]}{{$]\rangle$}}1
-		%        {]]}{{$\rangle$}}1
-		{<=>}{{$\Leftrightarrow\ $}}2
-		{<->}{{$\leftrightarrow\ $}}2
-		{(+)}{{$\oplus\ $}}1
-		{(-)}{{$\ominus\ $}}1
-		{_i}{{$_{i}$}}1
-		{_j}{{$_{j}$}}1
-		{_{i,j}}{{$_{i,j}$}}3
-		{_{j,i}}{{$_{j,i}$}}3
-		{_0}{{$_0$}}1
-		{_1}{{$_1$}}1
-		{_2}{{$_2$}}1
-		{_n}{{$_n$}}1
-		{_p}{{$_p$}}1
-		{_k}{{$_n$}}1
-		%        {-}{{$\ms{-}$}}1
-		{@}{{}}0
-		{\\delta}{{$\delta$}}1
-		{\\R}{{$\R$}}1
-		{\\Rplus}{{$\Rplus$}}1
-		{\\N}{{$\N$}}1
-		{\\times}{{$\times\ $}}1
-		{\\tau}{{$\tau$}}1
-		{\\alpha}{{$\alpha$}}1
-		{\\beta}{{$\beta$}}1
-		{\\gamma}{{$\gamma$}}1
-		{\\ell}{{$\ell\ $}}1
-		{--}{{$-\ $}}1
-		{\\TT}{{\hspace{1.5em}}}3
-	}
+\lstdefinelanguage{Koord}{
+    basicstyle=\scriptsize,
+    identifierstyle=\it,
+    mathescape=true,
+    tabsize=20,
+    sensitive=false,
+    columns=fullflexible,
+    keepspaces=true,
+    flexiblecolumns=true,
+    basewidth=0.05em,
+    moredelim=[il][\rm]{//},
+    moredelim=[is][\bf ]{*}{*},
+    keywordstyle=[1]\bf,
+    keywords=[1]{
+        and, agent, actuator, actuators, allread, allwrite, atomic, assume,
+        break,
+        def,
+        eff, else, elseif, end,
+        for, foreach, forget,
+        if, import, in, input, internal, invariant,
+        local,
+        module,
+        or,
+        pre,
+        return,
+        sensor, sensors, stop,
+        then, type, thread, to,
+        using,
+        variables, vocabulary,
+        when, where, while, with},
+    keywordstyle=[2]\it\color{olive},
+    keywords=[2]{
+        bool,
+        int,
+        list,
+        pathplanner, point,
+        set,
+        task},
+    keywordstyle=[3]\it\color{brown},
+    keywords=[3]{
+        false,
+        len,
+        pid,
+        true},
+    literate=
+    {(}{{$($}}1
+    {)}{{$)$}}1
+    % LaTeX math symbols
+    {\\in}{{$\in\ $}}1
+    {\\preceq}{{$\preceq\ $}}1
+    {\\subset}{{$\subset\ $}}1
+    {\\subseteq}{{$\subseteq\ $}}1
+    {\\supset}{{$\supset\ $}}1
+    {\\supseteq}{{$\supseteq\ $}}1
+    {\\forall}{{$\forall$}}1
+    {\\le}{{$\le\ $}}1
+    {\\ge}{{$\ge\ $}}1
+    {\\gets}{{$\gets\ $}}1
+    {\\cup}{{$\cup\ $}}1
+    {\\cap}{{$\cap\ $}}1
+    {\\langle}{{$\langle$}}1
+    {\\rangle}{{$\rangle$}}1
+    {\\exists}{{$\exists\ $}}1
+    {\\bot}{{$\bot$}}1
+    {\\rip}{{$\rip$}}1
+    {\\emptyset}{{$\emptyset$}}1
+    {\\notin}{{$\notin\ $}}1
+    {\\not\\exists}{{$\not\exists\ $}}1
+    {\\ne}{{$\ne\ $}}1
+    {\\to}{{$\to\ $}}1
+    {\\implies}{{$\implies\ $}}1
+    % LSL symbols (one-character)
+    {<*>}{{$\langle*\rangle$}}1
+    {=}{{$=$}}1
+    {~}{{$\neg\ $}}1
+    {|}{{$\mid$}}1
+    {'}{{$^\prime$}}1
+    % LSL symbols (two characters)
+    {\\A}{{$\forall\ $}}1
+    {\\E}{{$\exists\ $}}1
+    {\\/}{{$\vee\,$}}1
+    {\\vee}{{$\vee\,$}}1
+    {/\\}{{$\wedge\,$}}1
+    {\\wedge}{{$\wedge\,$}}1
+    {=>}{{$\Rightarrow\ $}}1
+    {->}{{$\rightarrow\ $}}1
+    {<=}{{$\ \leq\ $}}1
+    {<-}{{$\leftarrow\ $}}1
+    {==}{{$=\mathrel{\mkern-3mu}=$}}2
+    {<=}{{$\leq$}}1
+    {>=}{{$\geq$}}1
+    {~=}{{$\neq\ $}}1
+    {\\U}{{$\cup\ $}}1
+    {\\I}{{$\cap\ $}}1
+    {|-}{{$\vdash\ $}}1
+    {-|}{{$\dashv\ $}}1
+    {<<}{{$\ll\ $}}2
+    {>>}{{$\gg\ $}}2
+    {||}{{$\|$}}1
+    {\\<}{{$\langle$}}1
+    {\\>}{{$\rangle$}}1
+    {[}{{$[$}}1
+    {]}{{$]$}}1
+    {<=>}{{$\Leftrightarrow\ $}}2
+    {<->}{{$\leftrightarrow\ $}}2
+    {(+)}{{$\oplus\ $}}1
+    {(-)}{{$\ominus\ $}}1
+    {_i}{{$_{i}$}}1
+    {_j}{{$_{j}$}}1
+    {_{i,j}}{{$_{i,j}$}}3
+    {_{j,i}}{{$_{j,i}$}}3
+    {_0}{{$_0$}}1
+    {_1}{{$_1$}}1
+    {_2}{{$_2$}}1
+    {_n}{{$_n$}}1
+    {_k}{{$_n$}}1
+    %        {-}{{$\ms{-}$}}1
+    {@}{{}}0
+    {\\delta}{{$\delta$}}1
+    {\\R}{{$\R$}}1
+    {\\Rplus}{{$\Rplus$}}1
+    {\\N}{{$\N$}}1
+    {\\times}{{$\times\ $}}1
+    {\\tau}{{$\tau$}}1
+    {\\alpha}{{$\alpha$}}1
+    {\\beta}{{$\beta$}}1
+    {\\gamma}{{$\gamma$}}1
+    {\\ell}{{$\ell\ $}}1
+    {--}{{$-\ $}}1
+    {\\TT}{{\hspace{1.5em}}}3
+}
 	
 	
 	\lstdefinelanguage{NumKoord}[]{Koord}

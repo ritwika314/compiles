@@ -1,39 +1,40 @@
 using Motion:
   actuators:
-    pos[] path
+    List\<Point\> path
   sensors:
-    pos psn
-    boolean reached
+    Point position
+    Bool reached
+    PathPlanner planner
 local:
-  boolean isOnTask
-  Task myTask
-  pos[] testRoute
-  int i
+  Bool on_task = s
+  List\<Point\> curr_path
+  Task cur_task
 
 allread:
-  pos[] route
+  List\<Point\> shared_paths[$\NMAX$]
 allwrite:
-  Task[] tasks
+  List\<Task\> all_tasks
 
 Assign:
-  pre: isOnTask == false
-  eff: if allAssigned(tasks): stop
-    else: atomic:
-      for i = 0, length(tasks):
-          myTask$=$tasks[i]
-        if mytask.assigned$==$false:
-            testRoute$=$findPath(Motion.psn, myTask.loc)
-            if pathIsClear(route, testRoute, pid):
-              isOnTask$=$true
-              assign(myTask, pid)
-              tasks[i]$=$myTask
-              route[pid]$=$testRoute
-              Motion.path$=$testRoute
-            else:
-              isOnTask$=$false
-              route[pid]$=$[Motion.psn]
+  pre: !on_task
+  eff:
+     if len(all_tasks) == 0:
+        stop
+     else: atomic:
+        for t in all_tasks:
+           curr_path=Motion.planner(t.target)
+           if pathIsClear(shared_paths, curr_path, pid):
+              on_task=True
+              cur_task=t
+              break
+        if on_task:
+           all_tasks.remove(cur_task)
+           shared_paths[pid]=curr_path
+           Motion.path=curr_path
+        else:
+           shared_paths[pid]=[Motion.position]
 
 Complete:
-    pre: isOnTask and Motion.reached
-    eff: isOnTask$=$false
-         route[pid]$=$[Motion.psn[]
+    pre: on_task and Motion.reached
+    eff: on_task=False
+         shared_paths[pid]=[Motion.position]
