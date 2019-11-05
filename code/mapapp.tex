@@ -1,14 +1,11 @@
-using Lidar $\label{lidardef}$
+using MotionWithScan $\label{moddef}$
     sensors:
-       ScanStamped[] ldata
-
-using Motion $\label{moddef}$
-    sensors:
-        Pos pos,
-        PosStamped[] trace,
+        Point position
+        List\<Point, Scan\> pscan
         bool reached
+        PathPlanner planner
     actuators:
-        Pos target
+        List\<Point\> path
 
 allwrite:$\label{awvar}$
     GridMap map
@@ -16,33 +13,33 @@ allwrite:$\label{awvar}$
 #$\mathit{omitting\ initialization}$
 
 local:
-   posScan pscan
    GridMap localMap
-   bool newpoint $=$ True
-   obs obstacles
+   Point target
+   bool on_path = True
+   List\<Grid\> obstacles
 
-NewPoint:$\label{newpt}$
-  pre newpoint
-  eff :
-        obstacles = findObs(map)
-        Motion.path $=$ findPath(pickFrontierPos(
-                              map, Motion.pos), obstacles)
-        if Motion.path is None:
-           newpoint $=$ True
-        else:
-           newpoint $=$ False
-        $\lmap $ = map
+NewTarget:$\label{newpt}$
+  pre !on_path
+  eff:
+     target = \
+        pickFrontierPos(map, MotionWithScan.position)
+     obstacles = findObs(map)
+     MotionWithScan.path = \
+        MotionWithScan.planner(target, obstacles)
+     if MotionWithScan.path != []:
+        on_path = True
+     else:
+        on_path = False
+     $\lmap$ = map
 
 LUpdate:$\label{lup}$
-   pre not (newpoint || Motion.reached )
-   eff :
-          pscan $=$ tSync(Motion.trace, Lidar.ldata)
-         for pos, scan in pscan:
-             $\lmap$ $=$ merge($\lmap$,scanToMap(pos, scan))
+   pre on_path and !MotionWithScan.reached
+   eff:
+      for p, s in MotionWithScan.pscan:
+         $\lmap$ $=$ merge($\lmap$,scanToMap(p, s))
 
 GUpdate: $\label{gup}$
-  pre Motion.reached
+  pre MotionWithScan.reached
   eff: atomic:
-           map $=$ merge(map, \lmap)
-        newpoint $=$ True
-        update $=$ False
+        map = merge(map, \lmap)
+        on_path = False
