@@ -28,7 +28,7 @@ We also discuss at a high level, how to use \toolname to simulate and test this 
     {
         \lstinputlisting[language=NumKoord, firstline=7, firstnumber=7]{code/lineform.tex}
     }
-    \caption{Line Formation}\label{fig:lineform}
+    \caption{Koord program for Line Formation}\label{fig:lineform}
 \end{figure}
 
 $\lgname$ provides \emph{shared} variables to allow robots within a system to communicate with each other.
@@ -58,12 +58,10 @@ The robot also has access to two system-level \emph{constant} parameters (a) a u
 \subsection{Invariant Checking}
 
 \begin{invariant}
-If all agents were within the bounding rectangle, then all of them are still in the bounding rectangle.
+Given a rectangle defined by the two corners $x_{min}$ and $x_{max}$,
+and all agents were initialized within the rectangle. They should always stay in the rectangle.
 \[
-\begin{split}
-\forall i, x_{old}[i] \in rect(x_{old}[0], x_{old}[N_{sys}-1]) \implies \\
-\forall i, x_{cur}[i] \in rect(x_{cur}[0], x_{cur}[N_{sys}-1])
-\end{split}
+\forall i, x[i] \in rect(x_{min}, x_{max})
 \]
 \end{invariant}
 
