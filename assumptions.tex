@@ -97,21 +97,6 @@ This assumption can be shown to ensure for the \emph{Safe location} property of 
 
 %Assume that the planner returns a path if \begin{inparaenum}[(a)] \item the frontier is non-empty \item the grid rectangle picked on the frontier is reachable from the current point \end{inparaenum}. We also constrain the robots to move only on \emph{known} unoccupied grid rectangles, i.e $q\in Q, s_i.M.\lmap[q] = 0$. In implementation, we achieve this by ensuring that the path planner treats all the unknown ($q$ such that $s_i.M.\lmap[q] = -1$) grid rectangles as obstacles as well.
 
-
-\subsubsection{Synchronization and consistency}
-The following are the timing assumptions on $\lgname$ programs.
-\begin{assumption} A program step has zero logical execution time.
-\end{assumption}
-This assumption is reasonable if the time taken to complete a program transition step is negligible compared to $\delta$.  The $\lgname$ middleware ensures that the participating agents begin executing their events synchronously.
-
-\begin{assumption}
-    \label{shared}
-    Shared memory updates are propagated to all agents within one round. That is, given a state $\vs\in C$, for every  $i,j \in [N]$, for a shared variable $v$, $\vs.v_i = \vs.v_j$.
-\end{assumption}
-The $\lgname$ middleware uses message passing to implement shared memory, and compared to $\delta$, the time taken to observe a shared memory update as a received message from the time that it is sent is much smaller. We therefore can assume that in this setting, the shared memory semantics of $\lgname$ wherein an update is visible in the next round of program transitions, is a reasonable implementation deliverable.
-
-
-
 %$\marginpar{\scriptsize\sayan{MAke this a list of {\bf Assumptions} with discussion on why they hold, or what they mean in English.}}
 
 

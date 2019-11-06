@@ -12,16 +12,12 @@
 \label{sec:semantics}
 \sayan{SM: The main piece for this section will be the semantic rules as formalized in K in 1 page. Let us write those first (from OOPSLA paper) and then add whatever is necessary to explain them clearly. The final ``theorem'' might be the bounded reachability soundness. }
 
-
-\section{Koord Language and Semantics}
-\subsection{Syntax}
-
 \reffig{syntax} shows the BNF grammar syntax of the agent programs. Each agent program consists of
 \begin{enumerate}
-\item declarations of the interface between the programs and the controller module,
+\item declarations of the interfaces between the program and the controller modules,
 \item declarations of program variables and \item events, consisting of preconditions and effects.
 \end{enumerate}
-Agent programs (rule \emph{Program}) can import a controller module. The module import grammar production specifies the interface of the controllers: it contains all input and output ports for actuators (\emph{APorts}) and sensors (\emph{SPorts}) that the program uses. The program can also contain shared and local declarations. There can be an initialization process which sets certain program variable values. The program also includes events (rule \emph{Event}) which include a boolean \textbf{pre}condition, which may be tagged \textbf{urgent}, and an \textbf{eff}ect, which includes statements. The effect of an event may include the standard control flow constructs including a sequence of instructions, conditional statements, as well as atomic blocks of statements for mutual exclusion, function calls and assignment statements. The user is also allowed to define functions and abstract data types(which are tuples of the basic data types $\lgname$ supports).
+Agent programs (rule \emph{Program}) can import a controller module. The module import grammar production specifies the interface of the controllers: it contains all input and output ports for actuators (\emph{APorts}) and sensors (\emph{SPorts}) that the program uses. The program can also contain shared and local declarations. There can be an initialization process which sets certain program variable values. The program also includes events (rule \emph{Event}) which include a Boolean \textbf{pre}condition, which may be tagged \textbf{urgent}, and an \textbf{eff}ect, which includes statements. The effect of an event may include the standard control flow constructs including a sequence of instructions, conditional statements, as well as atomic blocks of statements for mutual exclusion, function calls and assignment statements. The user is also allowed to define functions and abstract data types(which are tuples of the basic data types $\lgname$ supports).
 
 In the syntax presented in \reffig{syntax}, an element enclosed in square brackets (other than array related syntax) means that it is optional in the syntax at that position. $\mathit{NT}^+$ refers to one or more occurrences of the nonterminal $NT$, and the expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$ in the enumeration list.
 
@@ -31,9 +27,9 @@ In the syntax presented in \reffig{syntax}, an element enclosed in square bracke
 
 \subsection{Koord model for distributed CPS}
 
-
-
-The (distributed) system of robots  executing the \dmap application written in $\lgname$ can be viewed as a nondeterministic, state machine automaton~\cite{TIOAmon, Mitra07PhD}. The detailed statement-level semantics of $\lgname$ has been developed in the $\mathbb{K}$ framework and will appear elsewhere. For the purpose of the analysis here, we briefly describe the ``big-step'' semantics of \lgname which allows all the statements in an event of a single robot to be executed as an instantaneous transition.
+The (distributed) system of robots written in $\lgname$ can be viewed as a nondeterministic, state machine automaton~\cite{TIOAmon, Mitra07PhD}.
+The detailed statement-level semantics of $\lgname$ has been developed in the $\mathbb{K}$ framework and will appear elsewhere.
+For the purpose of the analysis here, we briefly describe the ``big-step'' semantics of \lgname which allows all the statements in an event of a single robot to be executed as an instantaneous transition.
 
 Suppose we have $N$ robots in the system each executing the same \lgname application program. As mentioned earlier \lgname middleware enforces a synchronous \emph{round-by-round} execution, where each round lasts for $\delta$ time, where $\delta >0$ is a platform specific execution parameter.
 %
@@ -185,7 +181,7 @@ $$\stmtrule\ \subseteq (\pws \times \pwl\times \pwstmt \cup \{\cdot\}) \times \m
 %\end{mdframed}
 
 
-When an event is executed, the $\turn$ of the agent is set to $\mathtt{env}$ indicating that after this execution, an environment transition occurs. The system can display non deterministic behaviors arising from different agents executing their events in different orders. \fTBD{task app will not show non determinism because of atomic, perhaps use braking or lineform here?}
+When an event is executed, the $\turn$ of the agent is set to $\mathtt{env}$ indicating that after this execution, an environment transition occurs. The system can display non deterministic behaviors arising from different agents executing their events in different orders.
 \begin{mdframed}
 \scriptsize
 \begin{mathpar}
@@ -374,17 +370,26 @@ Theorem~\ref{thm:bmcsound} summarizes the soundness of \refalg{ag1}.
 %\end{mdframed}
 
 
-
-
-
-
-
 \subsection{Synchronous Distributed Shared Memory}
 \label{sec:memory}
 
 \chiao{
 Precisely describe how this can be achieved by synchronous communication given a $\delta$ time bound.
 Discuss why this abstraction over message passing with time delays is acceptable/reasonable}
+
+\subsubsection{Synchronization and consistency}
+The following are the timing assumptions on $\lgname$ programs.
+\begin{assumption} A program step has zero logical execution time.
+\end{assumption}
+This assumption is reasonable if the time taken to complete a program transition step is negligible compared to $\delta$.  The $\lgname$ middleware ensures that the participating agents begin executing their events synchronously.
+
+\begin{assumption}
+    \label{shared}
+    Shared memory updates are propagated to all agents within one round. That is, given a state $\vs\in C$, for every  $i,j \in [N]$, for a shared variable $v$, $\vs.v_i = \vs.v_j$.
+\end{assumption}
+The $\lgname$ middleware uses message passing to implement shared memory, and compared to $\delta$, the time taken to observe a shared memory update as a received message from the time that it is sent is much smaller. We therefore can assume that in this setting, the shared memory semantics of $\lgname$ wherein an update is visible in the next round of program transitions, is a reasonable implementation deliverable.
+
+
 
 \subsection{Specify Constraints over Modules}
 \label{sec:module}
