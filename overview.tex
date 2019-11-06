@@ -34,7 +34,7 @@ We also discuss at a high level, how to use \toolname to simulate and test this 
 $\lgname$ provides \emph{shared} variables to allow robots within a system to communicate with each other.
 At Line~\ref{lineform-allread} in \reffig{lineform}, an \emph{allread} variable, $x$, is a shared variable of array type which all robots can read from,
 but each agent $pid$ can only write to $x[pid]$.
-This shared array of $Position$s is then used to share the current position of each agent to all other agents.
+This shared array is used to share the current position of each agent to all other agents.
 
 %\begin{itemize}
 %    \item Multiple sensors
@@ -58,21 +58,41 @@ The robot also has access to two system-level \emph{constant} parameters (a) a u
 \subsection{Invariant Checking}
 
 \begin{invariant}
-Given a rectangle defined by the two corners $x_{min}$ and $x_{max}$,
-and all agents were initialized within the rectangle. They should always stay in the rectangle.
+Given all agents initialized within a rectangle defined by the two corners $x_{min}$ and $x_{max}$,
+all agents should always stay in the rectangle.
 \[
 \forall i, x[i] \in rect(x_{min}, x_{max})
 \]
 \end{invariant}
 
 
-\begin{assumption}
+\begin{assumption}\label{lineform-assume}
 Motion module ensures the device is moving within the bounding rectangle between its position and target.
 \[
 Motion.pos_{cur} \in rect(Motion.pos_{old}, Motion.target_{old})
 \]
 \end{assumption}
 
-Drones, turtle bots, and roombas satisfy this assumption.
-Cars however do not guarantee this. Consider parallel parking.
-So a different module including the orientation of cars as well as new assumptions are needed.
+\chiao{Describe at a high level how to prove by induction}
+
+\subsection{Simulation based Assumption Validation}
+
+Assumption~\ref{lineform-assume} seems reasonable and sufficiently weak at the first glance,
+but it actually imposes a very strong constraint over the $Motion$ module and the environment.
+We can monitor the sensor and actuator values to evaluate how often the assumption is violated by the simulation engine.
+For assumption~\ref{lineform-assume}, we can identify and demonstrate two common scenarios
+where this assumption is invalidated.
+
+\chiao{We can use simulator screenshot to show the violation.}
+
+First, if a robot has to avoid obstacles,
+then it may have to go around the obstacle and hence out of the bound.
+Second,  the assumption simply fails over certain types of devices.
+For example, four wheel cars doing parallel parking may easily go out of the rectangle
+because the cars need more space to make turns.
+
+In short, users can use the simulator to early detect whether
+the assumptions for correctness are too strong under specific scenarios,
+and revise the assumptions interactively.
+For example, to run the line formation program on cars,
+a different module including the orientation of cars as well as more relaxed assumptions are needed.
