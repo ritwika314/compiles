@@ -156,7 +156,7 @@ $\gconfig_\delta = (\lset,{S},\tau,\turn)$, where
 Bookkeeping variables are invisible in the language syntax, and only used in the semantics. We now define the \emph{agent configurations}, which are used to specify the semantics of each agent.
 
 
-Given that $\mathbb{P}$ is the set of all the productions in the \lgname grammar, $\Var$ is the set of variables, $Val$ be is set of values that an expression in the $\lgname$ can evaluate to, $\Cfield$ is the set of sensor and actuator ports of the controller being used in $P$, the configuration of an agent is a tuple $ l = (P, {M},{w},\cp,\turn)$, where
+Given that $\mathbb{P}$ is the set of all the productions in the \lgname grammar, $\Var$ is the set of variables, $Val$ be is set of values that an expression in the $\lgname$ can evaluate to, $\Cfield$ is the set of sensor and actuator ports of the controller being used in $P$, the configuration of an agent is a tuple $ l = (P, {M},\mathit{sm},\turn)$, where
 
 \begin{enumerate}[i)]
 \item $p \in \mathbb{P}$ is the current syntactic production,
@@ -284,95 +284,63 @@ Rule \ref{agntenvturn} is the semantic rule for setting the $\mathit{turn}$ of e
 
 Rule \ref{env} captures the fact that the global context $S$ is copied into local context of each agent $i \ (\lconfig{i}.M)$, thus ensuring that all agents have consistent shared variable values before the next program transition. After that, rule \ref{envturn} changes the turn of each agent back to program. In an actual execution, the controller  would run the program on hardware, whose sensor ports evolve for $\delta$ time between program transitions.
 
-Given a system configuration $C$, we define
- \begin{inparaenum}[(i)]
-     \item$\Post(C,i)$ as the set of configurations which can be reached by agent $i$ executing one of its enabled or urgent events from a configuration in $C$,
-     \item$\Post(C,p)$: the set of configurations reached during a program transition, when agents execute their events in the order $p$, where $p$ is a sequence of agent $\mathit{pids}$,
-     \item $\Post(C)$: the union over all possible orders $p$ in $\Post(C,p)$,
-     \item$\Final(C)$: the set of configurations reached from $C$ \emph{after} all agents have had a chance to execute an event: \end{inparaenum}
-\begin{mdframed}
-\footnotesize
-\begin{align*}
-\Post(C,i) :=& \{ c^\prime\mid \exists c\in \pwg,  \ \ c\rightarrow_{S}^{+} c^\prime  \\
-                  &\wedge c.L_i.\turn = \prog \wedge c^\prime.L_i.\turn = \env & \\
-                  & \wedge \forall j, j\neq i, c.L_j.\turn = c^\prime.L_j.\turn \},\\
-\Post(C,(i_1,i_2,\ldots ,i_p)) := & \ \Post(\Post(C,i_1),(i_2,i_3,\ldots,i_p))\\ & \cup \Post(C,i_1)\\
-\Post(C) :=& \bigcup_{p\in \mathit{perms}(\UINS)} \Post(C,p), \\
-\Final(C) :=& \left\{ c\in \Post(C)\mid \forall i \in \UINS, c.L_i.\turn = \env \right\}.
-\end{align*}
-\end{mdframed}
-
-Here $\mathit{perms}(\UINS)$ is the set of permutations of $\UINS$.
-The function $\traj: \pwg \times \left[0,\delta\right]$ represents the \emph{trajectory} of the system, or the intermediate values of the sensor ports during a environment transition.
-%
-Given a $c\in \pwg, t\in \left[0,\delta\right]$, $\traj(c,t)$ is the configuration at time $t$. $\pt(C)$ is  the set of configurations over the interval $[0,\delta]$.
-$$\pt(C) := \left\{c^\prime \mid \exists c\in C, t\leq \delta , c^\prime = \traj(c,t)\right\}, \ \ft(C) := \Post_{[\delta,\delta]}(C).$$
-A \emph{frontier} set of configurations represents the set of configurations that can be reached from an initial configuration $C$ after a system transition.
-$$\frontier(C,0) := C; \frontier(C,n) := \ft(\Final(\frontier(C,n-1))).$$
-The \emph{frontier} set of configurations given that the order of execution of events is $p$, is $\frontier(C,n,p) :=\ft(\Final(\frontier(C,n-1,p),p))$. Given an initial set of configurations $C_0\subset\pwg$,
-the set $\Reach(C_0,n)$ of  states reachable with executions of length $n$ can be defined inductively as: $\Reach(C_0,0) := C_0$,
-\begin{align*}
-\Reach(C_0,n) &:= \Post(\frontier(C_0,n-1) \cup \pt(\Post(\frontier(C_0,n-1)))
-\end{align*}
 
 
-
-
-The tool outputs `safe' if the $\mathit{inv}$ is indeed an $n$-invariant, `unsafe' if it finds a counter-example execution of length $n$. In some cases, it can return `unknown' as will be discussed in the following section.
-
-
- Algorithm~\ref{ag1}  computes reachable states of a given system based on the above functions and check $n$-invariance.
-$\mathit{Unique}(\mathit{Perms}(\UINS), P_\mathit{events})$ is the set of permutations of the agents that may result in unique behaviors, and we compute this set by analyzing the shared variables written to during enabled and urgent events of each agent during a round of program transitions.  The input to \refalg{ag1} is \begin{inparaenum}[(i)]
-    \item $P$: the program,
-    \item $\mathit{inv}$: a candidate invariant function,
-    \item {\UINS}: set of agents,
-    \item $\delta$: time step size and
-    \item $n$: length executions to check.
-\end{inparaenum}
+%The tool outputs `safe' if the $\mathit{inv}$ is indeed an $n$-invariant, `unsafe' if it finds a counter-example execution of length $n$. In some cases, it can return `unknown' as will be discussed in the following section.
 
 %
-
-\begin{algorithm}
-\scriptsize
-\textbf{Input}: $P$, $\mathit{inv}$, $\UINS$, $\delta$, $n$\\
-$c\leftarrow \mathit{Init}(P,N)$\quad$p \leftarrow \mathit{Unique}(\mathit{Perms}(\UINS),P_{\mathit{events}})$\\
-\lIf{
-$ \mathit{Sat}(c,\neg\mathit{inv})$} { \Return `unsafe'}
-$C \leftarrow$ \{c\} \\
-\For{$i = 0$ \KwTo n}{
-\For{$j = 0$ \KwTo $\mathit{len}(p)$ }{
-$C^\prime\leftarrow\Post(C,p[j])$\\
-\For{$c$ $\mathbf{in}$ $C'$} {
-\lIf{
-$ \mathit{Sat}(c,\neg\mathit{inv})$} { \Return (`unsafe',c)}
-}
-$C^\prime \leftarrow \Final(C,p[j])$\\
-\rg{\emph{continuous reachability here}}
-}}
-\Return `safe'
-\caption{Bounded invariant checking algorithm}\label{ag1}
-\end{algorithm}
-
-
-
- Then, for every order of program transitions in $p$, the algorithm uses the $\lgname$ semantics to compute $C^\prime$, the set of all configurations reached by the system during that round of program transitions. The algorithm first checks $\mathit{inv}$ is valid for configurations in $C^\prime$, or that the negation of $\mathit{inv}$ is unsatisfiable, using the procedure $\mathit{Sat}$. If it finds an unsafe configuration $c$, then it returns `unsafe' along with $c$.
-  In the next iteration, $C$ is set to be the frontier set of configurations.
-Theorem~\ref{thm:bmcsound} summarizes the soundness of \refalg{ag1}.
-
-\begin{theorem}
-    \label{thm:bmcsound}
-    If Algorithm~\ref{ag1}  returns `unsafe' then there exists a counter-example to \emph{inv} of length at most $n$, \rg{state assumption on continuous behavior here}.
-    if Algorithm~\ref{ag1} returns `safe' then \emph{inv} is an $n$-invariant.
-\end{theorem}
-\begin{proof}
-{\em Sketch.} If algorithm \ref{ag1} returns {\em safe}, then for the $n$ loop iterations of the outer loop, given a set of states $C$ and the property \texttt{inv}, according to the algorithm $\forall c \in \Post(C), c \models \texttt{inv}$. $\Post(C)$ is the set of configurations that can be reached from $C$ using any possible sequence of rewrite rules allowed by the system before an environment transition. Therefore, if the algorithm returns safe, then the set of configurations reached from $C$ before an environment transition is also safe. \rg{continue proof of soundness of reachability of continuous behavior}
-\end{proof}
-\fTBD{Relate this to assumptions}
-
-
- We implemented $\lgname$ semantics in \K, which a rewriting-based executable framework for defining language semantics. One can view a language semantics naturally as a set of reduction rules over configurations. Components of a configuration are called {\em cells} in \K. To implement the semantics discussed in \refsect{semantics}, the configuration in \K includes several bookkeeping variables as well.
-
-
+% Algorithm~\ref{ag1}  computes reachable states of a given system based on the above functions and check $n$-invariance.
+%$\mathit{Unique}(\mathit{Perms}(\UINS), P_\mathit{events})$ is the set of permutations of the agents that may result in unique behaviors, and we compute this set by analyzing the shared variables written to during enabled and urgent events of each agent during a round of program transitions.  The input to \refalg{ag1} is \begin{inparaenum}[(i)]
+%    \item $P$: the program,
+%    \item $\mathit{inv}$: a candidate invariant function,
+%    \item {\UINS}: set of agents,
+%    \item $\delta$: time step size and
+%    \item $n$: length executions to check.
+%\end{inparaenum}
+%
+%%
+%
+%\begin{algorithm}
+%\scriptsize
+%\textbf{Input}: $P$, $\mathit{inv}$, $\UINS$, $\delta$, $n$\\
+%$c\leftarrow \mathit{Init}(P,N)$\quad$p \leftarrow \mathit{Unique}(\mathit{Perms}(\UINS),P_{\mathit{events}})$\\
+%\lIf{
+%$ \mathit{Sat}(c,\neg\mathit{inv})$} { \Return `unsafe'}
+%$C \leftarrow$ \{c\} \\
+%\For{$i = 0$ \KwTo n}{
+%\For{$j = 0$ \KwTo $\mathit{len}(p)$ }{
+%$C^\prime\leftarrow\Post(C,p[j])$\\
+%\For{$c$ $\mathbf{in}$ $C'$} {
+%\lIf{
+%$ \mathit{Sat}(c,\neg\mathit{inv})$} { \Return (`unsafe',c)}
+%}
+%$C^\prime \leftarrow \Final(C,p[j])$\\
+%\rg{\emph{continuous reachability here}}
+%}}
+%\Return `safe'
+%\caption{Bounded invariant checking algorithm}\label{ag1}
+%\end{algorithm}
+%
+%
+%
+% Then, for every order of program transitions in $p$, the algorithm uses the $\lgname$ semantics to compute $C^\prime$, the set of all configurations reached by the system during that round of program transitions. The algorithm first checks $\mathit{inv}$ is valid for configurations in $C^\prime$, or that the negation of $\mathit{inv}$ is unsatisfiable, using the procedure $\mathit{Sat}$. If it finds an unsafe configuration $c$, then it returns `unsafe' along with $c$.
+%  In the next iteration, $C$ is set to be the frontier set of configurations.
+%Theorem~\ref{thm:bmcsound} summarizes the soundness of \refalg{ag1}.
+%
+%\begin{theorem}
+%    \label{thm:bmcsound}
+%    If Algorithm~\ref{ag1}  returns `unsafe' then there exists a counter-example to \emph{inv} of length at most $n$, \rg{state assumption on continuous behavior here}.
+%    if Algorithm~\ref{ag1} returns `safe' then \emph{inv} is an $n$-invariant.
+%\end{theorem}
+%\begin{proof}
+%{\em Sketch.} If algorithm \ref{ag1} returns {\em safe}, then for the $n$ loop iterations of the outer loop, given a set of states $C$ and the property \texttt{inv}, according to the algorithm $\forall c \in \Post(C), c \models \texttt{inv}$. $\Post(C)$ is the set of configurations that can be reached from $C$ using any possible sequence of rewrite rules allowed by the system before an environment transition. Therefore, if the algorithm returns safe, then the set of configurations reached from $C$ before an environment transition is also safe. \rg{continue proof of soundness of reachability of continuous behavior}
+%\end{proof}
+%\fTBD{Relate this to assumptions}
+%
+%
+% We implemented $\lgname$ semantics in \K, which a rewriting-based executable framework for defining language semantics. One can view a language semantics naturally as a set of reduction rules over configurations. Components of a configuration are called {\em cells} in \K. To implement the semantics discussed in \refsect{semantics}, the configuration in \K includes several bookkeeping variables as well.
+%
+%
 
 
 %Semantics in \K is expressed using configurations, which organize the components in elements called {\em cells}. Cells are labelled, have types indicating what kind of elements can be contained in them, and help specify the rewrite rule in context. \K allows underspecification of rewrite rules, meaning, only the rewrite rules affecting part of the configurations need to be specified if the rule doesn't affect the other parts of the rule. Our notion of configurations translate in a straightforward manner to \K configurations. We present a couple of example rewrite rules in \K to demonstrate how the executable semantics is implemented.
