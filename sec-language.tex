@@ -19,13 +19,46 @@
 \end{enumerate}
 Agent programs (rule \emph{Program}) can import a controller module. The module import grammar production specifies the interface of the controllers: it contains all input and output ports for actuators (\emph{APorts}) and sensors (\emph{SPorts}) that the program uses. The program can also contain shared and local declarations. There can be an initialization process which sets certain program variable values. The program also includes events (rule \emph{Event}) which include a Boolean \textbf{pre}condition, which may be tagged \textbf{urgent}, and an \textbf{eff}ect, which includes statements. The effect of an event may include the standard control flow constructs including a sequence of instructions, conditional statements, as well as atomic blocks of statements for mutual exclusion, function calls and assignment statements. The user is also allowed to define functions and abstract data types(which are tuples of the basic data types $\lgname$ supports).
 
-In the syntax presented in \reffig{syntax}, an element enclosed in square brackets (other than array related syntax) means that it is optional in the syntax at that position. $\mathit{NT}^+$ refers to one or more occurrences of the nonterminal $NT$, and the expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$ in the enumeration list.
+In the syntax presented in \reffig{partial-syntax}, given an nonterminal \textit{NT},
+{\it NT\textsuperscript{?}} means that it is optional in the syntax at that position,
+{\it NT*} refers to zero or more occurrences,
+and {\it NT\textsuperscript{+}} refers to one or more occurrences.
+The expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$.
 
+\begin{figure}
 
-\input{syntax.tex}
+\newcommand{\zeroone}{\textsuperscript{?}\ }
+\newcommand{\zeromore}{*\ }
+\newcommand{\onemore}{\textsuperscript{+}\ }
+\newcommand{\vbar}{{\normalfont\ |\ }}
+\newcommand{\mterm}[1]{{\normalfont \textbf{#1}}}
+\newcommand{\delim}{\mterm{:\ }\xspace}
 
+\itshape
+\begin{tabular}{lrl}
+    Program   & ::= & Def\zeromore Import\zeromore DeclBlock Init\zeroone Event\onemore \\
+    Def       & ::= & TypeDef \vbar FuncDef                                             \\
+    Import    & ::= & \mterm{using} \mterm{module} identifier \delim SPorts APorts      \\
+    SPorts    & ::= & \mterm{sensors} \delim VarDecl\onemore                            \\
+    APorts    & ::= & \mterm{actuators} \delim VarDecl\onemore                          \\
+              &     &                                                                   \\
+    DeclBlock & ::= & AWDecl\zeroone ARDecl\zeroone LocalDecl\zeroone                   \\
+    AWDecl    & ::= & \mterm{allwrite} \delim VarDecl\onemore                           \\
+    ARDecl    & ::= & \mterm{allread} \delim ARVarDecl\onemore                          \\
+    LocalDecl & ::= & \mterm{local} \delim VarDecl\onemore                              \\
+    VarDecl   & ::= & Type identifier \vbar Type identifier \mterm{=} Val               \\
+    ARVarDecl & ::= & Type identifier \mterm{[ $\NMAX$ ]}                               \\
+              &     &                                                                   \\
+    Init      & ::= & \mterm{init} \delim Stmt\onemore                                  \\
+    Event     & ::= & identifier \delim Precond Effect                                  \\
+    Precond   & ::= & \mterm{urgent}\zeroone \mterm{pre} \delim Expr                    \\
+    Effect    & ::= & \mterm{eff} \delim Stmt\onemore
+\end{tabular}
 
-\subsection{Koord model for distributed CPS}
+\caption{Partial \lgname syntax rules}\label{fig:partial-syntax}
+\end{figure}
+
+\subsection{\lgname model for Distributed CPS}
 
 The (distributed) system of robots written in $\lgname$ can be viewed as a nondeterministic, state machine automaton~\cite{TIOAmon, Mitra07PhD}.
 The detailed statement-level semantics of $\lgname$ has been developed in the $\mathbb{K}$ framework and will appear elsewhere.
@@ -123,7 +156,7 @@ $\gconfig_\delta = (\lset,{S},\tau,\turn)$, where
 Bookkeeping variables are invisible in the language syntax, and only used in the semantics. We now define the \emph{agent configurations}, which are used to specify the semantics of each agent.
 
 
-Given that $\mathbb{P}$ is the set of all the productions in the $\lgname$grammar, $\Var$ is the set of variables, $Val$ be is set of values that an expression in the $\lgname$ can evaluate to, $\Cfield$ is the set of sensor and actuator ports of the controller being used in $P$, the configuration of an agent is a tuple $ l = (P, {M},{w},\cp,\turn)$, where
+Given that $\mathbb{P}$ is the set of all the productions in the \lgname grammar, $\Var$ is the set of variables, $Val$ be is set of values that an expression in the $\lgname$ can evaluate to, $\Cfield$ is the set of sensor and actuator ports of the controller being used in $P$, the configuration of an agent is a tuple $ l = (P, {M},{w},\cp,\turn)$, where
 
 \begin{enumerate}[i)]
 \item $p \in \mathbb{P}$ is the current syntactic production,
