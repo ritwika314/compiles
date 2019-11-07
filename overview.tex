@@ -23,10 +23,10 @@ We also discuss at a high level, how to use \toolname to simulate and test this 
 \begin{figure}[h!]
     \two{0.32}{0.59}
     {
-        \lstinputlisting[language=NumKoord, lastline=5]{code/lineform.tex}
+        \lstinputlisting[language=NumKoord, lastline=8]{code/lineform.tex}
     }
     {
-        \lstinputlisting[language=NumKoord, firstline=7, firstnumber=7]{code/lineform.tex}
+        \lstinputlisting[language=NumKoord, firstline=9, firstnumber=9]{code/lineform.tex}
     }
     \caption{Koord program for Line Formation}\label{fig:lineform}
 \end{figure}
@@ -62,7 +62,10 @@ The robot also has access to two system-level \emph{constant} parameters (a) a u
 Given all agents initialized within a rectangle defined by the two corners $x_{min}$ and $x_{max}$,
 all agents should always stay in the rectangle.
 \[
-\forall i, x[i] \in rect(x_{min}, x_{max})
+\begin{split}
+    Motion.position \in rect(x_{min}, x_{max})        \\
+    \land\ \forall i, x[i] \in rect(x_{min}, x_{max})
+\end{split}
 \]
 \end{invariant}
 
@@ -70,19 +73,20 @@ all agents should always stay in the rectangle.
 \begin{assumption}\label{lineform-assume}
 Motion module ensures the device is moving within the bounding rectangle between its position and target.
 \[
-Motion.pos_{cur} \in rect(Motion.pos_{old}, Motion.target_{old})
+Motion.position' \in rect(Motion.position, Motion.target)
 \]
 \end{assumption}
 
 \chiao{Describe at a high level how to prove by induction}
 
+
 \subsection{Simulation based Assumption Validation}
 
 Assumption~\ref{lineform-assume} seems reasonable and sufficiently weak at the first glance,
 but it actually imposes a very strong constraint over the $Motion$ module and the environment.
-We can monitor the sensor and actuator values to evaluate how often the assumption is violated by the simulation engine.
-For assumption~\ref{lineform-assume}, we can identify and demonstrate two common scenarios
-where this assumption is invalidated.
+Using the simulation engine, we can monitor the sensor and actuator values to evaluate how often the assumption is violated.
+For Assumption~\ref{lineform-assume}, we can identify and demonstrate two common scenarios
+where it is invalidated.
 
 \chiao{We can use simulator screenshot to show the violation.}
 
@@ -94,6 +98,6 @@ because the cars need more space to make turns.
 
 In short, users can use the simulator to early detect whether
 the assumptions for correctness are too strong under specific scenarios,
-and revise the assumptions interactively.
+and revise the assumptions iteratively.
 For example, to run the line formation program on cars,
 a different module including the orientation of cars as well as more relaxed assumptions are needed.

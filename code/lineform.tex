@@ -1,11 +1,14 @@
 using Motion:
-  sensors Point position
-  actuators Point target
+  sensors: Point position
+  actuators: Point target
 
 allread: Point x[$\NMAX$] $\label{lineform-allread}$
+init:
+  x[pid] = Motion.position
 
 TargetUpdate:
-  pre True
-  eff if !(pid == $\NMAX$ - 1 or pid == 0):
-     Motion.target = (x[pid+1] + x[pid-1]) / 2
-     x[pid] = Motion.position
+  pre: True
+  eff:
+    if !(pid == $\NMAX$ - 1 or pid == 0):
+      Motion.target = (x[pid+1] + x[pid-1]) / 2
+      x[pid] = Motion.position
