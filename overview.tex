@@ -47,7 +47,7 @@ This shared array is used to share the current position of each agent to all oth
 
 
 The program and the controller interact with each other through \emph{sensor} and \emph{actuator} ports.
-A $\lgname$ program can have multiple \emph{modules} providing different sensor and actuator ports.
+A \lgname program can have multiple \emph{modules} providing different sensor and actuator ports.
 The program reads the sensor ports, reads and writes to program variables, and writes to actuator ports.
 The actuator ports of different modules can be used to provide input to the controller, which drives the underlying physical plant.
 
@@ -57,13 +57,14 @@ The robot also has access to two system-level \emph{constant} parameters (a) a u
 
 \subsection{Invariant Checking}
 
-\begin{invariant}
-    \label{lineform}
+$pos$ is shorthand for $Motion.position$. $tgt$ is shorthand for $Motion.target$.
+
+\begin{invariant}\label{inv:lineform}
 Given all agents initialized within a rectangle defined by the two corners $x_{min}$ and $x_{max}$,
 all agents should always stay in the rectangle.
 \[
 \begin{split}
-    Motion.position \in rect(x_{min}, x_{max})        \\
+    pos \in rect(x_{min}, x_{max})        \\
     \land\ \forall i, x[i] \in rect(x_{min}, x_{max})
 \end{split}
 \]
@@ -71,28 +72,54 @@ all agents should always stay in the rectangle.
 
 
 \begin{assumption}\label{lineform-assume}
-Motion module ensures the device is moving within the bounding rectangle between its position and target.
+Motion module should ensure the device is moving within the bounding rectangle between its position and target.
+Given an unknown function $f$ returning positions of the device in continuous time,
+formally we define the assumption as:
 \[
-Motion.position' \in rect(Motion.position, Motion.target)
+\forall t \in [0, \delta], f(pos, tgt, t) \in rect(pos, tgt)
+\]
+Or in \lgname we provide the shorthand,
+\[
+pos' \in rect(pos, tgt)
 \]
 \end{assumption}
 
-\chiao{Describe at a high level how to prove by induction}
+With the assumption, we can prove \inv{inv:lineform} inductively.
+The \K semantics of \lgname allows us to construct the symbolic post states of event \emph{TargetUpdate}.
+
+
+\begin{figure}
+\begin{tikzpicture}[
+    every node/.style={draw},
+]
+    \node (sym) {\K SymExec};
+    \node [below of=sym] (prover) {\lgname prover};
+    \node [diamond, aspect=2, below of=prover] (z3) {z3};
+    \node [below left=1cm and 1cm of z3] (proven) {Proven};
+    \node [below right=1cm and 1cm of z3] (incon) {Inconclusive};
+
+    \draw [->] (sym) edge (prover)
+               (prover) edge (z3)
+               (z3) edge node[draw=none] {UNSAT} (proven)
+               (z3) edge node[draw=none] {SAT} (incon)
+               ;
+\end{tikzpicture}
+\end{figure}
 
 
 \subsection{Simulation based Assumption Validation}
 
-Assumption~\ref{lineform-assume} seems reasonable and sufficiently weak at the first glance,
+\asum{lineform-assume} seems reasonable and sufficiently weak at the first glance,
 but it actually imposes a very strong constraint over the $Motion$ module and the environment.
 Using the simulation engine, we can monitor the sensor and actuator values to evaluate how often the assumption is violated.
-For Assumption~\ref{lineform-assume}, we can identify and demonstrate two common scenarios
+For \asum{lineform-assume}, we can identify and demonstrate two common scenarios
 where it is invalidated.
 
 \chiao{We can use simulator screenshot to show the violation.}
 
 First, if a robot has to avoid obstacles,
 then it may have to go around the obstacle and hence out of the bound.
-Second,  the assumption simply fails over certain types of devices.
+Second, the assumption simply fails over certain types of devices.
 For example, four wheel cars doing parallel parking may easily go out of the rectangle
 because the cars need more space to make turns.
 
