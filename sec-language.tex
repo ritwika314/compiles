@@ -7,16 +7,18 @@
 \refsect{module} <= 0.5 page
 }
 
-\subsection{Formal syntax and semantics}
-\rg{Labels for rules are wrong, will fix later, SYNTAX IS WRONG, WILL FIX LATER}
-\label{sec:semantics}
+\subsection{Formal syntax and semantics}\label{sec:semantics}
+
+\rg{Labels for rules are wrong, will fix later.}
 \sayan{SM: The main piece for this section will be the semantic rules as formalized in K in 1 page. Let us write those first (from OOPSLA paper) and then add whatever is necessary to explain them clearly. The final ``theorem'' might be the bounded reachability soundness. }
 
-\reffig{syntax} shows the BNF grammar syntax of the agent programs. Each agent program consists of
-\begin{enumerate}
+\reffig{partial-syntax} shows the partial grammar of \lgname syntax.
+Each agent program consists of
+\begin{inparaenum}[(a)]
 \item declarations of the interfaces between the program and the controller modules,
-\item declarations of program variables and \item events, consisting of preconditions and effects.
-\end{enumerate}
+\item declarations of shared and local program variables, and
+\item events, consisting of preconditions and effects.
+\end{inparaenum}
 Agent programs (rule \emph{Program}) can import a controller module. The module import grammar production specifies the interface of the controllers: it contains all input and output ports for actuators (\emph{APorts}) and sensors (\emph{SPorts}) that the program uses. The program can also contain shared and local declarations. There can be an initialization process which sets certain program variable values. The program also includes events (rule \emph{Event}) which include a Boolean \textbf{pre}condition, which may be tagged \textbf{urgent}, and an \textbf{eff}ect, which includes statements. The effect of an event may include the standard control flow constructs including a sequence of instructions, conditional statements, as well as atomic blocks of statements for mutual exclusion, function calls and assignment statements. The user is also allowed to define functions and abstract data types(which are tuples of the basic data types $\lgname$ supports).
 
 In the syntax presented in \reffig{partial-syntax}, given an nonterminal \textit{NT},
@@ -38,7 +40,7 @@ The expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$.
 \begin{tabular}{lrl}
     Program   & ::= & Def\zeromore Import\zeromore DeclBlock Init\zeroone Event\onemore \\
     Def       & ::= & TypeDef \vbar FuncDef                                             \\
-    Import    & ::= & \mterm{using} \mterm{module} identifier \delim SPorts APorts      \\
+    Import    & ::= & \mterm{using} identifier \delim SPorts APorts      \\
     SPorts    & ::= & \mterm{sensors} \delim VarDecl\onemore                            \\
     APorts    & ::= & \mterm{actuators} \delim VarDecl\onemore                          \\
               &     &                                                                   \\
@@ -55,19 +57,24 @@ The expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$.
     Effect    & ::= & \mterm{eff} \delim Stmt\onemore
 \end{tabular}
 
-\caption{Partial \lgname syntax rules}\label{fig:partial-syntax}
+\caption{Partial \lgname syntax rules.}\label{fig:partial-syntax}
 \end{figure}
 
 \subsection{\lgname model for Distributed CPS}
 
-The (distributed) system of robots written in $\lgname$ can be viewed as a nondeterministic, state machine automaton~\cite{TIOAmon, Mitra07PhD}.
-The detailed statement-level semantics of $\lgname$ has been developed in the $\mathbb{K}$ framework and will appear elsewhere.
-For the purpose of the analysis here, we briefly describe the ``big-step'' semantics of \lgname which allows all the statements in an event of a single robot to be executed as an instantaneous transition.
+\chiao{Avoid mentioning hybrid automaton}
 
-Suppose we have $N$ robots in the system each executing the same \lgname application program. As mentioned earlier \lgname middleware enforces a synchronous \emph{round-by-round} execution, where each round lasts for $\delta$ time, where $\delta >0$ is a platform specific execution parameter.
+The (distributed) system of robots written in \lgname can be viewed as a system of nondeterministic hybrid automata~\cite{TIOAmon, Mitra07PhD}.
+Suppose we have $\NMAX$ robots in the system each executing the same \lgname application program,
+\lgname middleware enforces a synchronous \emph{round-by-round} execution,
+where each round lasts for $\delta$ time, where $\delta >0$ is a platform specific execution parameter.
 %
 In each round, each robot performs an  event.
-The state update performed by a single robot executing an  event is modeled as an  transition of the state machine updating the program variables, however,  different events executed by the different robots may interleave. In between the events of successive rounds, the program variables remain constant, but {\em all\/} the \sayan{sensor and actuator variables} of all the robots  change continuously with time.  These are modeled as  $\delta$-transitions that advance time as well as the \sayan{sensor and actuator variables}.
+The state update performed by a single robot executing an event is modeled as an transition of the state machine updating the program variables;
+however, different events executed by the different robots may interleave.
+In between the events of successive rounds, the program variables remain constant,
+but {\em all\/} the sensor and actuator variables of all robots change continuously with time.
+These are modeled as $\delta$-transitions that advance time as well as the sensor and actuator variables.
 
 %
 %Let the set of all program variables in the $\lgname$ application be $\Var$, and the set of all the sensor and actuator ports be $\mathit{Port}$. Let $\mathit{Event}_i$ be the set of events for the program for agent $i$.
@@ -108,7 +115,7 @@ The state update performed by a single robot executing an  event is modeled as a
 %%
 
 
- In the rest of this section, we present the formal semantics of the $\lgname$ programming language. %The complete formalization of the semantics in \K is available from~\cite{} \sayan{webpage/github}. The syntax of the language is presented through examples.
+In the rest of this section, we present the formal semantics of the $\lgname$ programming language.
 %
 %\subsection{Program (cyber) variables and physical variables}
 %
@@ -168,7 +175,14 @@ Given that $\mathbb{P}$ is the set of all the productions in the \lgname grammar
 The components of an agent configuration in the tuple $l$ are accessed
 using the dot (``$.$'') notation, for example, $l.M\equiv
 \pi_2(l)$ and $l.w \equiv \pi_3(l)$.
+
+
 \subsection{Big step semantics}
+
+For simplicity, we briefly describe the ``big-step'' semantics of \lgname which allows all the statements in an event of a single robot to be executed as an instantaneous transition.
+The detailed statement-level semantics of \lgname has been developed in the $\mathbb{K}$ framework.
+The complete formalization of the semantics in \K is available from~\cite{} \sayan{webpage/github}.
+
 We provide the semantics for some of the syntactic productions in $\lgname$, which will help us discuss the semantics of program and environment transitions. The statement semantics are given by update rules of the type
 $$\stmtrule\ \subseteq (\pws \times \pwl\times \pwstmt \cup \{\cdot\}) \times \mathscr{P}(\pws\times \pwl \times \pwstmt \cup \{\cdot\}),$$
 \fTBD{$\pwstmt$ is very clunky looking, need to change it perhaps?}where $\pwstmt$ refers to the set of all possible statements allowed by language syntax. We introduce the symbol `$\cdot$' to indicate an ``empty" statement, which does not affect the configurations. The update relation takes as input a tuple of (1) an agent configuration, (2) a global context, and (3) a statement, and maps it to a set of such tuples.
