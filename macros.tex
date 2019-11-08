@@ -76,17 +76,14 @@
 \newcommand{\ev}{\mathit{ev}}
 \definecolor{orange}{rgb}{1,0.5,0}
 \definecolor{darkgreen}{rgb}{0.0, 0.5, 0.0}
-\newcommand{\marker}[1]{} %{\note{orange}{{#1}}}
-\newcommand{\SM}[1]{\note{darkgreen}{SM: {#1}}}
-\newcommand{\RG}[1]{\note{orange}{RG: {#1}}}
 \newcommand{\logicarg}[2]{% \logicarg{<premise>}{<conclusion>}
   \begin{tabular}[t]{@{}c@{}}
     #1 \\ \hline #2
   \end{tabular}%
 }
-\newcommand{\sayan}[1]{\textcolor{blue}{#1}}
-\newcommand{\rg}[1]{\textcolor{red}{#1}}
-\newcommand{\chiao}[1]{\textcolor{green}{#1}}
+\newcommand{\sayan}[1]{\textcolor{blue}{Sayan: #1}}
+\newcommand{\rg}[1]{\textcolor{red}{Ritwika: #1}}
+\newcommand{\chiao}[1]{\textcolor{green}{Chiao: #1}}
 \newcommand{\two}[4]{
 	\parbox{.98\columnwidth}{\vspace{1pt} \vfill
 		\parbox[t]{#1\columnwidth}{#3}%
@@ -300,13 +297,17 @@
 \definecolor{TODOColor}{rgb}{0,.50,0}
 
 % inline
-%\newcommand{\NA}[1]{#1}
 \newcommand{\NA}[1]{\textcolor{SubtleColor}{ {\tiny \bf ($\star$)} #1}}
 \newcommand{\TODO}[1]{\textcolor{TODOColor}{ {\tiny \bf TODO:} #1}}
 \newcommand{\LATER}[1]{\textcolor{SubtleColor}{ {\tiny \bf ($\dagger$)} #1}}
 \newcommand{\TBD}[1]{\textcolor{SubtleColor}{ {\tiny \bf (!)} #1}}
 \newcommand{\PROBLEM}[1]{\textcolor{WowColor}{ {\bf (!!)} {\bf #1}}}
 \newcommand{\ST}[1]{ \textcolor{SubtleColor}{ {\tiny \bf (!!)} \sout{#1} } }
+
+\newcommand{\fTBD}[1]{\textcolor{SubtleColor}{$\,^{(\incdisplaycounter)}$}\marginpar{\tiny\textcolor{SubtleColor}{ {\tiny $(\displaycounter)$} #1}}}
+\newcommand{\fTODO}[1]{\textcolor{TODOColor}{$\,^{(\incdisplaycounter)}$}\marginpar{\tiny\textcolor{TODOColor}{ {\tiny TODO $(\displaycounter)$}:  #1}}}
+\newcommand{\fPROBLEM}[1]{\textcolor{WowColor}{$\,^{((\incdisplaycounter))}$}\marginpar{\tiny\textcolor{WowColor}{ {\bf $\mathbf{((\displaycounter))}$} {\bf #1}}}}
+\newcommand{\fLATER}[1]{\textcolor{SubtleColor}{$\,^{(\incdisplaycounter\dagger)}$}\marginpar{\tiny\textcolor{SubtleColor}{ {\tiny $(\displaycounter\dagger)$} #1}}}
 
 %semantic macros
 \newcommand{\pid}{\mathit{pid}}
@@ -346,14 +347,6 @@
 \newcommand{\env}{\mathtt{env}}
 \newcommand{\prog}{\mathtt{prog}}
 
-
-
-\newcommand{\fTBD}[1]{\textcolor{SubtleColor}{$\,^{(\incdisplaycounter)}$}\marginpar{\tiny\textcolor{SubtleColor}{ {\tiny $(\displaycounter)$} #1}}}
-\newcommand{\fTODO}[1]{\textcolor{TODOColor}{$\,^{(\incdisplaycounter)}$}\marginpar{\tiny\textcolor{TODOColor}{ {\tiny TODO $(\displaycounter)$}:  #1}}}
-
-\newcommand{\fPROBLEM}[1]{\textcolor{WowColor}{$\,^{((\incdisplaycounter))}$}\marginpar{\tiny\textcolor{WowColor}{ {\bf $\mathbf{((\displaycounter))}$} {\bf #1}}}}
-
-\newcommand{\fLATER}[1]{\textcolor{SubtleColor}{$\,^{(\incdisplaycounter\dagger)}$}\marginpar{\tiny\textcolor{SubtleColor}{ {\tiny $(\displaycounter\dagger)$} #1}}}
 \newcommand{\mytitle}{Working Title}
 \newcommand{\qfunc}{\mathit{quant}}
 \newcommand{\qinv}{\mathit{quant}^{-1}}
