@@ -7,10 +7,20 @@
 \refsect{module} <= 0.5 page
 }
 
-\subsection{Formal syntax and semantics}\label{sec:semantics}
+\subsection{Run-time System Abstraction and Parameters}
 
-\rg{Labels for rules are wrong, will fix later.}
-\sayan{SM: The main piece for this section will be the semantic rules as formalized in K in 1 page. Let us write those first (from OOPSLA paper) and then add whatever is necessary to explain them clearly. The final ``theorem'' might be the bounded reachability soundness. }
+As mentioned in \refsect{overview}, the same \lgname program is expected to be run on a (distributed) system of robots,
+and the robots communicate with each other through distributed shared memory.
+
+\chiao{Introduce $\NMAX$, $\myuin$, $\UINS$, $\delta$.
+If necessary, we can also make modules and other platform-specific things as parameters and refer to appendix.}
+%
+We have $\NMAX$ robots in the system each executing the same \lgname application program.
+A synchronous \emph{round-by-round} execution,
+where each round lasts for $\delta$ time, where $\delta >0$ is a platform specific execution parameter.
+
+
+\subsection{Formal Syntax}\label{sec:syntax}
 
 \reffig{partial-syntax} shows the partial grammar of \lgname syntax.
 Each agent program consists of
@@ -19,7 +29,16 @@ Each agent program consists of
 \item declarations of shared and local program variables, and
 \item events, consisting of preconditions and effects.
 \end{inparaenum}
-Agent programs (rule \emph{Program}) can import a controller module. The module import grammar production specifies the interface of the controllers: it contains all input and output ports for actuators (\emph{APorts}) and sensors (\emph{SPorts}) that the program uses. The program can also contain shared and local declarations. There can be an initialization process which sets certain program variable values. The program also includes events (rule \emph{Event}) which include a Boolean \textbf{pre}condition, which may be tagged \textbf{urgent}, and an \textbf{eff}ect, which includes statements. The effect of an event may include the standard control flow constructs including a sequence of instructions, conditional statements, as well as atomic blocks of statements for mutual exclusion, function calls and assignment statements. The user is also allowed to define functions and abstract data types(which are tuples of the basic data types $\lgname$ supports).
+Agent programs (rule \emph{Program}) can import a controller module.
+The module import grammar production specifies the interface of the controllers:
+it contains all input and output ports for actuators (\emph{APorts}) and sensors (\emph{SPorts}) that the program uses.
+The program can also contain shared and local declarations.
+There can be an initialization process which sets certain program variable values.
+The program also includes events (rule \emph{Event}) which include a Boolean \textbf{pre}condition, which may be tagged \textbf{urgent},
+and an \textbf{eff}ect, which includes statements.
+The effect of an event may include the standard control flow constructs including a sequence of instructions,
+conditional statements, as well as atomic blocks of statements for mutual exclusion, function calls and assignment statements.
+The user is also allowed to define functions and abstract data types(which are tuples of the basic data types \lgname supports).
 
 In the syntax presented in \reffig{partial-syntax}, given an nonterminal \textit{NT},
 {\it NT\textsuperscript{?}} means that it is optional in the syntax at that position,
@@ -60,16 +79,13 @@ The expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$.
 \caption{Partial \lgname syntax rules.}\label{fig:partial-syntax}
 \end{figure}
 
-\subsection{\lgname model for Distributed CPS}
 
-\chiao{Avoid mentioning hybrid automaton}
+\subsection{Formal Semantics}\label{sec:semantics}
 
-The (distributed) system of robots written in \lgname can be viewed as a system of nondeterministic hybrid automata~\cite{TIOAmon, Mitra07PhD}.
-Suppose we have $\NMAX$ robots in the system each executing the same \lgname application program,
-\lgname middleware enforces a synchronous \emph{round-by-round} execution,
-where each round lasts for $\delta$ time, where $\delta >0$ is a platform specific execution parameter.
-%
-In each round, each robot performs an  event.
+\rg{Labels for rules are wrong, will fix later.}
+\sayan{SM: The main piece for this section will be the semantic rules as formalized in K in 1 page. The final ``theorem'' might be the bounded reachability soundness.}
+
+In each round, each robot performs an event.
 The state update performed by a single robot executing an event is modeled as an transition of the state machine updating the program variables;
 however, different events executed by the different robots may interleave.
 In between the events of successive rounds, the program variables remain constant,
@@ -88,12 +104,6 @@ These are modeled as $\delta$-transitions that advance time as well as the senso
 %Given a valuation $\vs$, the value of a subset of  variables (or ports) $X$ is denoted by $\vs.X$. For example, the  valuation of all the variables of robot $i$ is $\vs.\Var_i$.
 %%
 %%
-%In the $\dmap$ $\lgname$ application,
-%\begin{inparaenum}
-%\item $\Var = \left\{ \gmap, \lmap, \mathit{newPoint}, \mathit{pscan}, \mathit{obstacles} \right\}$
-%\item $\Port = \left\{\mathit{ldata}, \mathit{trace}, \mathit{pos}, \mathit{trace}, \mathit{reached}, \mathit{target} \right\}$. \footnote{The syntax of $\lgname$ requires each \emph{actuator} and \emph{sensor} variable $v$ defined in a module $M$ to be referred to as $M.v$.}
-%\item For each robot $i$, $\mathit{Event}_i = \left\{ \mathit{NewPoint}, \mathit{LUpdate}, \mathit{GUpdate}\right\}$
-%\end{inparaenum}
 %%
 %%values that the variables can take is $\Val$, the \emph{state} of a robot $i$ is a tuple $$s_i = ( M, cp), \mbox{ where}$$
 %%
@@ -115,7 +125,6 @@ These are modeled as $\delta$-transitions that advance time as well as the senso
 %%
 
 
-In the rest of this section, we present the formal semantics of the $\lgname$ programming language.
 %
 %\subsection{Program (cyber) variables and physical variables}
 %
@@ -141,29 +150,35 @@ In the rest of this section, we present the formal semantics of the $\lgname$ pr
 %
 %The agent program specifies the controller which determines the dynamic behavior of each agent and its interaction with the environment. \reffig{arch} shows how  each controller has sensor ports and actuator ports which the agent programs use to interact with the controller and consequently, with the physical environment. The agent program can read from the sensor ports read and write to the actuator ports during the program transition. The sensor ports are updated during the environment transition according to the controller dynamics.
 %
-%The $\mathit{Task}$ app  uses a controller called $\mathit{Motion}$ which is expected to drive the robots through a route, as directed by the position value set at its actuator port $\mathit{Motion.route}$. The sensor ports that $\mathit{Motion}$ makes available to the $\mathit{Task}$ program are: \begin{inparaenum}[i)]\item $\mathit{Motion.psn}$: the robot position in a fixed coordinate system (provided by either GPS or an indoor positioning system) \item $\mathit{Motion.done}$: A flag indicating whether the $\mathit{Motion}$ controller is active, or finished reaching the previous $\mathit{route}$ target points.\end{inparaenum}The implementation of $\mathit{Motion}$ controller involves, for example, path planners, and platform-specific steering and throttle controllers, and drivers for specific positioning systems.
-% Each agent program also has access to two simulation parameters (a) a unique integer identifier $\myuin$ for itself and (b)  a list $\UINS$ of identifiers of all participating agents. \footnote{This set of participating agents is known and constant.} We now describe the system state, or \emph{configurations} which we use to formalize $\lgname$ semantics.
 
-\subsection{System configurations}
+We now describe the system state, or \emph{system configurations} which we use to formalize $\lgname$ semantics.
 
+\paragraph{System Configurations.}
 
-A {\em system configuration\/} with sampling parameter $\delta$ is a tuple
+A {\em system configuration\/} with the parameter $\delta$ is a tuple
 $\gconfig_\delta = (\lset,{S},\tau,\turn)$, where
 \flushleft
 
 \begin{enumerate}
 
-\item ${L} = \{\lconfig{i}\}_{i\in\UINS}$ is a list of {\em agent configurations\/}--one for each participating agent, where $\UINS$ is the known set of participating agents. $\lconfig{i}$ refers to the configuration of the $i$th element in the list $L$, or the $i$th agent in the system.   \\
-\item ${S} : Var \mapsto Val$ is the {\em global context\/}, mapping all shared variable names to their values. \\
-%Why we need this becomes clear in the next section.
+\item ${L} = \{\lconfig{i}\}_{i\in\UINS}$ is a list of {\em agent configurations\/}--one for each participating agent,
+      where $\UINS$ is the known set of participating agents.
+      $\lconfig{i}$ refers to the configuration of the $i$-th element in $L$, or the $i$-th agent in the system.
+\item ${S} : Var \mapsto Val$ is the {\em global context\/}, mapping all shared variable names to their values.
 \item $\tau\in \mathbb{R}^{+}$ is the {\em global time\/}.
 \item $\turn\in\{\mathtt{prog,env}\}$ is a binary \emph{bookkeeping} variable determining whether  program or environment transitions are being processed.
 \end{enumerate}
 
-Bookkeeping variables are invisible in the language syntax, and only used in the semantics. We now define the \emph{agent configurations}, which are used to specify the semantics of each agent.
+Bookkeeping variables are invisible in the language syntax, and only used in the semantics.
 
 
-Given that $\mathbb{P}$ is the set of all the productions in the \lgname grammar, $\Var$ is the set of variables, $Val$ be is set of values that an expression in the $\lgname$ can evaluate to, $\Cfield$ is the set of sensor and actuator ports of the controller being used in $P$, the configuration of an agent is a tuple $ l = (P, {M},\mathit{sm},\turn)$, where
+\paragraph{Agent Configurations.}
+
+\emph{Agent configurations} are used to specify the semantics of each agent.
+Given that $\mathbb{P}$ is the set of all the productions in the \lgname grammar,
+$\Var$ is the set of variables, $Val$ be is set of values that an expression in the $\lgname$ can evaluate to,
+$\Cfield$ is the set of sensor and actuator ports of the controller being used in $P$,
+the configuration of an agent is a tuple $ l = (P, {M},\mathit{sm},\turn)$, where
 
 \begin{enumerate}[i)]
 \item $p \in \mathbb{P}$ is the current syntactic production,
