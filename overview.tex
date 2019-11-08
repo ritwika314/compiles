@@ -10,9 +10,6 @@ Discuss verbally what are the assumptions over run-time environment for proving 
 challenges---sensing, perception, coordination, movement.
 }
 
-%
-
-
 We first give an overview of a line formation algorithm that controls robots to be uniformly distributed along a line.
 Then we showcase the features of our programming language \lgname that enables us to design a succinct application for this algorithm.
 We also discuss at a high level, how to use \toolname to simulate and test this application for a multi-robot system under various deployment scenarios.
@@ -30,6 +27,8 @@ We also discuss at a high level, how to use \toolname to simulate and test this 
     }
     \caption{Koord program for Line Formation}\label{fig:lineform}
 \end{figure}
+
+\chiao{Emphasize that the same program is executed on a system of robots.}
 
 $\lgname$ provides \emph{shared} variables to allow robots within a system to communicate with each other.
 At Line~\ref{lineform-allread} in \reffig{lineform}, an \emph{allread} variable, $x$, is a shared variable of array type which all robots can read from,
@@ -50,10 +49,12 @@ The program and the controller interact with each other through \emph{sensor} an
 A \lgname program can have multiple \emph{modules} providing different sensor and actuator ports.
 The program reads the sensor ports, reads and writes to program variables, and writes to actuator ports.
 The actuator ports of different modules can be used to provide input to the controller, which drives the underlying physical plant.
-
-
-The robot also has access to two system-level \emph{constant} parameters (a) a unique integer identifier $\myuin$ for itself and (b) a list $\UINS$ of identifiers of all participating robots.\footnote{Our current system implementation assumes that the set of possible participating robots is known, but this assumption can be relaxed on a per application basis.}
-
+%
+The robot also has access to two system-level \emph{constant} parameters
+\begin{inparaenum}[(a)]
+\item a unique integer identifier $\myuin$ for itself and
+\item a list $\UINS$ of identifiers of all participating robots.\footnote{Our current system implementation assumes that the set of possible participating robots is known, but this assumption can be relaxed on a per application basis.}
+\end{inparaenum}
 
 \subsection{Invariant Checking}
 
@@ -72,11 +73,12 @@ all agents should always stay in the rectangle.
 
 
 \begin{assumption}\label{lineform-assume}
-Motion module should ensure the device is moving within the bounding rectangle between its position and target.
+Motion module should ensure the device is moving within the bounding rectangle between its position and target
+within a period of time $\delta$.
 Given an unknown function $f$ returning positions of the device in continuous time,
-formally we define the assumption as:
+formally we can define the assumption over $f$:
 \[
-\forall t \in [0, \delta], f(pos, tgt, t) \in rect(pos, tgt)
+\forall \tau \in [0, \delta], f(pos, tgt, \tau) \in rect(pos, tgt)
 \]
 Or in \lgname we provide the shorthand,
 \[
