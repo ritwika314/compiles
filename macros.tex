@@ -24,7 +24,7 @@
 \newcommand{\etal}{\textit{et al.}\xspace}
 \newcommand{\MW}{\sf{allwrite}}
 \newcommand{\SW}{\sf{allread}}
-\newcommand{\lgname}{\emph{K\kern-2pt oord}\xspace}
+\newcommand{\lgname}{\emph{Koord}\xspace}
 \newcommand{\toolname}{\emph{CyPhyHouse}\xspace}
 \newcommand{\appname}{\emph{AppName}\xspace}
 \newcommand{\UINS}{ID\xspace}
@@ -315,19 +315,19 @@
 \newcommand{\ur}{\mathit{ur}}
 \newcommand{\cp}{\mathit{cp}}
 \newcommand{\turn}{\mathit{turn}}
-\newcommand{\gconfig}{\mathcal{C}} %global config 
-\newcommand{\lset}{L} %set of agent configurations 
-\newcommand{\lconfig}[1]{L_{#1}} %configuration of agent i
+\newcommand{\gconfig}{\mathcal{C}} %global config
 \newcommand{\agnt}{L}
+\newcommand{\lconfig}[1]{\agnt_{#1}} %configuration of agent i
+\newcommand{\lset}{\{\lconfig{i}\}} %set of agent configurations
 \newcommand{\pwg}{\mathbb{C}} %all possible global configs, (power set of)
 \newcommand{\pwl}{\mathbbm{L}} %all possible local configs
-\newcommand{\pwe}{\mathbb{E}} %all possible expressions. 
+\newcommand{\pwe}{\mathbb{E}} %all possible expressions.
 \newcommand{\pws}{\mathbb{S}} %all possible global context
-\newcommand{\pwstmt}{\mathbb{S\mathit{tmt}}} %all possible statements
+\newcommand{\pwstmt}{\mathit{Stmt}} %all possible statements
 
 %%transition rules
 \newcommand{\exprule}{\rightarrow_E\xspace}
-\newcommand{\stmtrule}{\rightarrow_\mathit{Stmt}\xspace}
+\newcommand{\stmtrule}{\rightarrow_\mathit{stmt}\xspace}
 \newcommand{\sysrule}{\rightarrow_\mathit{Env}\xspace}
 \newcommand{\progtrans}{\rightarrow_\mathit{prog}\xspace}
 \newcommand{\envtrans}{\rightarrow_\mathit{env}\xspace}
