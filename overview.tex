@@ -12,6 +12,12 @@
 
 We will discuss the key features of the Koord language and programming system with an example. The Koord application shown in Figure~\ref{fig:lineform} is a simple  formation control protocol of the type often used for drone shows like the one seen in Figure~\ref{fig:firefly}. The code in Figure~\ref{fig:lineform} makes an arbitrary number of robots (drones) line up uniformly between two extremal robots. \sayan{Small modifications} to the code make the drones form other shapes like  squares, cubes, and stars. 
 
+
+\subsection{Koord language}
+\label{sec:koord-language}
+% 1 sentence intro of the language
+Koord is a high-level, event-driven language in which application programs use  {\em shared variables\/}  for coordination across robots and  {\em ports\/} for   interacting  with hardware-specific subroutines. 
+
 %This application makes
 %
 %We first give an overview of a line formation algorithm that controls robots to be uniformly distributed along a line.
@@ -32,25 +38,26 @@ We will discuss the key features of the Koord language and programming system wi
     \label{fig:lineform}
 \end{figure}
 
-A Koord program interacts with the sensors and low-level controllers of the robot through \emph{sensor} and \emph{actuator} ports.
+\paragraph{Variables and ports}
+A Koord program interacts with the sensors and low-level controllers of the robot platform through \emph{sensor} and \emph{actuator} ports. The program can read data from the sensor ports and can write data to actuator ports, and in addition it can reads and writes to program variables.
 %
-The {\sf LineForm}  uses the {\em Motion\/} module (library) which provides 
+The {\sf LineForm} application uses a module (library) called {\em Motion\/} which provides a sensor that publishes the robots's location in a port called {\em position\/}. The motion module also a port called {\em target\/} for 
+
 \sayan{introduce sensor and actuator ports using the LineForm example.}
 
 A \lgname program can have multiple \emph{modules} providing different sensor and actuator ports.
-The program reads the sensor ports, reads and writes to program variables, and writes to actuator ports.
 The actuator ports of different modules can be used to provide input to the controller, which drives the underlying physical plant.
+\sayan{sentence about middleware implementing the connection between ports and low-level hardware/controllers, with example.}
 The controllers in use determine the dynamic behavior of each agent and its interaction with the environment.
 \reffig{arch} shows how each controller has sensor ports and actuator ports which the agent programs use to interact with the controller and consequently, with the physical environment.
-The agent program can read from the sensor ports read and write to the actuator ports during the program transition.
+%The agent program can read from the sensor ports read and write to the actuator ports during the program transition.
 The sensor ports are updated during the environment transition according to the controller dynamics.
 %
 The robot also has access to two system-level \emph{constant} parameters
 
 
-
-
-$\lgname$ provides \emph{shared} variables to allow robots within a system to communicate with each other.
+\paragraph{Shared variables}
+Koord provides \emph{shared} variables to allow robots within a system to communicate with each other.
 At Line~\ref{lineform-allread} in \reffig{lineform}, an \emph{allread} variable, $x$, is a shared variable of array type which all robots can read from,
 but each agent $pid$ can only write to $x[pid]$.
 This shared array is used to share the current position of each agent to all other agents.
@@ -63,8 +70,8 @@ This shared array is used to share the current position of each agent to all oth
 %\end{itemize}
 % language features - what main "issue" each feature addresses .
 
-\subsection{Koord program for Line Formation Algorithm}
-
+\paragraph{Compiler / execution platform}
+One para about all the supporting tools (simulator, compiler, deployment tools) with pointers to figures, and forward pointer to Section 4 where these are discussed in more detail.
 
 
 \begin{inparaenum}[(a)]
