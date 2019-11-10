@@ -28,8 +28,26 @@ We will discuss the key features of the Koord language and programming system wi
     {
         \lstinputlisting[language=NumKoord, firstline=9, firstnumber=9]{code/lineform.tex}
     }
-    \caption{Koord program for Line Formation.}\label{fig:lineform}
+    \caption{Koord program {\sf LineForm} for a setof agents to form a line.}
+    \label{fig:lineform}
 \end{figure}
+
+A Koord program interacts with the sensors and low-level controllers of the robot through \emph{sensor} and \emph{actuator} ports.
+%
+The {\sf LineForm}  uses the {\em Motion\/} module (library) which provides 
+\sayan{introduce sensor and actuator ports using the LineForm example.}
+
+A \lgname program can have multiple \emph{modules} providing different sensor and actuator ports.
+The program reads the sensor ports, reads and writes to program variables, and writes to actuator ports.
+The actuator ports of different modules can be used to provide input to the controller, which drives the underlying physical plant.
+The controllers in use determine the dynamic behavior of each agent and its interaction with the environment.
+\reffig{arch} shows how each controller has sensor ports and actuator ports which the agent programs use to interact with the controller and consequently, with the physical environment.
+The agent program can read from the sensor ports read and write to the actuator ports during the program transition.
+The sensor ports are updated during the environment transition according to the controller dynamics.
+%
+The robot also has access to two system-level \emph{constant} parameters
+
+
 
 
 $\lgname$ provides \emph{shared} variables to allow robots within a system to communicate with each other.
@@ -48,16 +66,6 @@ This shared array is used to share the current position of each agent to all oth
 \subsection{Koord program for Line Formation Algorithm}
 
 
-The program and the controller interact with each other through \emph{sensor} and \emph{actuator} ports.
-A \lgname program can have multiple \emph{modules} providing different sensor and actuator ports.
-The program reads the sensor ports, reads and writes to program variables, and writes to actuator ports.
-The actuator ports of different modules can be used to provide input to the controller, which drives the underlying physical plant.
-The controllers in use determine the dynamic behavior of each agent and its interaction with the environment.
-\reffig{arch} shows how each controller has sensor ports and actuator ports which the agent programs use to interact with the controller and consequently, with the physical environment.
-The agent program can read from the sensor ports read and write to the actuator ports during the program transition.
-The sensor ports are updated during the environment transition according to the controller dynamics.
-%
-The robot also has access to two system-level \emph{constant} parameters
 
 \begin{inparaenum}[(a)]
 \item a unique integer identifier $\myuin$ for itself and
