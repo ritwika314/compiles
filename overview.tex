@@ -1,21 +1,24 @@
-\section{Motivating Example}
+\section{Overview and an example}
 \label{sec:overview}
 
-\chiao{1\textasciitilde1.5 pages}
+%\chiao{1\textasciitilde1.5 pages}
+%
+%\chiao{
+%Use the example to informally introduce \lgname syntax.
+%Bring out how the distributed memory, abstraction on time, and black-box modules help simplify the design.
+%Discuss verbally what are the assumptions over run-time environment for proving the given example correct.
+%challenges---sensing, perception, coordination, movement.
+%}
 
-\chiao{
-Use the example to informally introduce \lgname syntax.
-Bring out how the distributed memory, abstraction on time, and black-box modules help simplify the design.
-Discuss verbally what are the assumptions over run-time environment for proving the given example correct.
-challenges---sensing, perception, coordination, movement.
-}
+We will discuss the key features of the Koord language and programming system with an example. The Koord application shown in Figure~\ref{fig:lineform} is a simple  formation control protocol of the type often used for drone shows like the one seen in Figure~\ref{fig:firefly}. The code in Figure~\ref{fig:lineform} makes an arbitrary number of robots (drones) line up uniformly between two extremal robots. \sayan{Small modifications} to the code make the drones form other shapes like  squares, cubes, and stars. 
 
-We first give an overview of a line formation algorithm that controls robots to be uniformly distributed along a line.
-Then we showcase the features of our programming language \lgname that enables us to design a succinct application for this algorithm.
-We also discuss at a high level, how to use \toolname to simulate and test this application for a multi-robot system under various deployment scenarios.
+%This application makes
+%
+%We first give an overview of a line formation algorithm that controls robots to be uniformly distributed along a line.
+%Then we showcase the features of our programming language \lgname that enables us to design a succinct application for this algorithm.
+%We also discuss at a high level, how to use \toolname to simulate and test this application for a multi-robot system under various deployment scenarios.
 
 
-\subsection{Koord program for Line Formation Algorithm}
 
 \begin{figure}[h!]
     \two{0.32}{0.59}
@@ -28,7 +31,6 @@ We also discuss at a high level, how to use \toolname to simulate and test this 
     \caption{Koord program for Line Formation.}\label{fig:lineform}
 \end{figure}
 
-\chiao{Emphasize that the same program is executed on a system of robots.}
 
 $\lgname$ provides \emph{shared} variables to allow robots within a system to communicate with each other.
 At Line~\ref{lineform-allread} in \reffig{lineform}, an \emph{allread} variable, $x$, is a shared variable of array type which all robots can read from,
@@ -43,6 +45,8 @@ This shared array is used to share the current position of each agent to all oth
 %\end{itemize}
 % language features - what main "issue" each feature addresses .
 
+\subsection{Koord program for Line Formation Algorithm}
+
 
 The program and the controller interact with each other through \emph{sensor} and \emph{actuator} ports.
 A \lgname program can have multiple \emph{modules} providing different sensor and actuator ports.
@@ -54,10 +58,14 @@ The agent program can read from the sensor ports read and write to the actuator 
 The sensor ports are updated during the environment transition according to the controller dynamics.
 %
 The robot also has access to two system-level \emph{constant} parameters
+
 \begin{inparaenum}[(a)]
 \item a unique integer identifier $\myuin$ for itself and
 \item a list $\UINS$ of identifiers of all participating robots.\footnote{Our current system implementation assumes that the set of possible participating robots is known, but this assumption can be relaxed on a per application basis.}
 \end{inparaenum}
+
+\chiao{Emphasize that the same program is executed on a system of robots.}
+
 
 \subsection{Invariant Checking}
 
