@@ -17,7 +17,9 @@ The code in \reffig{lineform} makes an arbitrary number of robots (drones) line 
 \subsection{\lgname language}
 \label{sec:koord-language}
 % 1 sentence intro of the language
-\lgname is a high-level, event-driven language in which application programs use \emph{shared variables} for coordination across robots and \emph{ports} for interacting with hardware-specific subroutines.
+\lgname is a high-level, event-driven language in which application programs use \emph{shared variables} for coordination across robots
+and \emph{ports} for interacting with hardware-specific subroutines.
+In the distributed robotic control setting, the same \lgname program is executed on a system of robots to solve problems collectively.
 
 \begin{figure}[h!]
     \two{0.32}{0.59}
@@ -27,66 +29,56 @@ The code in \reffig{lineform} makes an arbitrary number of robots (drones) line 
     {
         \lstinputlisting[language=NumKoord, firstline=9, firstnumber=9]{code/lineform.tex}
     }
-    \caption{\lgname program \LineForm for a set of agents to form a line.}
+    \caption{\lgname program \LineForm for a set of robots to form a line.}
     \label{fig:lineform}
 \end{figure}
 
-\paragraph{Variables and ports.}
+\paragraph{Module ports and local variables.}
 A \lgname program interacts with the sensors and low-level controllers of the robot platform through \emph{sensor} and \emph{actuator} ports.
-The program can read data from the sensor ports and can write data to actuator ports, and in addition it can reads and writes to program variables.
+The program can read data from the sensor ports and can write data to actuator ports.
 %
-The \LineForm application uses a module (library) called \emph{Motion} which provides a sensor that publishes the robot's location in a port called \emph{position}.
-The motion module also a port called \emph{target} for \sayan{introduce sensor and actuator ports using the \LineForm example.}
+The \LineForm application uses a \emph{module} (library) called \emph{Motion} which provides a sensor port called \emph{position} that publishes the robot's position.
+The motion module also a port called \emph{target} for specifying a target position.
 
-A \lgname program can have multiple \emph{modules} providing different sensor and actuator ports.
-The actuator ports of different modules can be used to provide input to the controller, which drives the underlying physical plant.
-\sayan{sentence about middleware implementing the connection between ports and low-level hardware/controllers, with example.}
-The controllers in use determine the dynamic behavior of each agent and its interaction with the environment.
-\reffig{arch} shows how each controller has sensor ports and actuator ports which the agent programs use to interact with the controller and consequently, with the physical environment.
-%The agent program can read from the sensor ports read and write to the actuator ports during the program transition.
-The sensor ports are updated during the environment transition according to the controller dynamics.
-%
-The robot also has access to two system-level \emph{constant} parameters
+A \lgname program can have multiple modules providing different sensor and actuator ports.
+As shown in \reffig{arch}, the actuator ports of different modules can be used to provide input to the controllers,
+which drives the underlying physical plant and environment.
+The sensor ports are then updated according to the real world physics perceived by the controllers.
+It is worth noting that module ports provide a significant abstraction over various possible controller implementations and environments.
+For example, our implementation of the \emph{position} port for \emph{Motion} module uses an indoor camera based positioning system
+to track positions of drones.
+Users can also use GPS to implement the \emph{Motion} module in an outdoor setting.
+The sampling frequencies of sensors are also abstracted away in \lgname as well.
+In short, different controllers in use would largely affect the behavior of each robot and its interaction with the environment.
+
+In addition to sensors and actuators, \lgname also allows declaring \emph{local} variables similar to most programming languages.
+Note that a \lgname is run on a system of robots;
+therefore, each participating robot would have its own set of module ports and local variables from the system view.
 
 
-\paragraph{Shared variables.}
-\lgname provides \emph{shared} variables to allow robots within a system to communicate with each other.
+\paragraph{Shared variables and system parameters.}
+\lgname provides \emph{shared} variables to allow robots within the system to communicate with each other.
 At Line~\ref{lineform-allread} in \reffig{lineform}, an \emph{allread} variable, $x$, is a shared variable of array type which all robots can read from,
-but each agent $pid$ can only write to $x[pid]$.
-This shared array is used to share the current position of each agent to all other agents.
+but each robot \myuin can only write to $x[\myuin]$.
+This shared array is used to share the current position of each robot to all other robots.
+\chiao{Should we discuss about atomic blocks and mutual exclusion here.}
 
-%\begin{itemize}
-%    \item Multiple sensors
-%    \item Sampled sensing : sensed over time.
-%    \item Coordination using shared variables.
-%    \item Mutual exclusion.
-%\end{itemize}
-% language features - what main "issue" each feature addresses .
-
-
-
-
+The robot also has access to system-level \emph{constant} parameters.
+For \LineForm as an example, it uses
 \begin{inparaenum}[(a)]
-\item a unique integer identifier $\myuin$ for itself and
-\item a list $\UINS$ of identifiers of all participating robots.\footnote{Our current system implementation assumes that the set of possible participating robots is known, but this assumption can be relaxed on a per application basis.}
+    \item the unique integer identifier \myuin for itself and
+    \item the number \NMAX of all participating robots.
 \end{inparaenum}
-
-\chiao{Emphasize that the same program is executed on a system of robots.}
-
-
-\paragraph{Modules and system configurations}
-- Implementation of module interfaces
-- e.g., implementation using ROS
-- Configuration file (system parameters) pid, $N_{sys}$, $\delta$
+A detail list of system parameters will be discussed later in \refsect{language}.
 
 
-\subsection{Invariant Checking}
+\subsection{Formal Semantics and Invariant Checking}
 
 $pos$ is shorthand for $Motion.position$. $tgt$ is shorthand for $Motion.target$.
 
 \begin{invariant}\label{inv:lineform}
-Given all agents initialized within a rectangle defined by the two corners $x_{min}$ and $x_{max}$,
-all agents should always stay in the rectangle.
+Given all robots initialized within a rectangle defined by the two corners $x_{min}$ and $x_{max}$,
+all robots should always stay in the rectangle.
 \[
 \begin{split}
     pos \in rect(x_{min}, x_{max})        \\
@@ -160,3 +152,9 @@ One para about all the supporting tools (simulator, compiler, deployment tools) 
 - Cite ICRA, arxiv
 - Heterogeneous platforms
 - Forward pointer to Section 4/6 where these are discussed in more detail.
+
+\paragraph{Modules and system configurations}
+
+- Implementation of module interfaces
+- e.g., implementation using ROS
+- Configuration file (system parameters) \myuin, \NMAX, $\delta$

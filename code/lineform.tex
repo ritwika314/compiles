@@ -4,11 +4,11 @@ using Motion:
 
 allread: Point x[$\NMAX$] $\label{lineform-allread}$
 init:
-  x[pid] = Motion.position
+  x[$\myuin$] = Motion.position
 
 TargetUpdate:
   pre: True
   eff:
-    if !(pid == $\NMAX$ - 1 or pid == 0):
-      Motion.target = (x[pid+1] + x[pid-1]) / 2
-      x[pid] = Motion.position
+    if !($\myuin$ == $\NMAX$ - 1 or $\myuin$ == 0):
+      Motion.target = (x[$\myuin$+1] + x[$\myuin$-1]) / 2
+      x[$\myuin$] = Motion.position
