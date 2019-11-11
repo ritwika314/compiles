@@ -63,8 +63,7 @@ This shared array is used to share the current position of each agent to all oth
 %\end{itemize}
 % language features - what main "issue" each feature addresses .
 
-\paragraph{Compiler / execution platform.}
-One para about all the supporting tools (simulator, compiler, deployment tools) with pointers to figures, and forward pointer to Section 4 where these are discussed in more detail.
+
 
 
 \begin{inparaenum}[(a)]
@@ -73,6 +72,12 @@ One para about all the supporting tools (simulator, compiler, deployment tools) 
 \end{inparaenum}
 
 \chiao{Emphasize that the same program is executed on a system of robots.}
+
+
+\paragraph{Modules and system configurations}
+- Implementation of module interfaces
+- e.g., implementation using ROS
+- Configuration file (system parameters) pid, $N_{sys}$, $\delta$
 
 
 \subsection{Invariant Checking}
@@ -149,3 +154,9 @@ the assumptions for correctness are too strong under specific scenarios,
 and revise the assumptions iteratively.
 For example, to run the line formation program on cars,
 a different module including the orientation of cars as well as more relaxed assumptions are needed.
+
+\subsection{Compiler / execution platform.}
+One para about all the supporting tools (simulator, compiler, deployment tools) with pointers to figures.
+- Cite ICRA, arxiv
+- Heterogeneous platforms
+- Forward pointer to Section 4/6 where these are discussed in more detail.
