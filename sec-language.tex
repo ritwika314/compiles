@@ -48,6 +48,7 @@ and an \textbf{eff}ect, which includes statements.
 The effect of an event may include the standard control flow constructs including a sequence of instructions,
 conditional statements, as well as atomic blocks of statements for mutual exclusion, function calls and assignment statements.
 The user is also allowed to define functions and abstract data types(which are tuples of the basic data types \lgname supports).
+\chiao{Should we mention atomic block for shared variables?}
 
 In the syntax presented in \reffig{partial-syntax}, given an nonterminal \textit{NT},
 {\it NT\textsuperscript{?}} means that it is optional in the syntax at that position,
@@ -130,13 +131,13 @@ An \emph{agent configurations} is used to specify the semantics of each agent.
 Given that $\mathbb{P}$ is the set of all production rules in the \lgname grammar,
 $\Var$ is the set of variables, $\Val$ be is set of values that an expression in \lgname can evaluate to,
 $\Cfield$ is the set of sensor and actuator ports of the controller being used in $P$,
-the configuration of an agent is a tuple $\agnt = (P, {M},\mathit{sm},\turn)$, where
+the configuration of an agent is a tuple $\agnt = (P, {M},\cp,\turn)$, where
 
 \begin{enumerate}[i)]
 \item $P \in \mathbb{P}$ is the current syntactic production,
-\item ${M} : \Var \mapsto \Val$ is its {\em local context\/} mapping all variables in $P$ to agent local values.
-\item $\mathit{sm} : \mathit{Sens} \mapsto \Val$ is the mapping of sensor variables to values.
-\item $\turn \in \{\mathtt{prog,env}\}$ is a bookkeeping variable indicating whether the agent should be executing a program or environment transition.
+\item ${M} : \Var \mapsto \Val$ is its \emph{local context} mapping all variables in $P$ to agent local values.
+\item $\cp : \Cfield \mapsto \Val$ is the mapping of sensor and actuator variables to values.
+\item $\turn \in \{\mathtt{prog,env}\}$ is a bookkeeping variable indicating whether this agent should be executing a program or environment transition.
 \end{enumerate}
 
 The components of an agent configuration in the tuple $l$ are accessed
@@ -148,41 +149,43 @@ using the dot (``$.$'') notation, for example, $l.M\equiv \pi_2(l)$ and $l.w \eq
 \rg{Labels for rules are wrong, will fix later.}
 \sayan{SM: The main piece for this section will be the semantic rules as formalized in K in 1 page. The final ``theorem'' might be the bounded reachability soundness.}
 
-\begin{figure*}
 
 \newcommand{\lsetp}{\{\lconfig{i}^\prime\}}
 \newcommand{\lsetpp}{\{\lconfig{i}^{\prime\prime}\}}
 
+\begin{figure}
 \scriptsize
 \begin{mathpar}
     \inferrule*[Right=event]
-    {\begin{array}{l} \mathit{ev} = \s{pre } \mathit{Cond} \s{ eff }\mathit{Ss} \cr \land {\agnt= (P,{M},\mathit{sm},\mathtt{prog}) \land\ \agnt^\prime =  (P,{M},\mathit{sm},\mathtt{env})\land \mathit{eval(\mathit{Cond}, L.M)} }\end{array}}
-    {\langle{S},\agnt, \cdot \rangle {\rightarrow_{S}}  \langle{S},\agnt^\prime, \mathit{Ss} \rangle }\label{e1}
+    {
+        \mathit{ev} = \s{pre } \mathit{Cond} \s{ eff }\mathit{Body} \land \\
+        \agnt= (P,{M},\cp,\mathtt{prog}) \land \agnt^\prime = (P,{M},\cp,\mathtt{env}) \land \mathit{eval(\mathit{Cond}, L.M)}
+    }
+    {\langle{S},\agnt, \cdot \rangle {\rightarrow_{S}}  \langle{S},\agnt^\prime, \mathit{Body} \rangle }
 
-    \linebreak
-
-    \inferrule*[Right=envtrans]{ \forall i \in \UINS,\lconfig{i}^\prime.\mathit{sm} = \agnt.\mathit{f}(\lconfig{i}.\mathit{sm},\delta) \land \forall x \in \mathit{Keys}({S}),\lconfig{i}'.{M}[x \mapsto S[x]] \land \lconfig{i}.\turn = \mathtt{env}}
+    \inferrule*[Right=envtrans]{
+         \forall i \in \UINS, \lconfig{i}^\prime.\cp = \lconfig{i}.\mathit{f}(\lconfig{i}.\cp,\delta) \land \\
+         \forall x \in \mathit{Keys}({S}),\lconfig{i}'.{M}[x \mapsto S[x]] \land \lconfig{i}.\turn = \mathtt{env}
+    }
     { (\lset, {S}, \tau,\mathtt{prog})\rightarrow_G (\lsetp, {S}, \tau + \delta,\mathtt{env}) \label{env}     }
 
-    \linebreak
-
     \inferrule*[Right=agent-env-to-prog]
-    {  \forall i \in \UINS , \lconfig{i}.\turn = \mathtt{env} \land \lconfig{i}^\prime.\turn = \mathtt{prog} }
+    {  \forall i \in \UINS, \lconfig{i}.\turn = \mathtt{env} \land \lconfig{i}^\prime.\turn = \mathtt{prog} }
     {  (\lset, S, \tau, \mathtt{env})\rightarrow_G (\lsetp, S, \tau, \mathtt{env}) \label{agntenvturn} }
 
-
     \inferrule*[Right=env-to-prog]
-    {  \forall i \in \UINS , \lconfig{i}.\turn = \mathtt{prog} }
+    {  \forall i \in \UINS, \lconfig{i}.\turn = \mathtt{prog} }
     {  (\lset, S,\tau, \mathtt{env})\rightarrow_G (\lset, S, \tau, \mathtt{prog}) \label{envturn} }
 
-    \linebreak
-
     \inferrule*[Right=Run-Sys]
-    { \forall i\in\UINS (S,\lconfig{i},\lconfig{i}.p)\stmtrule(S^\prime,\lconfig{i}^\prime,p^\prime)\stmtrule\ldots\stmtrule (S^{\prime\prime},\lconfig{i}^{\prime\prime},\ \cdot\ )\land \lconfig{i}^{\prime\prime}.\turn=\mathtt{env}}
+    {
+         \forall i\in\UINS, (S,\lconfig{i},\lconfig{i}.p)\stmtrule(S^\prime,\lconfig{i}^\prime,p^\prime)\stmtrule\ldots\stmtrule (S^{\prime\prime},\lconfig{i}^{\prime\prime}, \cdot) \\
+         \land\ \lconfig{i}^{\prime\prime}.\turn=\mathtt{env}
+    }
     {(\lset, S, \tau,  \mathtt{prog})\rightarrow_G (\lsetpp, S^{\prime\prime}, \tau, \mathtt{prog})}\label{runsys}
 \end{mathpar}
 \caption{Partial Semantic Rules for \lgname.}\label{key}
-\end{figure*}
+\end{figure}
 
 For simplicity, we briefly describe the ``big-step'' semantics of \lgname which allows all the statements in an event of a single robot to be executed as an instantaneous transition.
 The detailed statement-level semantics of \lgname has been developed in the \K framework.
@@ -242,18 +245,23 @@ When an event is executed, the $\turn$ of the agent is set to $\mathtt{env}$ ind
 The advancement of time and environment transitions govern the changes in the system configuration.
 The rewrite rule is a mapping from an initial system configuration to a set of configurations.
 It has the type
-$$\rightarrow_G\ \subseteq (\mathbb{L}\times \pws \times \nnreals \times \{\mathtt{prog,env}\}) \times \mathscr{P}(\mathbb{L}\times\pws \times \nnreals\times \{\mathtt{prog,env}\}) $$
+$$\rightarrow_G\ \subseteq (\pwl\times \pws \times \nnreals \times \{\mathtt{prog,env}\}) \times \wp(\pwl\times\pws \times \nnreals\times \{\mathtt{prog,env}\}) $$
 
 First, we present the semantics of executing the events for each agent.
 A \lgname program can be seen as sequences of $\stmtrule$ rules, which determine event executions followed by an environment transition.
 To express this, we define a rule that shows the the changes in the configuration of the overall system due to all the agents executing their program just before an environment transition is applicable.
 
-\fTBD{FIXING Rule REFERENCES}The rule \ref{runsys} expresses that starting from a global configuration $c = ({L}, S, \tau, \mathtt{env})$, each agent $i$ with local configuration $\lconfig{i}$ processes its program $P$ using a sequence of $\stmtrule$ rewrites, until its event is executed, and its $\turn$ set to $\mathtt{env}$ at the end of the event execution. Overall, the system goes from a configuration $c$ to $c^{\prime\prime}= ({L^{\prime\prime}}, S^{\prime\prime}, \tau, \mathtt{env})$, with possibly different agent configurations and global context depending on whether any of the events executed resulted in writes to shared variables.
+\chiao{I will fix Rule reference later.}
+The rule \ref{runsys} expresses that starting from a global configuration $c = (\lset, S, \tau, \env)$,
+ each agent $i$ with local configuration $\lconfig{i}$ processes its program $P$ using a sequence of $\stmtrule$ rewrites, until its event is executed,
+ and its $\turn$ set to $\mathtt{env}$ at the end of the event execution.
+ Overall, the system goes from a configuration $c$ to $c^{\prime\prime}= (\lsetpp, S^{\prime\prime}, \tau, \env)$,
+ with possibly different agent configurations and global context depending on whether any of the events executed resulted in writes to shared variables.
 
 
 
 \fTBD{Agent local states and propagation over messages.}
-Suppose the function $f:\mathit{Sens} \times Val \times \mathbb{R} \mapsto \Val$ captures the behavior of the controller, and can be used to update the sensor ports after time $\delta$.
+Suppose the function $f:\mathit{Sens} \times \Val \times \mathbb{R} \mapsto \Val$ captures the behavior of the controller, and can be used to update the sensor ports after time $\delta$.
 Rule~\ref{env} shows the semantics of the system configuration after rule~\ref{runsys}.
 \sayan{This formalization allows the ports to behave arbitrarily over $\delta$-transitions. In order to establish invariant properties of applications, therefore, we will need to constrain the behavior of the sensor and actuator ports with additional assumptions.}
 
