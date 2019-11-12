@@ -7,14 +7,14 @@
 We will discuss the key features of the \lgname language and programming system with an example.
 The \lgname application shown in \reffig{lineform} is a simple formation control protocol of the type often used for drone shows like the one seen in \reffig{firefly}.
 The code in \reffig{lineform} makes an arbitrary number of robots (drones) line up uniformly between two extremal robots.
-\sayan{Small modifications} to the code make the drones form other shapes like squares, cubes, and stars.
+Small modifications to the code make the drones form other shapes like squares, cubes, and stars.
 
 \subsection{\lgname language}
 \label{sec:koord-language}
 % 1 sentence intro of the language
 \lgname is a high-level, event-driven language in which application programs use \emph{shared variables} for coordination across robots
 and \emph{ports} for interacting with hardware-specific subroutines.
-In the distributed robotic control setting, the same \lgname program is executed on a system of robots to solve problems collectively.
+In a distributed robotics setting, instances of the same \lgname program is executed by each participating robots to solve problems collectively.
 
 \begin{figure}[h!]
     \two{0.32}{0.59}
@@ -33,29 +33,34 @@ A \lgname program interacts with the sensors and low-level controllers of the ro
 The program can read data from the sensor ports and can write data to actuator ports.
 %
 The \LineForm application uses a \emph{module} (library) called \emph{Motion} which provides a sensor port called \emph{position} that publishes the robot's position.
-The motion module also a port called \emph{target} for specifying a target position.
+The \emph{Motion} module also provides a port called \emph{target} for specifying a target position.
 
-A \lgname program can have multiple modules providing different sensor and actuator ports.
+A \lgname program can use multiple modules providing different sensor and actuator ports.
 As shown in \reffig{arch}, the actuator ports of different modules can be used to provide input to the controllers,
 which drives the underlying physical plant and environment.
-The sensor ports are then updated according to the real world physics perceived by the controllers.
-It is worth noting that module ports provide a significant abstraction over various possible controller implementations and environments.
-For example, our implementation of the \emph{position} port for \emph{Motion} module uses an indoor camera based positioning system
-to track positions of drones.
+The sensor ports are  updated according to the real world physics, as perceived by the controllers.
+%
+\marginpar{\scriptsize\sayan{1. actuator ports ``can be'' used or ``are used'' ? How else could they be used? 2. The term controller is confusing there and in Fig 1.}}
+%
+Thus, the module ports provide an abstraction over various possible controller implementations and environments.
+For example, our implementation of the \emph{position} port for \emph{Motion} module uses an indoor camera based positioning system to track positions of drones.
 Alternatively, users may use GPS to implement the \emph{Motion} module in an outdoor setting.
 In short, different controllers in use would largely affect the behavior of each robot and its interaction with the environment.
 
 In addition to sensors and actuators, \lgname also allows declaring \emph{local} variables similar to most programming languages.
 Note that a \lgname is run on a system of robots;
 therefore, each participating robot would have its own set of module ports and local variables from the system point of view.
-
-
+%
+\marginpar{\scriptsize\sayan{What does ``system point of view'' mean?}}
+%
 \paragraph{Shared variables and system parameters.}
-\lgname provides \emph{shared} variables to allow robots within the system to communicate with each other.
-At Line~\ref{lineform-allread} in \reffig{lineform}, an \emph{allread} variable, $x$, is a shared variable of array type which all robots can read from,
+\lgname provides \emph{shared} variables to allow participating robots to communicate with each other.
+At Line~\ref{lineform-allread} in \reffig{lineform}, an \textbf{allread} variable, $x$, is a shared variable of array type which all robots can read from,
 but each robot \myuin can only write to $x[\myuin]$.
-This shared array is used to share the current position of each robot to all other robots.
+This shared array is used to share the current position of each robot with all other robots.
 \chiao{Should we discuss about atomic blocks and mutual exclusion here.}
+\sayan{not in any detail. 1 sentence forward pointer.} 
+% Sayan: Not in detail 
 
 The robot also has access to system-level \emph{constant} parameters.
 For \LineForm as an example, it uses
@@ -68,14 +73,16 @@ A detail list of system parameters will be discussed later in \refsect{language}
 
 \subsection{Formal Semantics and Invariant Checking}
 
-Benefit from the \K framework, not only can we formally describe the execution semantics for \lgname,
-but we also can design different formal analyses enabled by \K.
-In this work, we demonstrate an approach that checks invariant for \lgname programs via specifying symbolic execution semantics in \K~\cite{}.
+\sayan{We have developed/implemented the full semantics of \lgname using \K~\cite{Kcite}. The details are presented in Section~\ref{}.}
+This formalization not only enables us to formally define the execution semantics for \lgname applications, 
+\marginpar{\scriptsize\sayan{Elaborate why this is challenging? CPS, shared memory, asynchrony?}}
+but we can also implement different formal analyses using \sayan{search/rewriting/which system/artifact of} \K.
+In this work, we demonstrate an approach that checks invariant for \lgname programs using the symbolic execution semantics in \K~\cite{}.
 
-For \LineForm as an example, a requirement can be restricting all robots to always operate within certain area.
+For \LineForm, a natural requirement is to restrict all the robots to stay within a certain safe area, at all times (Geofencing).
 More precisely, given a (hyper)rectangle $rect(x_{min}, x_{max})$ defined by its two corners $x_{min}$ and $x_{max}$,
-if all robots are initialized within the rectangle, then all robots should always stay in the rectangle.
-Formally, we would like to prove following invariant:
+if all robots are initialized within the rectangle, then all robots should always stay in the rectangle. This requirement can be stated as:
+%Formally, we would like to prove following invariant:
 \begin{invariant}\label{inv:lineform}
 \[
 \begin{split}
@@ -87,6 +94,9 @@ Formally, we would like to prove following invariant:
 \end{invariant}
 
 \chiao{Explain why we need assumptions over modules.}
+\sayan{Drop the extra line after Invariant~1. Why bother with the shorthand M.pos? M.tgt does not even appear in the invariant.}
+\sayan{Ok, you can state the invariant...then what? can it be proved automatically using K? We should say that then with the appropriate qualifiers, and give a forward pointer.}
+
 Motion module should ensure the device is moving within the bounding rectangle between its position and target
 within a period of time $\delta$.
 That is, given a black-box function $f$ returning positions of the device in continuous time,
@@ -119,7 +129,7 @@ The \K semantics of \lgname allows us to construct the symbolic post states of e
 \end{tikzpicture}
 \caption{\K semantics based invariant checking for \lgname.}
 \end{figure}
-
+\marginpar{\scriptsize\sayan{Shouldn't this flowchart also have inputs Koord application code/requirement? Also, too much white space.}}
 
 \subsection{Simulation based Assumption Validation}
 
