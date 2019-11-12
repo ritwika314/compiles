@@ -2,17 +2,12 @@
 \label{sec:overview}
 
 %\chiao{1\textasciitilde1.5 pages}
-%
-%\chiao{
-%Bring out how the distributed memory, abstraction on time, and black-box modules help simplify the design.
-%challenges---sensing, perception, coordination, movement.
-%}
 \newcommand{\LineForm}{\textsf{LineForm}\xspace}
 
 We will discuss the key features of the \lgname language and programming system with an example.
 The \lgname application shown in \reffig{lineform} is a simple formation control protocol of the type often used for drone shows like the one seen in \reffig{firefly}.
 The code in \reffig{lineform} makes an arbitrary number of robots (drones) line up uniformly between two extremal robots.
-\sayan{Small modifications} to the code make the drones form other shapes like  squares, cubes, and stars.
+\sayan{Small modifications} to the code make the drones form other shapes like squares, cubes, and stars.
 
 \subsection{\lgname language}
 \label{sec:koord-language}
@@ -47,13 +42,12 @@ The sensor ports are then updated according to the real world physics perceived 
 It is worth noting that module ports provide a significant abstraction over various possible controller implementations and environments.
 For example, our implementation of the \emph{position} port for \emph{Motion} module uses an indoor camera based positioning system
 to track positions of drones.
-Users can also use GPS to implement the \emph{Motion} module in an outdoor setting.
-The sampling frequencies of sensors are also abstracted away in \lgname as well.
+Alternatively, users may use GPS to implement the \emph{Motion} module in an outdoor setting.
 In short, different controllers in use would largely affect the behavior of each robot and its interaction with the environment.
 
 In addition to sensors and actuators, \lgname also allows declaring \emph{local} variables similar to most programming languages.
 Note that a \lgname is run on a system of robots;
-therefore, each participating robot would have its own set of module ports and local variables from the system view.
+therefore, each participating robot would have its own set of module ports and local variables from the system point of view.
 
 
 \paragraph{Shared variables and system parameters.}
@@ -74,43 +68,44 @@ A detail list of system parameters will be discussed later in \refsect{language}
 
 \subsection{Formal Semantics and Invariant Checking}
 
-$pos$ is shorthand for $Motion.position$. $tgt$ is shorthand for $Motion.target$.
+Benefit from the \K framework, not only can we formally describe the execution semantics for \lgname,
+but we also can design different formal analyses enabled by \K.
+In this work, we demonstrate an approach that checks invariant for \lgname programs via specifying symbolic execution semantics in \K~\cite{}.
 
+For \LineForm as an example, a requirement can be restricting all robots to always operate within certain area.
+More precisely, given a (hyper)rectangle $rect(x_{min}, x_{max})$ defined by its two corners $x_{min}$ and $x_{max}$,
+if all robots are initialized within the rectangle, then all robots should always stay in the rectangle.
+Formally, we would like to prove following invariant:
 \begin{invariant}\label{inv:lineform}
-Given all robots initialized within a rectangle defined by the two corners $x_{min}$ and $x_{max}$,
-all robots should always stay in the rectangle.
 \[
 \begin{split}
-    pos \in rect(x_{min}, x_{max})        \\
-    \land\ \forall i, x[i] \in rect(x_{min}, x_{max})
+    \forall \myuin \in \UINS,\ M.pos_{\myuin} \in rect(x_{min}, x_{max}) \\
+    \land\ x[\myuin] \in rect(x_{min}, x_{max})
 \end{split}
 \]
+\normalfont{where $M.pos$ is the shorthand for $Motion.position$ and $M.tgt$ for $Motion.target$.}
 \end{invariant}
 
-
-\begin{assumption}\label{lineform-assume}
+\chiao{Explain why we need assumptions over modules.}
 Motion module should ensure the device is moving within the bounding rectangle between its position and target
 within a period of time $\delta$.
-Given an unknown function $f$ returning positions of the device in continuous time,
-formally we can define the assumption over $f$:
+That is, given a black-box function $f$ returning positions of the device in continuous time,
+we can formally define the assumption over the \emph{Motion} module as follows.
+\begin{assumption}\label{lineform-assume}
 \[
-\forall \tau \in [0, \delta], f(pos, tgt, \tau) \in rect(pos, tgt)
-\]
-Or in \lgname we provide the shorthand,
-\[
-pos' \in rect(pos, tgt)
+\forall \tau \in [0, \delta], f(M.pos, M.tgt, \tau) \in rect(M.pos, M.tgt)
 \]
 \end{assumption}
 
 With the assumption, we can prove \inv{inv:lineform} inductively.
 The \K semantics of \lgname allows us to construct the symbolic post states of event \emph{TargetUpdate}.
-
+\chiao{Give the formula representing the symbolic post or transition relation of \emph{TargetUpdate}}
 
 \begin{figure}
 \begin{tikzpicture}[
     every node/.style={draw},
 ]
-    \node (sym) {\K SymExec};
+    \node (sym) {\K Symbolic Execution};
     \node [below of=sym] (prover) {\lgname prover};
     \node [diamond, aspect=2, below of=prover] (z3) {z3};
     \node [below left=1cm and 1cm of z3] (proven) {Proven};
@@ -118,10 +113,11 @@ The \K semantics of \lgname allows us to construct the symbolic post states of e
 
     \draw [->] (sym) edge (prover)
                (prover) edge (z3)
-               (z3) edge node[draw=none] {UNSAT} (proven)
-               (z3) edge node[draw=none] {SAT} (incon)
+               (z3) edge node[draw=none, left] {UNSAT} (proven)
+               (z3) edge node[draw=none, right] {SAT} (incon)
                ;
 \end{tikzpicture}
+\caption{\K semantics based invariant checking for \lgname.}
 \end{figure}
 
 
@@ -132,7 +128,6 @@ but it actually imposes a very strong constraint over the $Motion$ module and th
 Using the simulation engine, we can monitor the sensor and actuator values to evaluate how often the assumption is violated.
 For \asum{lineform-assume}, we can identify and demonstrate two common scenarios
 where it is invalidated.
-
 \chiao{We can use simulator screenshot to show the violation.}
 
 First, if a robot has to avoid obstacles,
@@ -147,14 +142,10 @@ and revise the assumptions iteratively.
 For example, to run the line formation program on cars,
 a different module including the orientation of cars as well as more relaxed assumptions are needed.
 
-\subsection{Compiler / execution platform.}
-One para about all the supporting tools (simulator, compiler, deployment tools) with pointers to figures.
-- Cite ICRA, arxiv
-- Heterogeneous platforms
-- Forward pointer to Section 4/6 where these are discussed in more detail.
-
-\paragraph{Modules and system configurations}
-
-- Implementation of module interfaces
-- e.g., implementation using ROS
-- Configuration file (system parameters) \myuin, \NMAX, $\delta$
+\subsection{Compilation and Deployment.}
+In addition to the formal language, semantics, analysis, and simulation,
+our whole tool chain also includes compilation and deployment to heterogeneous platforms including drones and race cars.
+Once developers install our ROS~\cite{ros} based run-time libraries~(middleware) on a platform
+and a device specific configuration denoting the mapping from \lgname modules to low level controllers,
+our module port based abstraction then allows the same \lgname to run on this platform.
+Detailed description of our tool chain is available in~\cite{ghosh2019cyphyhouse}.
