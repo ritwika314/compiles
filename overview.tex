@@ -144,8 +144,9 @@ a different module including the orientation of cars as well as more relaxed ass
 
 \subsection{Compilation and Deployment.}
 In addition to the formal language, semantics, analysis, and simulation,
-our whole tool chain also includes compilation and deployment to heterogeneous platforms including drones and race cars.
+our complete tool chain also includes compilation and deployment to heterogeneous platforms including drones and race cars.
 Once developers install our ROS~\cite{ros} based run-time libraries~(middleware) on a platform
-and a device specific configuration denoting the mapping from \lgname modules to low level controllers,
-our module port based abstraction then allows the same \lgname to run on this platform.
+and provides a device specific configuration denoting the mapping from \lgname module ports
+to low level sensor and actuator ROS messages,
+our module port based abstraction then allows the same \lgname program to run on this platform.
 Detailed description of our tool chain is available in~\cite{ghosh2019cyphyhouse}.
