@@ -76,9 +76,26 @@ for all $c' \in \Post(c,i,e)$.
 The executable $\lgname$ semantics is used to prove \inv{lineform} inductively, using the strategy explained at a high level in \refsect{overview}. Let us denote the variables $\mathit{Motion.Position}$ and $\mathit{Motion.Target}$ by $\mathit{mp}$ and $\mathit{mt}$ respectively,  and denote the value of agent $i$'s local copies of these variables before the event is executed by $\mathit{mp}_i$ and $\mathit{mt}_i$ respectively. The \emph{allread} variable $x[i]$ is denoted by $x_i$. The primed copies of these variables ($\mathit{mp_i', mt_i',x_i'}$) denote their values after a round (event execution and $\delta$-transition) has occured. For the \emph{Lineform} application, it has only one event \emph{TargetUpdate}, which is executed only when $\neg (\myuin = \NMAX - 1 \vee \myuin = 0)$ holds. $\myuin = 0 \wedge E$ is unsatisfiable, meaning these invariant is vacuously validated for the extremal robots.
 
 
-Executing the effect of the event (for agent $i$) using \K semantics gives us the constraint $$E := mt_i' = (x_{i-1} + x_{i+1})/2  \wedge x_i' = mp_i$$.  The assumption (as stated earlier) is \begin{align*}A := &mp_i' \leq mt_i \wedge mp_i' \geq mp_i \\ &\wedge  x_{i-1} \in [x_{min}, x_{max}] \wedge x_{i+1}\in [x_{min},x_{max}].\end{align*} The invariant is $I: \mathit{mp}_i \in [x_{min}, x_{max}]$ and $I'$ denotes the invariant $\mathit{mp}_i' \in [x_{min}, x_{max}].$  The overall constraint then becomes $E \wedge A \wedge I \Rightarrow I',$. Now, given a configuration $c$, since there is only one event, $\Post(c,i,\mathit{TargetUpdate}) = \Post(c,i)$. Additionally, since given any two agents $i$ and $j$ do not write to the same variable, $\Post(\Post(c,i), j) = \Post(\Post(c,j),i)$. Therefore, we can consider a single order of execution.
+Executing the effect of the event (for agent $i$) using \K semantics gives us the constraint $$E := mt_i' = (x_{i-1} + x_{i+1})/2  \wedge x_i' = mp_i$$.  The assumption (as stated earlier) is \begin{align*}A := &mp_i' \leq mt_i \wedge mp_i' \geq mp_i \\ &\wedge  x_{i-1} \in [x_{min}, x_{max}] \wedge x_{i+1}\in [x_{min},x_{max}].\end{align*} The invariant is $I: \mathit{mp}_i \in [x_{min}, x_{max}]$ and $I'$ denotes the invariant $\mathit{mp}_i' \in [x_{min}, x_{max}].$  The overall constraint then becomes $E \wedge A \wedge I \Rightarrow I',$. Now, given a configuration $c$, since there is only one event, $\Post(c,i,\mathit{TargetUpdate}) = \Post(c,i)$. Additionally, since given any two agents $i$ and $j$ do not write to the same variable, $\Post(\Post(c,i), j) = \Post(\Post(c,j),i)$. Therefore, we can consider a single order of execution for computing $\Post(c)$.
 
-\rg{discussion of numbers here}.
+ \begin{table}[!t]
+\scriptsize
+ \centering
+  \caption{\small Summary of semantics based verification.  The \emph{Agents}(N) is the number of agents in the system, $T_R$ is the total verification time in seconds (K + Z3).}
+  \label{tab:verif}
+   %\begin{tabular}{|l|l|l|l|l|l|l|l|c|}
+   \begin{tabular}{ l|  c c  c  }
+ \hline
+ \tb{Benchmark}       & \tb{Agents}(N) & $T_R$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
+ Lineform       & 3       &9.09   & \Checkmark  \\
+Lineform       & 4      & 11.21  & \Checkmark   \\
+ Lineform       & 5        &  11.77  & \Checkmark   \\
+  Task       & 3       &14.12   & \Checkmark  \\
+Task       & 4      & 18.28  & \Checkmark   \\
+ Task       & 5        &  19.61  & \Checkmark   \\
+ \hline
+ \end{tabular}
+ \end{table}
 
 %The effect of the event (for agent $i$) is $E := mt_i' = (x_{i-1} + x_{i+1})/2  \wedge x_i' = mp_i$.  The assumption (as stated earlier) is $A := mp_i' \leq mt_i \wedge mp_i' \geq mp_i)$. \rg{Additionally, we need a constraint $F:= x_{i-1} \in [x_{min}, x_{max}] \wedge x_{i+1}\in [x_{min},x_{max}]$.} The invariant is $I: \mathit{mp}_i \in [x_{min}, x_{max}]$ and $I'$ denotes the invariant $\mathit{mp}_i' \in [x_{min}, x_{max}]$.  The overall constraint then becomes :
                    %$E \wedge A \wedge F \wedge I \Rightarrow I'$, which we verified for models of size 3,4 and 5 using \K and Z3.
