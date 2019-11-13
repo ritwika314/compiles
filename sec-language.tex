@@ -23,21 +23,21 @@ where each round lasts for $\delta$ time, where $\delta >0$ is a platform specif
 \subsection{Formal Syntax}\label{sec:syntax}
 
 \reffig{partial-syntax} shows the partial grammar of \lgname syntax.
-Each agent program consists of
+Each robot program consists of
 \begin{inparaenum}[(a)]
 \item declarations of the interfaces between the program and the controller modules,
 \item declarations of shared and local program variables, and
 \item events, consisting of preconditions and effects.
 \end{inparaenum}
-Agent programs (rule \emph{Program}) can import a controller module.
+robot programs (rule \emph{Program}) can import a controller module.
 The module import grammar production specifies the interface of the controllers:
 it contains all input and output ports for actuators (\emph{APorts}) and sensors (\emph{SPorts}) that the program uses.
 The program can also contain shared and local declarations.
 
 \begin{enumerate}[i)]
 \item \emph{Local program variables} record the state of the program.
-\item \emph{Distributed shared variables} are used for coordination across agents.
-      \textbf{allwrite} is a multi-writer variable which can be updated by any participating agent.
+\item \emph{Distributed shared variables} are used for coordination across robots.
+      \textbf{allwrite} is a multi-writer variable which can be updated by any participating robot.
       Shared variables variables can also be single-writer (\textbf{allread}).
 \item \emph{Sensor and actuator variables} are used to read from sensor ports and to write to actuator ports.
 \end{enumerate}
@@ -48,7 +48,9 @@ and an \textbf{eff}ect, which includes statements.
 The effect of an event may include the standard control flow constructs including a sequence of instructions,
 conditional statements, as well as atomic blocks of statements for mutual exclusion, function calls and assignment statements.
 The user is also allowed to define functions and abstract data types(which are tuples of the basic data types \lgname supports).
-\chiao{Should we mention atomic block for shared variables?}
+\chiao{Should we mention atomic block for shared variables?
+Mutual exclusion is always an essential feature when shared variables are involved.
+\lgname provides a locking mechanism using the keyword \textbf{atomic} to update the shared variable safely.}
 
 In the syntax presented in \reffig{partial-syntax}, given an nonterminal \textit{NT},
 {\it NT\textsuperscript{?}} means that it is optional in the syntax at that position,
@@ -99,13 +101,6 @@ In between the events of successive rounds, the program variables remain constan
 but {\em all\/} the sensor and actuator variables of all robots change continuously with time.
 These are modeled as $\delta$-transitions that advance time as well as the sensor and actuator variables.
 
-%
-%
-%\paragraph{Program variables}
-%Mutual exclusion is always an essential feature when shared variables are involved.
-%\lgname provides a locking mechanism using the keyword $\mathit{atomic}$ to update the shared variable safely.
-%
-
 We now describe the system state, or \emph{system configurations} which we use to formalize \lgname semantics.
 
 \paragraph{System Configurations.}
@@ -114,9 +109,9 @@ A {\em system configuration\/} with the parameter $\delta$ is a tuple
 $\gconfig_\delta = (\lset_{i\in\UINS},{S},\tau,\turn)$, where
 
 \begin{enumerate}[i)]
-\item $\lset_{i\in\UINS}$ or $\lset$ in short is an indexed set of \emph{agent configurations}--one for each participating agent,
-      where $\UINS$ is the known set of participating agents.
-      $\lconfig{i}$ refers to the configuration of the $i$-th element, i.e., the $i$-th agent in the system.
+\item $\lset_{i\in\UINS}$ or $\lset$ in short is an indexed set of \emph{robot configurations}--one for each participating robot,
+      where $\UINS$ is the known set of participating robots.
+      $\lconfig{i}$ refers to the configuration of the $i$-th element, i.e., the $i$-th robot in the system.
 \item ${S} : \Var \mapsto \Val$ is the {\em global context\/}, mapping all shared variable names to their values.
 \item $\tau\in \nnreals$ is the {\em global time\/}.
 \item $\turn\in\{\mathtt{prog,env}\}$ is a binary \emph{bookkeeping} variable determining whether  program or environment transitions are being processed.
@@ -125,226 +120,144 @@ $\gconfig_\delta = (\lset_{i\in\UINS},{S},\tau,\turn)$, where
 Bookkeeping variables are invisible in the language syntax, and only used in the semantics.
 
 
-\paragraph{Agent Configurations.}
+\paragraph{Robot Configurations.}
 
-An \emph{agent configurations} is used to specify the semantics of each agent.
+An \emph{robot configurations} is used to specify the semantics of each robot.
 Given that $\mathbb{P}$ is the set of all production rules in the \lgname grammar,
 $\Var$ is the set of variables, $\Val$ be is set of values that an expression in \lgname can evaluate to,
-$\Cfield$ is the set of sensor and actuator ports of the controller being used in $P$,
-the configuration of an agent is a tuple $\agnt = (P, {M},\cp,\turn)$, where
+$\Cfield$ is the set of sensor and actuator ports of the controller being used,
+the configuration of an robot is a tuple $\agnt = (p, {M},\cp,\turn)$, where
 
 \begin{enumerate}[i)]
 \item $P \in \mathbb{P}$ is the current syntactic production,
-\item ${M} : \Var \mapsto \Val$ is its \emph{local context} mapping all variables in $P$ to agent local values.
+\item ${M} : \Var \mapsto \Val$ is its \emph{local context} mapping all variables in $P$ to robot local values.
 \item $\cp : \Cfield \mapsto \Val$ is the mapping of sensor and actuator variables to values.
-\item $\turn \in \{\mathtt{prog,env}\}$ is a bookkeeping variable indicating whether this agent should be executing a program or environment transition.
+\item $\turn \in \{\mathtt{prog,env}\}$ is a bookkeeping variable indicating whether this robot should be executing a program or environment transition.
 \end{enumerate}
 
-The components of an agent configuration in the tuple $l$ are accessed
+The components of an robot configuration in the tuple $l$ are accessed
 using the dot (``$.$'') notation, for example, $l.M\equiv \pi_2(l)$ and $l.w \equiv \pi_3(l)$.
 
 
 \subsection{Formal Semantics}\label{sec:semantics}
 
-\rg{Labels for rules are wrong, will fix later.}
-\sayan{SM: The main piece for this section will be the semantic rules as formalized in K in 1 page. The final ``theorem'' might be the bounded reachability soundness.}
-
+%%semantic rule references
+\newcommand{\EventRule}{\textsc{Event}\xspace}
+\newcommand{\RunSysRule}{\textsc{RunSys}\xspace}
+\newcommand{\EnvTransRule}{\textsc{EnvTrans}\xspace}
+\newcommand{\RobotEnvToProgRule}{\textsc{RobotEnvToProg}\xspace}
+\newcommand{\EnvToProgRule}{\textsc{EnvToProg}\xspace}
+%%transition rules
+\newcommand{\exprule}{\rightarrow_E\xspace}
+\newcommand{\stmtrule}{\rightarrow_\mathit{stmt}\xspace}
+\newcommand{\sysrule}{\rightarrow_\mathit{Env}\xspace}
+\newcommand{\progtrans}{\rightarrow_\mathit{prog}\xspace}
+\newcommand{\envtrans}{\rightarrow_\mathit{env}\xspace}
 
 \newcommand{\lsetp}{\{\lconfig{i}^\prime\}}
 \newcommand{\lsetpp}{\{\lconfig{i}^{\prime\prime}\}}
-
 \begin{figure}
 \scriptsize
 \begin{mathpar}
-    \inferrule*[Right=event]
+    \inferrule*[Right=\EventRule]
     {
-        \mathit{ev} = \s{pre } \mathit{Cond} \s{ eff }\mathit{Body} \land \\
+        \mathit{ev} = \textbf{pre } \mathit{Cond} \textbf{ eff }\mathit{Body} \land ev \in P \\
         \agnt= (P,{M},\cp,\mathtt{prog}) \land \agnt^\prime = (P,{M},\cp,\mathtt{env}) \land \mathit{eval(\mathit{Cond}, L.M)}
     }
-    {\langle{S},\agnt, \cdot \rangle {\rightarrow_{S}}  \langle{S},\agnt^\prime, \mathit{Body} \rangle }
+    {\langle{S},\agnt, \cdot \rangle \stmtrule  \langle{S},\agnt^\prime, \mathit{Body} \rangle }
 
-    \inferrule*[Right=envtrans]{
+    \inferrule*[Right=\EnvTransRule]{
          \forall i \in \UINS, \lconfig{i}^\prime.\cp = \lconfig{i}.\mathit{f}(\lconfig{i}.\cp,\delta) \land \\
          \forall x \in \mathit{Keys}({S}),\lconfig{i}'.{M}[x \mapsto S[x]] \land \lconfig{i}.\turn = \mathtt{env}
     }
-    { (\lset, {S}, \tau,\mathtt{prog})\rightarrow_G (\lsetp, {S}, \tau + \delta,\mathtt{env}) \label{env}     }
+    { (\lset, {S}, \tau,\mathtt{prog})\rightarrow_G (\lsetp, {S}, \tau + \delta,\mathtt{env})}
 
-    \inferrule*[Right=agent-env-to-prog]
+    \inferrule*[Right=\RobotEnvToProgRule]
     {  \forall i \in \UINS, \lconfig{i}.\turn = \mathtt{env} \land \lconfig{i}^\prime.\turn = \mathtt{prog} }
-    {  (\lset, S, \tau, \mathtt{env})\rightarrow_G (\lsetp, S, \tau, \mathtt{env}) \label{agntenvturn} }
+    {  (\lset, S, \tau, \mathtt{env})\rightarrow_G (\lsetp, S, \tau, \mathtt{env})}
 
-    \inferrule*[Right=env-to-prog]
+    \inferrule*[Right=\EnvToProgRule]
     {  \forall i \in \UINS, \lconfig{i}.\turn = \mathtt{prog} }
-    {  (\lset, S,\tau, \mathtt{env})\rightarrow_G (\lset, S, \tau, \mathtt{prog}) \label{envturn} }
+    {  (\lset, S,\tau, \mathtt{env})\rightarrow_G (\lset, S, \tau, \mathtt{prog})}
 
-    \inferrule*[Right=Run-Sys]
+    \inferrule*[Right=\RunSysRule]
     {
          \forall i\in\UINS, (S,\lconfig{i},\lconfig{i}.p)\stmtrule(S^\prime,\lconfig{i}^\prime,p^\prime)\stmtrule\ldots\stmtrule (S^{\prime\prime},\lconfig{i}^{\prime\prime}, \cdot) \\
          \land\ \lconfig{i}^{\prime\prime}.\turn=\mathtt{env}
     }
-    {(\lset, S, \tau,  \mathtt{prog})\rightarrow_G (\lsetpp, S^{\prime\prime}, \tau, \mathtt{prog})}\label{runsys}
+    {(\lset, S, \tau,  \mathtt{prog})\rightarrow_G (\lsetpp, S^{\prime\prime}, \tau, \mathtt{prog})}
 \end{mathpar}
-\caption{Partial Semantic Rules for \lgname.}\label{key}
+\caption{Partial Semantic Rules for \lgname.}\label{fig:partial-semantics}
 \end{figure}
 
-For simplicity, we briefly describe the ``big-step'' semantics of \lgname which allows all the statements in an event of a single robot to be executed as an instantaneous transition.
-The detailed statement-level semantics of \lgname has been developed in the \K framework.
+\sayan{SM: The final ``theorem'' might be the bounded reachability soundness.}
+
+For simplicity, we describe only part of semantic rules of \lgname that is above event level.
+The detailed statement and expression level semantics of \lgname is standard.
 The complete formalization of the semantics in \K is available from~\cite{}.
-We provide the semantics for some of the syntactic productions in \lgname,
+
+
+\paragraph{Event Semantics.}
+\chiao{Need a complete rewrite for event level semantics.}
+We provide the semantics for events in \lgname,
 which will help us discuss the semantics of program and environment transitions.
-The statement semantics are given by update rules of the type
+First, we assume rules for statement semantics are of type
 \[
-\stmtrule\ \subseteq (\pws \times \pwl\times \pwstmt \cup \{\cdot\}) \times \wp(\pws\times \pwl \times \pwstmt \cup \{\cdot\}),
+\stmtrule \subseteq (\pws \times \pwl\times \pwstmt \cup \{\cdot\}) \times \wp(\pws\times \pwl \times \pwstmt \cup \{\cdot\}),
 \]
-where $\pwstmt$ refers to the set of all possible statements allowed by language syntax. We introduce the symbol `$\cdot$' to indicate an ``empty" statement, which does not affect the configurations. The update relation takes as input a tuple of (1) an agent configuration, (2) a global context, and (3) a statement, and maps it to a set of such tuples.
+where $\pwstmt$ refers to the set of all possible statements allowed by language syntax,
+and the symbol `$\cdot$' indicates an ``empty" statement, which does not affect the configurations.
+The update relation takes as input a tuple of (1) an robot configuration, (2) a global context, and (3) a statement, and maps it to a set of such tuples.
 
-%\subsubsection{Program variable/program statement updates}
-%
-%The following rules display the variable lookup and assignment semantics for $\lgname$. The variable lookup rule \textsc{Var-Lookup-rule} states that every agent has a local copy of every variable in the program, and if an agent is evaluating an expression involving variable $x$, it will replace $x$ with the current value $v$ from the local context $M$. $M[x\mapsto v]$ here refers to the fact that in the map $M$, the key $x$ maps to the value $v$. \textsc{Lvar-assign} describe the semantics of variable assignment. If the right side of the assignment is not a constant, then it is first evaluated, and then substituted.
-%\begin{mdframed}
-%\scriptsize
-%\begin{mathpar}
-%%
-%  \hspace{-1in}\inferrule*[Right=\textsc{Var-Lookup}]
-%    {\agnt.M[x\mapsto v_1]}
-%    {\langle{S},\agnt, x \rangle \exprule  \langle{S},\agnt, v \rangle } \label{vl1} \and \qquad\qquad
-%  \\
-%
-%\hspace{-1in} \inferrule*[Right=\sc{lvar-assign}]
-%    {\begin{array}{l}
-%    x \notin \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\agnt .{M}) \cr \wedge {\agnt = (P, {M},\mathit{sm},\mathtt{prog})\ \wedge\ \agnt^\prime = (P,{M}[x\mapsto c],\mathit{sm},  \mathtt{prog})}\end{array} }
-%    {\langle{S},\agnt, x = c \rangle {\rightarrow_{S}}  \langle{S},\agnt^\prime,\cdot\rangle}\label{va2} \and \qquad\qquad \\
-%    \end{mathpar}
-%\end{mdframed}
-%
-%
-%
-%\subsubsection{Shared memory updates}
-%
-% The set of all copies of the local copies shared variables can be seen as the \emph{distributed shared memory}. The correctness of a program relies on consistent values of the agents' local values of shared variables. When an agent writes to a variable, it updates its local copy and our implementation of the $\lgname$ framework uses message passing to inform the other agents of the change.
-%%
-%\begin{mdframed}
-%\scriptsize
-%\begin{mathpar}
-%\hspace{-.5in}\inferrule*[Right=\sc{svar-assign}]
-%    {\begin{array}{l}
-%    x \in \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\agnt .{M}) \wedge x \in \agnt.w
-%    \wedge\ \agnt = (P, {M},\mathit{sm},\mathtt{prog}) \cr
-%    \wedge {S}^\prime = {S}[x \mapsto v]
-%    \wedge\ \agnt^\prime = (P,{M}[x\mapsto v],\mathit{sm}, \mathtt{prog})
-%    \end{array}
-%    }
-%    {\langle{S},\agnt, x = v \rangle {\rightarrow_{S}}  \langle{S}^\prime,\agnt^\prime,\cdot\rangle}\label{va1} \\
-%    \end{mathpar}
-%\end{mdframed}
+Rule~\EventRule in \reffig{partial-semantics} shows that an event can be executed,
+the $\turn$ of the robot is set to $\mathtt{env}$ indicating that after this execution, an environment transition occurs.
+The system can display non deterministic behaviors arising from different robots executing their events in different orders.
 
 
-When an event is executed, the $\turn$ of the agent is set to $\mathtt{env}$ indicating that after this execution, an environment transition occurs. The system can display non deterministic behaviors arising from different agents executing their events in different orders.
-
+\paragraph{Environment Robot Transition.}
 
 The advancement of time and environment transitions govern the changes in the system configuration.
 The rewrite rule is a mapping from an initial system configuration to a set of configurations.
 It has the type
 $$\rightarrow_G\ \subseteq (\pwl\times \pws \times \nnreals \times \{\mathtt{prog,env}\}) \times \wp(\pwl\times\pws \times \nnreals\times \{\mathtt{prog,env}\}) $$
 
-First, we present the semantics of executing the events for each agent.
+First, we present the semantics of executing the events for each robot.
 A \lgname program can be seen as sequences of $\stmtrule$ rules, which determine event executions followed by an environment transition.
-To express this, we define a rule that shows the the changes in the configuration of the overall system due to all the agents executing their program just before an environment transition is applicable.
+To express this, we define a rule that shows the the changes in the configuration of the overall system due to all the robots executing their program just before an environment transition is applicable.
 
-\chiao{I will fix Rule reference later.}
-The rule \ref{runsys} expresses that starting from a global configuration $c = (\lset, S, \tau, \env)$,
- each agent $i$ with local configuration $\lconfig{i}$ processes its program $P$ using a sequence of $\stmtrule$ rewrites, until its event is executed,
- and its $\turn$ set to $\mathtt{env}$ at the end of the event execution.
- Overall, the system goes from a configuration $c$ to $c^{\prime\prime}= (\lsetpp, S^{\prime\prime}, \tau, \env)$,
- with possibly different agent configurations and global context depending on whether any of the events executed resulted in writes to shared variables.
+Rule~\RunSysRule expresses that starting from a global configuration $c = (\lset, S, \tau, \env)$,
+each robot $i$ with local configuration $\lconfig{i}$ processes its program $P$ using a sequence of $\stmtrule$ rewrites,
+until its event is executed,
+and its $\turn$ set to $\mathtt{env}$ at the end of the event execution.
+Overall, the system goes from a configuration $c$ to $c^{\prime\prime}= (\lsetpp, S^{\prime\prime}, \tau, \env)$,
+with possibly different robot configurations and global context depending on
+whether any of the events executed resulted in writes to shared variables.
 
-
-
-\fTBD{Agent local states and propagation over messages.}
-Suppose the function $f:\mathit{Sens} \times \Val \times \mathbb{R} \mapsto \Val$ captures the behavior of the controller, and can be used to update the sensor ports after time $\delta$.
-Rule~\ref{env} shows the semantics of the system configuration after rule~\ref{runsys}.
+Suppose the function $f:\mathit{Sens} \times \Val \times \nnreals \mapsto \Val$ captures the behavior of the controller,
+and can be used to update the sensor ports after time $\delta$.
+Rule~\EnvTransRule shows the semantics of the system configuration after rule~\RunSysRule.
 \sayan{This formalization allows the ports to behave arbitrarily over $\delta$-transitions. In order to establish invariant properties of applications, therefore, we will need to constrain the behavior of the sensor and actuator ports with additional assumptions.}
 
-Rule \ref{agntenvturn} is the semantic rule for setting the $\mathit{turn}$ of each agent back to $\mathtt{prog}$ from $\mathtt{env}$ after the environment transition has been completed. The semantics synchronizes the program transitions of each agent, ensuring that the event executions for each happen every $\delta$ time.
+Rule~\RobotEnvToProgRule is the semantic rule for setting the $\mathit{turn}$ of each robot back to $\mathtt{prog}$ from $\mathtt{env}$ after the environment transition has been completed. The semantics synchronizes the program transitions of each robot, ensuring that the event executions for each happen every $\delta$ time.
 
 
-Rule \ref{env} captures the fact that the global context $S$ is copied into local context of each agent $i \ (\lconfig{i}.M)$, thus ensuring that all agents have consistent shared variable values before the next program transition. After that, rule \ref{envturn} changes the turn of each agent back to program. In an actual execution, the controller  would run the program on hardware, whose sensor ports evolve for $\delta$ time between program transitions.
+Rule~\EnvTransRule captures the fact that the global context $S$ is copied into local context $\lconfig{i}.M$ of each robot $i$,
+thus ensuring that all robots have consistent shared variable values before the next program transition.
+After that, rule~\EnvToProgRule changes the turn of each robot back to program.
+In an actual execution, the controller would run the program on hardware,
+whose sensor ports evolve for $\delta$ time between program transitions.
 
-
-
-%The tool outputs `safe' if the $\mathit{inv}$ is indeed an $n$-invariant, `unsafe' if it finds a counter-example execution of length $n$. In some cases, it can return `unknown' as will be discussed in the following section.
-
 %
-% Algorithm~\ref{ag1}  computes reachable states of a given system based on the above functions and check $n$-invariance.
-%$\mathit{Unique}(\mathit{Perms}(\UINS), P_\mathit{events})$ is the set of permutations of the agents that may result in unique behaviors, and we compute this set by analyzing the shared variables written to during enabled and urgent events of each agent during a round of program transitions.  The input to \refalg{ag1} is \begin{inparaenum}[(i)]
-%    \item $P$: the program,
-%    \item $\mathit{inv}$: a candidate invariant function,
-%    \item {\UINS}: set of agents,
-%    \item $\delta$: time step size and
-%    \item $n$: length executions to check.
-%\end{inparaenum}
-%
-%%
-%
-%\begin{algorithm}
-%\scriptsize
-%\textbf{Input}: $P$, $\mathit{inv}$, $\UINS$, $\delta$, $n$\\
-%$c\leftarrow \mathit{Init}(P,N)$\quad$p \leftarrow \mathit{Unique}(\mathit{Perms}(\UINS),P_{\mathit{events}})$\\
-%\lIf{
-%$ \mathit{Sat}(c,\neg\mathit{inv})$} { \Return `unsafe'}
-%$C \leftarrow$ \{c\} \\
-%\For{$i = 0$ \KwTo n}{
-%\For{$j = 0$ \KwTo $\mathit{len}(p)$ }{
-%$C^\prime\leftarrow\Post(C,p[j])$\\
-%\For{$c$ $\mathbf{in}$ $C'$} {
-%\lIf{
-%$ \mathit{Sat}(c,\neg\mathit{inv})$} { \Return (`unsafe',c)}
-%}
-%$C^\prime \leftarrow \Final(C,p[j])$\\
-%\rg{\emph{continuous reachability here}}
-%}}
-%\Return `safe'
-%\caption{Bounded invariant checking algorithm}\label{ag1}
-%\end{algorithm}
-%
-%
-%
-% Then, for every order of program transitions in $p$, the algorithm uses the $\lgname$ semantics to compute $C^\prime$, the set of all configurations reached by the system during that round of program transitions. The algorithm first checks $\mathit{inv}$ is valid for configurations in $C^\prime$, or that the negation of $\mathit{inv}$ is unsatisfiable, using the procedure $\mathit{Sat}$. If it finds an unsafe configuration $c$, then it returns `unsafe' along with $c$.
-%  In the next iteration, $C$ is set to be the frontier set of configurations.
-%Theorem~\ref{thm:bmcsound} summarizes the soundness of \refalg{ag1}.
-%
-%\begin{theorem}
-%    \label{thm:bmcsound}
-%    If Algorithm~\ref{ag1}  returns `unsafe' then there exists a counter-example to \emph{inv} of length at most $n$, \rg{state assumption on continuous behavior here}.
-%    if Algorithm~\ref{ag1} returns `safe' then \emph{inv} is an $n$-invariant.
-%\end{theorem}
-%\begin{proof}
-%{\em Sketch.} If algorithm \ref{ag1} returns {\em safe}, then for the $n$ loop iterations of the outer loop, given a set of states $C$ and the property \texttt{inv}, according to the algorithm $\forall c \in \Post(C), c \models \texttt{inv}$. $\Post(C)$ is the set of configurations that can be reached from $C$ using any possible sequence of rewrite rules allowed by the system before an environment transition. Therefore, if the algorithm returns safe, then the set of configurations reached from $C$ before an environment transition is also safe. \rg{continue proof of soundness of reachability of continuous behavior}
-%\end{proof}
-%\fTBD{Relate this to assumptions}
-%
-%
-% We implemented $\lgname$ semantics in \K, which a rewriting-based executable framework for defining language semantics. One can view a language semantics naturally as a set of reduction rules over configurations. Components of a configuration are called {\em cells} in \K. To implement the semantics discussed in \refsect{semantics}, the configuration in \K includes several bookkeeping variables as well.
-%
+% Then, for every order of program transitions in $p$, the algorithm uses the \lgname semantics to compute $C^\prime$, the set of all configurations reached by the system during that round of program transitions. The algorithm first checks $\mathit{inv}$ is valid for configurations in $C^\prime$, or that the negation of $\mathit{inv}$ is unsatisfiable, using the procedure $\mathit{Sat}$. If it finds an unsafe configuration $c$, then it returns `unsafe' along with $c$.
 %
 
-
-%Semantics in \K is expressed using configurations, which organize the components in elements called {\em cells}. Cells are labelled, have types indicating what kind of elements can be contained in them, and help specify the rewrite rule in context. \K allows underspecification of rewrite rules, meaning, only the rewrite rules affecting part of the configurations need to be specified if the rule doesn't affect the other parts of the rule. Our notion of configurations translate in a straightforward manner to \K configurations. We present a couple of example rewrite rules in \K to demonstrate how the executable semantics is implemented.
-%
-%
-%We use a top level {\em system} cell with nested cells corresponding to the elements discussed in \refsect{semantics}, as well as other cells which are used to store information like number of agents in the system, simulation parameters of the program, and other bookkeeping information we used to implement the semantics. There is a special cell called the {\em k} cell, which is used to store the current computation in the program. Each agent has a {\em k} cell to store its computation. Recall that a local variable is updated only in the local memory. The rule for this checks whether the variable is not in the keys of the map {\em sysLoc} from shared variables to their locations. The following rule in \K that corresponds to our \textsc{lvar-assign} rule in the semantics.
-%\vspace{2pt}
-%\begin{mdframed}
-%\begin{Verbatim}[fontsize=\tiny]
-%<agent> ... <k> V:Id = I:Val => .  ... </k>
-%            <loc> ... V |-> L ... </loc>
-%            <locstore> ... L |-> _ => I ... </locstore>
-%        ... </agent>
-%<sysloc> Rho </sysloc>                    when L notBool inKeys(Rho)
-%\end{Verbatim}
-%\end{mdframed}
-%
-%We use bookkeeping variables in the \K configuration to ensure that all agents have their turn set to \texttt{env} before the system environment transition.We also  ensure that an agent has updated its sensor ports after the environment transition, to implement the rule \textsc{agent-env-to-prog}. Once all the agents in the system are ready to perform the next program transition, the rule \textsc{env-to-prog} is implemented as follows. If the number of agents which have set their $\mathit{turn}$ to $\mathit{env}$ (indicated by the cell {\em envToProg}) is the same as the number of all agents in the system, then the system sets its turn from $\mathit{Env}$ to $\mathit{Prog}$.
+We use bookkeeping variables to ensure that all robots have their turn set to \texttt{env} before the system environment transition.
+We also ensure that an robot has updated its sensor ports after the environment transition,
+to implement the rule~\RobotEnvToProgRule.
+Once all the robots in the system are ready to perform the next program transition,
+the rulee~\EnvToProgRule is implemented as follows.
+If the number of robots which have set their $\mathit{turn}$ to $\mathit{env}$ is the same as the number of all robots in the system,
+then the system sets its turn from $\mathit{Env}$ to $\mathit{Prog}$.
 
 
 \subsection{Synchronous Distributed Shared Memory}
@@ -354,16 +267,22 @@ Rule \ref{env} captures the fact that the global context $S$ is copied into loca
 Precisely describe how this can be achieved by synchronous communication given a $\delta$ time bound.
 Discuss why this abstraction over message passing with time delays is acceptable/reasonable}
 
+%\subsubsection{Shared memory updates}
+%
+% The set of all copies of the local copies shared variables can be seen as the \emph{distributed shared memory}. The correctness of a program relies on consistent values of the robots' local values of shared variables. When an robot writes to a variable, it updates its local copy and our implementation of the $\lgname$ framework uses message passing to inform the other robots of the change.
+%%
+
 \subsubsection{Synchronization and consistency}
+\rg{robot local states and propagation over messages.}
 \rg{We assume that the event transitions are computational steps, and take zero logical time, whereas the $\delta$-transitions denote the evolution of the sensor and the actuator ports with time, and take $\delta$ time.}
 The following are the timing assumptions on \lgname programs.
 \begin{assumption} A program step has zero logical execution time.
 \end{assumption}
-This assumption is reasonable if the time taken to complete a program transition step is negligible compared to $\delta$.  The $\lgname$ middleware ensures that the participating agents begin executing their events synchronously.
+This assumption is reasonable if the time taken to complete a program transition step is negligible compared to $\delta$.  The $\lgname$ middleware ensures that the participating robots begin executing their events synchronously.
 
 \begin{assumption}
     \label{shared}
-    Shared memory updates are propagated to all agents within one round. That is, given a state $\vs\in C$, for every  $i,j \in [N]$, for a shared variable $v$, $\vs.v_i = \vs.v_j$.
+    Shared memory updates are propagated to all robots within one round. That is, given a state $\vs\in C$, for every  $i,j \in [N]$, for a shared variable $v$, $\vs.v_i = \vs.v_j$.
 \end{assumption}
 The \lgname middleware uses message passing to implement shared memory, and compared to $\delta$, the time taken to observe a shared memory update as a received message from the time that it is sent is much smaller. We therefore can assume that in this setting, the shared memory semantics of \lgname wherein an update is visible in the next round of program transitions, is a reasonable implementation deliverable.
 
