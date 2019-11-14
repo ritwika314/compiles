@@ -94,12 +94,13 @@ The expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$.
 
 \subsection{Configurations}\label{sec:configs}
 
+At a high level, \lgname program execution is based on synchronous rounds divided into event transitions and environment transitions.
 In each round, each robot performs an event.
-The state update performed by a single robot executing an event is modeled as an transition of the state machine updating the program variables;
+The update performed by a single robot executing an event is modeled as an transition of updating the program variables;
 however, different events executed by the different robots may interleave.
 In between the events of successive rounds, the program variables remain constant,
-but {\em all\/} the sensor and actuator variables of all robots change continuously with time.
-These are modeled as $\delta$-transitions that advance time as well as the sensor and actuator variables.
+but the sensor and actuator variables of all robots change continuously with time.
+These are modeled as environment transitions that advance time as well as the sensor and actuator variables.
 
 We now describe the system state, or \emph{system configurations} which we use to formalize \lgname semantics.
 
@@ -276,27 +277,25 @@ Overall, the system goes from a configuration $c$ to $c^{\prime}= (\lsetp, S^{\p
 with possibly different robot configurations and global context depending on
 whether any of the events executed resulted in writes to shared variables.
 
-
 Rule~\EnvTransRule shows the semantics of the system configuration after rule~\ProgTransRule.
 This rule synchronizes the environment transitions of each robot and
 ensure that the global time $\tau$ advances to $\tau + \delta$.
 
 
-\subsection{Synchronous Distributed Shared Memory}
-\label{sec:memory}
+\subsection{Synchronization and Consistency}
+\label{sec:sync}
 
-\chiao{
-Precisely describe how this can be achieved by synchronous communication given a $\delta$ time bound.
-Discuss why this abstraction over message passing with time delays is acceptable/reasonable}
+Following our semantic rules in \refsect{semantics},
+careful readers would notice the program transitions takes zero time,
+whereas the $\delta$-transitions denote the evolution of the sensor and the actuator ports with time, and take $\delta$ time.
 
 %\subsubsection{Shared memory updates}
 %
 % The set of all copies of the local copies shared variables can be seen as the \emph{distributed shared memory}. The correctness of a program relies on consistent values of the robots' local values of shared variables. When an robot writes to a variable, it updates its local copy and our implementation of the $\lgname$ framework uses message passing to inform the other robots of the change.
 %%
 
-\subsubsection{Synchronization and consistency}
 \rg{robot local states and propagation over messages.}
-\rg{We assume that the event transitions are computational steps, and take zero logical time, whereas the $\delta$-transitions denote the evolution of the sensor and the actuator ports with time, and take $\delta$ time.}
+
 The following are the timing assumptions on \lgname programs.
 \begin{assumption} A program step has zero logical execution time.
 \end{assumption}
@@ -304,7 +303,7 @@ This assumption is reasonable if the time taken to complete a program transition
 
 \begin{assumption}
     \label{shared}
-    Shared memory updates are propagated to all robots within one round. That is, given a state $\vs\in C$, for every  $i,j \in [N]$, for a shared variable $v$, $\vs.v_i = \vs.v_j$.
+    Shared memory updates are propagated to all robots within one round. That is, given a state $\vs\in C$, for every  $i,j \in \UINS$, for a shared variable $v$, $\vs.v_i = \vs.v_j$.
 \end{assumption}
 The \lgname middleware uses message passing to implement shared memory, and compared to $\delta$, the time taken to observe a shared memory update as a received message from the time that it is sent is much smaller. We therefore can assume that in this setting, the shared memory semantics of \lgname wherein an update is visible in the next round of program transitions, is a reasonable implementation deliverable.
 
