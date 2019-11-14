@@ -130,6 +130,7 @@ the configuration of an robot is a tuple $\agnt = ({M},\cp,\turn)$, where
 
 \begin{enumerate}[i)]
 \item ${M} : \Var \mapsto \Val$ is its \emph{local context} mapping all variables in $P$ to robot local values.
+      Do note that $M$ also includes a copy of shared variable values.
 \item $\cp : \Cfield \mapsto \Val$ is the mapping of sensor and actuator variables to values.
 \item $\turn \in \{\prog,\env\}$ is a bookkeeping variable indicating whether this robot should be executing a program or environment transition.
 \end{enumerate}
@@ -191,8 +192,7 @@ $f$ evaluates the physical dynamics and returns new values for all sensor and ac
 
     \inferrule*[leftskip=2cm, Right=\RobotEnvTransRule]
     {
-        \cp' = \mathit{f}(\cp,\delta)
-        \land \forall x \in \mathit{Keys}({S}),M' = {M}[x \mapsto S[x]]
+        \forall x \in \mathit{Keys}({S}),M' = {M}[x \mapsto S[x]] \land \cp' = \mathit{f}(\cp,\delta)
     }
     {  \langle S, (M, cp, \env) \rangle \envtrans \langle S, (M', cp', \prog) \rangle}
 
@@ -218,78 +218,68 @@ $f$ evaluates the physical dynamics and returns new values for all sensor and ac
 For simplicity, we describe only part of semantic rules of \lgname that is above event level.
 The detailed statement and expression level semantics of \lgname is available in~\cite{}.
 
-\paragraph{Event Semantics.}
-We provide the semantics for events in \lgname,
-which will help us discuss the semantics of program and environment transitions.
-
-First, we assume rules for statement semantics are of type
+\paragraph{Per Robot Semantics.}
+First, we present the semantics of executing the events for each robot.
+which will help us discuss the semantics of the whole system.
+Following~\cite{}, we know that all rules for statement semantics are of type
 \[
-\stmtrule \subseteq (\pws \times \pwl\times (\pwstmt^+ \cup \{\SelectEvent\})) \times \wp(\pws\times \pwl \times \pwstmt^*),
+\stmtrule \subseteq (\pws \times \pwl\times (\pwstmt^+ \cup \{\SelectEvent\})) \mapsto \wp(\pws\times \pwl \times \pwstmt^*),
 \]
 where $\pwstmt$ refers to the set of all possible statements allowed by language syntax.
-The update relation takes as input a tuple of (1) an robot configuration, (2) a global context, and (3) a sequence of statements or \SelectEvent,
+This relation takes as input a tuple of (1) a global context, (2) an robot configuration, and (3) a sequence of statements or \SelectEvent,
 and maps it to a set of such tuples.
 The symbol `\SelectEvent' is a symbol not in \lgname to denote nondeterministic selection of events,
 and we use `\EndEvent' to indicate an ``empty" sequence.
 
 Rule~\SelectEventRule in \reffig{partial-semantics} shows that any event may be executed when the precondition is satisfied,
-and by replacing \SelectEvent with the body of the event, it ensures only one event is executed.
-At the end of the event, the sequence of statements is empty~`\EndEvent'.
-Rule~\EndEventRule makes sure the $\turn$ of the robot is set to $\env$ indicating that after this execution,
-an environment transition occurs.
+and by replacing \SelectEvent with the event effect $\mathit{Body}$, it ensures only one event is selected and executed.
+The event effect is then executed following the semantics of each statement in $\mathit{Body}$ defined in~\cite{}.
+At the end of the event, the sequence of statements becomes empty~`\EndEvent'.
+Rule~\EndEventRule then makes sure the $\turn$ of the robot is set to $\env$ indicating that
+an environment transition will occur afterwards.
+
+Similarly, we define the semantics of how each robot interacts with environment including other robots.
+The environment transition rule is of type
+\[
+\envtrans \subseteq (\pws \times \pwl) \mapsto \wp(\pws\times \pwl),
+\]
+which takes a global context and a robot configuration as input.
+Rule~\RobotEnvTransRule simply states that the new local context $M'$ is
+old local context $M$ updated with the global context $S$;
+thus ensuring that all robots have consistent shared variable values before the next program transition.
+New sensor readings $\cp'$ is then obtained by evaluating the black-box dynamics $f$ with time $\delta$.
+In an actual execution, the controller would run the program on hardware,
+whose sensor ports evolve for $\delta$ time between program transitions.
+\sayan{%
+This formalization allows the ports to behave arbitrarily over $\delta$-transitions.
+In order to establish invariant properties of applications;
+therefore, we will need to constrain the behavior of the sensor and actuator ports with additional assumptions.
+}%
+Finally, the $\turn$ of the robot is set back to $\prog$.
 
 
-\paragraph{Program Transitions.}
+\paragraph{Global Semantics.}
 
-The system can display nondeterministic behaviors arising from different robots executing their events in different orders.
-
-The advancement of time and environment transitions govern the changes in the system configuration.
+With the event semantic for each robot, we can then define the execution for the distributed \lgname program.
 The rewrite rule is a mapping from an initial system configuration to a set of configurations.
 It has the type
-$$\rightarrow_G\ \subseteq (\pwl\times \pws \times \nnreals \times \{\prog,\env\}) \times \wp(\pwl\times\pws \times \nnreals\times \{\prog,\env\}) $$
+\[
+\rightarrow_G\ \subseteq \pwg \mapsto \wp(\pwg),
+\]
+where $\pwg$ is the set of all possible global configurations.
 
 Rule~\ProgTransRule expresses that starting from a global configuration $\gconfig = (\lset, S, \tau, \env)$,
 each robot $i$ with the configuration $\lconfig{i}$ processes which starts by selecting an enabled event and executes the event via a sequence of $\stmtrule$ rewrites,
 and its $\turn$ set to $\env$ at the end of the event execution.
-Overall, the system goes from a configuration $c$ to $c^{\prime\prime}= (\lsetpp, S^{\prime\prime}, \tau, \env)$,
+The system can display nondeterministic behaviors arising from different robots executing their events in different orders.
+Overall, the system goes from a configuration $c$ to $c^{\prime}= (\lsetp, S^{\prime}, \tau, \env)$,
 with possibly different robot configurations and global context depending on
 whether any of the events executed resulted in writes to shared variables.
 
 
-\paragraph{Environment Transitions.}
-
-First, we present the semantics of executing the events for each robot.
-A \lgname program can be seen as sequences of $\stmtrule$ rules, which determine event executions followed by an environment transition.
-To express this, we define a rule that shows the the changes in the configuration of the overall system due to all the robots executing their program just before an environment transition is applicable.
-
-
-Suppose the function $f:\mathit{Sens} \times \Val \times \nnreals \mapsto \Val$ captures the behavior of the controller,
-and can be used to update the sensor ports after time $\delta$.
 Rule~\EnvTransRule shows the semantics of the system configuration after rule~\ProgTransRule.
-\sayan{This formalization allows the ports to behave arbitrarily over $\delta$-transitions. In order to establish invariant properties of applications, therefore, we will need to constrain the behavior of the sensor and actuator ports with additional assumptions.}
-
-
-Rule~\RobotEnvToProgRule is the semantic rule for setting the $\mathit{turn}$ of each robot back to $\prog$ from $\env$ after the environment transition has been completed.
-The semantics synchronizes the program transitions of each robot, ensuring that the event executions for each happen every $\delta$ time.
-
-
-Rule~\EnvTransRule captures the fact that the global context $S$ is copied into local context $\lconfig{i}.M$ of each robot $i$,
-thus ensuring that all robots have consistent shared variable values before the next program transition.
-After that, rule~\EnvToProgRule changes the turn of each robot back to program.
-In an actual execution, the controller would run the program on hardware,
-whose sensor ports evolve for $\delta$ time between program transitions.
-
-%
-% Then, for every order of program transitions in $p$, the algorithm uses the \lgname semantics to compute $C^\prime$, the set of all configurations reached by the system during that round of program transitions. The algorithm first checks $\mathit{inv}$ is valid for configurations in $C^\prime$, or that the negation of $\mathit{inv}$ is unsatisfiable, using the procedure $\mathit{Sat}$. If it finds an unsafe configuration $c$, then it returns `unsafe' along with $c$.
-%
-
-We use bookkeeping variables to ensure that all robots have their turn set to \texttt{env} before the system environment transition.
-We also ensure that an robot has updated its sensor ports after the environment transition,
-to implement the rule~\RobotEnvToProgRule.
-Once all the robots in the system are ready to perform the next program transition,
-the rule~\EnvToProgRule is implemented as follows.
-If the number of robots which have set their $\mathit{turn}$ to $\mathit{env}$ is the same as the number of all robots in the system,
-then the system sets its turn from $\mathit{Env}$ to $\mathit{Prog}$.
+This rule synchronizes the environment transitions of each robot and
+ensure that the global time $\tau$ advances to $\tau + \delta$.
 
 
 \subsection{Synchronous Distributed Shared Memory}
