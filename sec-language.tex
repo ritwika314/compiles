@@ -43,7 +43,7 @@ The program can also contain shared and local declarations.
 \end{enumerate}
 
 There can be an initialization process which sets certain program variable values.
-The program also includes events (rule \emph{Event}) which include a Boolean \textbf{pre}condition, which may be tagged \textbf{urgent},
+The program also includes events (rule \emph{Event}) which include a Boolean \textbf{pre}condition
 and an \textbf{eff}ect, which includes statements.
 The effect of an event may include the standard control flow constructs including a sequence of instructions,
 conditional statements, as well as atomic blocks of statements for mutual exclusion, function calls and assignment statements.
@@ -71,7 +71,7 @@ The expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$.
 \begin{tabular}{lrl}
     Program   & ::= & Def\zeromore Import\zeromore DeclBlock Init\zeroone Event\onemore \\
     Def       & ::= & TypeDef \vbar FuncDef                                             \\
-    Import    & ::= & \mterm{using} identifier \delim SPorts APorts      \\
+    Import    & ::= & \mterm{using} identifier \delim SPorts APorts                     \\
     SPorts    & ::= & \mterm{sensors} \delim VarDecl\onemore                            \\
     APorts    & ::= & \mterm{actuators} \delim VarDecl\onemore                          \\
               &     &                                                                   \\
@@ -84,7 +84,7 @@ The expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$.
               &     &                                                                   \\
     Init      & ::= & \mterm{init} \delim stmt\onemore                                  \\
     Event     & ::= & identifier \delim Precond Effect                                  \\
-    Precond   & ::= & \mterm{urgent}\zeroone \mterm{pre} \delim expr                    \\
+    Precond   & ::= & \mterm{pre} \delim expr                                           \\
     Effect    & ::= & \mterm{eff} \delim stmt\onemore
 \end{tabular}
 
@@ -114,7 +114,7 @@ $\gconfig_\delta = (\lset_{i\in\UINS},{S},\tau,\turn)$, where
       $\lconfig{i}$ refers to the configuration of the $i$-th element, i.e., the $i$-th robot in the system.
 \item ${S} : \Var \mapsto \Val$ is the {\em global context\/}, mapping all shared variable names to their values.
 \item $\tau\in \nnreals$ is the {\em global time\/}.
-\item $\turn\in\{\mathtt{prog,env}\}$ is a binary \emph{bookkeeping} variable determining whether  program or environment transitions are being processed.
+\item $\turn\in\{\prog,\env\}$ is a binary \emph{bookkeeping} variable determining whether  program or environment transitions are being processed.
 \end{enumerate}
 
 Bookkeeping variables are invisible in the language syntax, and only used in the semantics.
@@ -122,28 +122,34 @@ Bookkeeping variables are invisible in the language syntax, and only used in the
 
 \paragraph{Robot Configurations.}
 
-An \emph{robot configurations} is used to specify the semantics of each robot.
-Given that $\mathbb{P}$ is the set of all production rules in the \lgname grammar,
+A \emph{robot configurations} is used to specify the semantics of each robot.
+Given that $\mathbb{P}$ is the set of all possible lists of statements in \lgname grammar,
 $\Var$ is the set of variables, $\Val$ be is set of values that an expression in \lgname can evaluate to,
-$\Cfield$ is the set of sensor and actuator ports of the controller being used,
-the configuration of an robot is a tuple $\agnt = (p, {M},\cp,\turn)$, where
+and $\Cfield$ is the set of sensor and actuator ports of the controller being used,
+the configuration of an robot is a tuple $\agnt = ({M},\cp,\turn)$, where
 
 \begin{enumerate}[i)]
-\item $P \in \mathbb{P}$ is the current syntactic production,
 \item ${M} : \Var \mapsto \Val$ is its \emph{local context} mapping all variables in $P$ to robot local values.
 \item $\cp : \Cfield \mapsto \Val$ is the mapping of sensor and actuator variables to values.
-\item $\turn \in \{\mathtt{prog,env}\}$ is a bookkeeping variable indicating whether this robot should be executing a program or environment transition.
+\item $\turn \in \{\prog,\env\}$ is a bookkeeping variable indicating whether this robot should be executing a program or environment transition.
 \end{enumerate}
-
 The components of an robot configuration in the tuple $l$ are accessed
 using the dot (``$.$'') notation, for example, $l.M\equiv \pi_2(l)$ and $l.w \equiv \pi_3(l)$.
+
+Further, the set of events for each robot is denoted as $\Event$,
+and the controller module is modeled as a black-box functions
+$f: [\Cfield \mapsto \Val] \times \nnreals \mapsto [\Cfield \mapsto \Val]$.
+That is, given old sensor and actuator values as well as a period of continuous time,
+$f$ evaluates the physical dynamics and returns new values for all sensor and actual ports.
 
 
 \subsection{Formal Semantics}\label{sec:semantics}
 
 %%semantic rule references
-\newcommand{\EventRule}{\textsc{Event}\xspace}
-\newcommand{\RunSysRule}{\textsc{RunSys}\xspace}
+\newcommand{\SelectEventRule}{\textsc{SelectEvent}\xspace}
+\newcommand{\EndEventRule}{\textsc{EndEvent}\xspace}
+\newcommand{\ProgTransRule}{\textsc{ProgTrans}\xspace}
+\newcommand{\RobotEnvTransRule}{\textsc{RobotEnvTrans}\xspace}
 \newcommand{\EnvTransRule}{\textsc{EnvTrans}\xspace}
 \newcommand{\RobotEnvToProgRule}{\textsc{RobotEnvToProg}\xspace}
 \newcommand{\EnvToProgRule}{\textsc{EnvToProg}\xspace}
@@ -153,39 +159,56 @@ using the dot (``$.$'') notation, for example, $l.M\equiv \pi_2(l)$ and $l.w \eq
 \newcommand{\sysrule}{\rightarrow_\mathit{Env}\xspace}
 \newcommand{\progtrans}{\rightarrow_\mathit{prog}\xspace}
 \newcommand{\envtrans}{\rightarrow_\mathit{env}\xspace}
+%%
+\newcommand{\SelectEvent}{\ensuremath{\mathtt{\oplus}}\xspace}
+\newcommand{\EndEvent}{\ensuremath{\mathtt{\cdot}}\xspace}
 
 \newcommand{\lsetp}{\{\lconfig{i}^\prime\}}
 \newcommand{\lsetpp}{\{\lconfig{i}^{\prime\prime}\}}
 \begin{figure}
 \scriptsize
 \begin{mathpar}
-    \inferrule*[Right=\EventRule]
+    \mprset{flushleft}
+    \inferrule*[leftskip=1.5cm, Right=\SelectEventRule]
     {
-        \mathit{ev} = \textbf{pre } \mathit{Cond} \textbf{ eff }\mathit{Body} \land ev \in P \\
-        \agnt= (P,{M},\cp,\mathtt{prog}) \land \agnt^\prime = (P,{M},\cp,\mathtt{env}) \land \mathit{eval(\mathit{Cond}, L.M)}
+        ``\mathit{Name}\textbf{: pre: } \mathit{Cond} \textbf{ eff: }\mathit{Body}" \in \Event
+        \land \mathit{eval(\mathit{Cond}, M)}
     }
-    {\langle{S},\agnt, \cdot \rangle \stmtrule  \langle{S},\agnt^\prime, \mathit{Body} \rangle }
+    {\langle{S}, ({M},\cp,\prog), \SelectEvent \rangle \stmtrule  \langle{S}, ({M},\cp,\prog), \mathit{Body} \rangle }
+
+    \inferrule*[Right=\EndEventRule]
+    {}
+    {\langle{S},({M},\cp,\prog), \EndEvent \rangle \stmtrule  \langle{S},({M},\cp,\env), \EndEvent \rangle }
+
+    \inferrule*[Right=\ProgTransRule]
+    {
+        \forall i\in\UINS,
+        \langle S,\lconfig{i}, \SelectEvent \rangle \stmtrule\ldots\stmtrule
+        \langle S^{\prime},\lconfig{i}^{\prime}, \EndEvent\rangle \\
+        \land\ \lconfig{i}.\turn=\prog \land \lconfig{i}^{\prime}.\turn=\env
+    }
+    {(\lset, S, \tau, \prog)\rightarrow_G (\lsetp, S^{\prime}, \tau, \env)}
+
+    \inferrule*[leftskip=2cm, Right=\RobotEnvTransRule]
+    {
+        \cp' = \mathit{f}(\cp,\delta)
+        \land \forall x \in \mathit{Keys}({S}),M' = {M}[x \mapsto S[x]]
+    }
+    {  \langle S, (M, cp, \env) \rangle \envtrans \langle S, (M', cp', \prog) \rangle}
 
     \inferrule*[Right=\EnvTransRule]{
-         \forall i \in \UINS, \lconfig{i}^\prime.\cp = \lconfig{i}.\mathit{f}(\lconfig{i}.\cp,\delta) \land \\
-         \forall x \in \mathit{Keys}({S}),\lconfig{i}'.{M}[x \mapsto S[x]] \land \lconfig{i}.\turn = \mathtt{env}
+        \forall i \in \UINS, \langle S, \lconfig{i} \rangle \envtrans \langle S, \lconfig{i}^\prime \rangle \\\\
+        \land \lconfig{i}.\turn = \env \land \lconfig{i}^\prime.\turn = \prog
     }
-    { (\lset, {S}, \tau,\mathtt{prog})\rightarrow_G (\lsetp, {S}, \tau + \delta,\mathtt{env})}
+    { (\lset, {S}, \tau,\env)\rightarrow_G (\lsetp, {S}, \tau + \delta,\prog)}
 
-    \inferrule*[Right=\RobotEnvToProgRule]
-    {  \forall i \in \UINS, \lconfig{i}.\turn = \mathtt{env} \land \lconfig{i}^\prime.\turn = \mathtt{prog} }
-    {  (\lset, S, \tau, \mathtt{env})\rightarrow_G (\lsetp, S, \tau, \mathtt{env})}
-
-    \inferrule*[Right=\EnvToProgRule]
-    {  \forall i \in \UINS, \lconfig{i}.\turn = \mathtt{prog} }
-    {  (\lset, S,\tau, \mathtt{env})\rightarrow_G (\lset, S, \tau, \mathtt{prog})}
-
-    \inferrule*[Right=\RunSysRule]
-    {
-         \forall i\in\UINS, (S,\lconfig{i},\lconfig{i}.p)\stmtrule(S^\prime,\lconfig{i}^\prime,p^\prime)\stmtrule\ldots\stmtrule (S^{\prime\prime},\lconfig{i}^{\prime\prime}, \cdot) \\
-         \land\ \lconfig{i}^{\prime\prime}.\turn=\mathtt{env}
-    }
-    {(\lset, S, \tau,  \mathtt{prog})\rightarrow_G (\lsetpp, S^{\prime\prime}, \tau, \mathtt{prog})}
+%    \inferrule*[Right=\RobotEnvToProgRule]
+%    {  \forall i \in \UINS, \lconfig{i}.\turn = \env \land \lconfig{i}^\prime.\turn = \prog }
+%    {  (\lset, S, \tau, \env)\rightarrow_G (\lsetp, S, \tau, \env)}
+%
+%    \inferrule*[Right=\EnvToProgRule]
+%    {  \forall i \in \UINS, \lconfig{i}.\turn = \prog }
+%    {  (\lset, S,\tau, \env)\rightarrow_G (\lset, S, \tau, \prog)}
 \end{mathpar}
 \caption{Partial Semantic Rules for \lgname.}\label{fig:partial-semantics}
 \end{figure}
@@ -193,52 +216,61 @@ using the dot (``$.$'') notation, for example, $l.M\equiv \pi_2(l)$ and $l.w \eq
 \sayan{SM: The final ``theorem'' might be the bounded reachability soundness.}
 
 For simplicity, we describe only part of semantic rules of \lgname that is above event level.
-The detailed statement and expression level semantics of \lgname is standard.
-The complete formalization of the semantics in \K is available from~\cite{}.
-
+The detailed statement and expression level semantics of \lgname is available in~\cite{}.
 
 \paragraph{Event Semantics.}
-\chiao{Need a complete rewrite for event level semantics.}
 We provide the semantics for events in \lgname,
 which will help us discuss the semantics of program and environment transitions.
+
 First, we assume rules for statement semantics are of type
 \[
-\stmtrule \subseteq (\pws \times \pwl\times \pwstmt \cup \{\cdot\}) \times \wp(\pws\times \pwl \times \pwstmt \cup \{\cdot\}),
+\stmtrule \subseteq (\pws \times \pwl\times (\pwstmt^+ \cup \{\SelectEvent\})) \times \wp(\pws\times \pwl \times \pwstmt^*),
 \]
-where $\pwstmt$ refers to the set of all possible statements allowed by language syntax,
-and the symbol `$\cdot$' indicates an ``empty" statement, which does not affect the configurations.
-The update relation takes as input a tuple of (1) an robot configuration, (2) a global context, and (3) a statement, and maps it to a set of such tuples.
+where $\pwstmt$ refers to the set of all possible statements allowed by language syntax.
+The update relation takes as input a tuple of (1) an robot configuration, (2) a global context, and (3) a sequence of statements or \SelectEvent,
+and maps it to a set of such tuples.
+The symbol `\SelectEvent' is a symbol not in \lgname to denote nondeterministic selection of events,
+and we use `\EndEvent' to indicate an ``empty" sequence.
 
-Rule~\EventRule in \reffig{partial-semantics} shows that an event can be executed,
-the $\turn$ of the robot is set to $\mathtt{env}$ indicating that after this execution, an environment transition occurs.
-The system can display non deterministic behaviors arising from different robots executing their events in different orders.
+Rule~\SelectEventRule in \reffig{partial-semantics} shows that any event may be executed when the precondition is satisfied,
+and by replacing \SelectEvent with the body of the event, it ensures only one event is executed.
+At the end of the event, the sequence of statements is empty~`\EndEvent'.
+Rule~\EndEventRule makes sure the $\turn$ of the robot is set to $\env$ indicating that after this execution,
+an environment transition occurs.
 
 
-\paragraph{Environment Robot Transition.}
+\paragraph{Program Transitions.}
+
+The system can display nondeterministic behaviors arising from different robots executing their events in different orders.
 
 The advancement of time and environment transitions govern the changes in the system configuration.
 The rewrite rule is a mapping from an initial system configuration to a set of configurations.
 It has the type
-$$\rightarrow_G\ \subseteq (\pwl\times \pws \times \nnreals \times \{\mathtt{prog,env}\}) \times \wp(\pwl\times\pws \times \nnreals\times \{\mathtt{prog,env}\}) $$
+$$\rightarrow_G\ \subseteq (\pwl\times \pws \times \nnreals \times \{\prog,\env\}) \times \wp(\pwl\times\pws \times \nnreals\times \{\prog,\env\}) $$
+
+Rule~\ProgTransRule expresses that starting from a global configuration $\gconfig = (\lset, S, \tau, \env)$,
+each robot $i$ with the configuration $\lconfig{i}$ processes which starts by selecting an enabled event and executes the event via a sequence of $\stmtrule$ rewrites,
+and its $\turn$ set to $\env$ at the end of the event execution.
+Overall, the system goes from a configuration $c$ to $c^{\prime\prime}= (\lsetpp, S^{\prime\prime}, \tau, \env)$,
+with possibly different robot configurations and global context depending on
+whether any of the events executed resulted in writes to shared variables.
+
+
+\paragraph{Environment Transitions.}
 
 First, we present the semantics of executing the events for each robot.
 A \lgname program can be seen as sequences of $\stmtrule$ rules, which determine event executions followed by an environment transition.
 To express this, we define a rule that shows the the changes in the configuration of the overall system due to all the robots executing their program just before an environment transition is applicable.
 
-Rule~\RunSysRule expresses that starting from a global configuration $c = (\lset, S, \tau, \env)$,
-each robot $i$ with local configuration $\lconfig{i}$ processes its program $P$ using a sequence of $\stmtrule$ rewrites,
-until its event is executed,
-and its $\turn$ set to $\mathtt{env}$ at the end of the event execution.
-Overall, the system goes from a configuration $c$ to $c^{\prime\prime}= (\lsetpp, S^{\prime\prime}, \tau, \env)$,
-with possibly different robot configurations and global context depending on
-whether any of the events executed resulted in writes to shared variables.
 
 Suppose the function $f:\mathit{Sens} \times \Val \times \nnreals \mapsto \Val$ captures the behavior of the controller,
 and can be used to update the sensor ports after time $\delta$.
-Rule~\EnvTransRule shows the semantics of the system configuration after rule~\RunSysRule.
+Rule~\EnvTransRule shows the semantics of the system configuration after rule~\ProgTransRule.
 \sayan{This formalization allows the ports to behave arbitrarily over $\delta$-transitions. In order to establish invariant properties of applications, therefore, we will need to constrain the behavior of the sensor and actuator ports with additional assumptions.}
 
-Rule~\RobotEnvToProgRule is the semantic rule for setting the $\mathit{turn}$ of each robot back to $\mathtt{prog}$ from $\mathtt{env}$ after the environment transition has been completed. The semantics synchronizes the program transitions of each robot, ensuring that the event executions for each happen every $\delta$ time.
+
+Rule~\RobotEnvToProgRule is the semantic rule for setting the $\mathit{turn}$ of each robot back to $\prog$ from $\env$ after the environment transition has been completed.
+The semantics synchronizes the program transitions of each robot, ensuring that the event executions for each happen every $\delta$ time.
 
 
 Rule~\EnvTransRule captures the fact that the global context $S$ is copied into local context $\lconfig{i}.M$ of each robot $i$,
@@ -255,7 +287,7 @@ We use bookkeeping variables to ensure that all robots have their turn set to \t
 We also ensure that an robot has updated its sensor ports after the environment transition,
 to implement the rule~\RobotEnvToProgRule.
 Once all the robots in the system are ready to perform the next program transition,
-the rulee~\EnvToProgRule is implemented as follows.
+the rule~\EnvToProgRule is implemented as follows.
 If the number of robots which have set their $\mathit{turn}$ to $\mathit{env}$ is the same as the number of all robots in the system,
 then the system sets its turn from $\mathit{Env}$ to $\mathit{Prog}$.
 
