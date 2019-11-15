@@ -5,21 +5,21 @@
 \subsection{Reachable Configurations}
 Let $\rightarrow_{e}$ where $e$ is an event in the $\lgname$ program represent the sequence of $\stmtrule$ rules that correspond to the execution of event $e$. Given a system configuration $C$, we define the following:
  \begin{inparaenum}[(i)]
-     \item $\Post(C,i,e)$ is the set of configurations which can be reached by agent $i$ executing event $e \in \Event$ from a configuration in $C$.
-     \item$\Post(C,i)$ is the set of configurations which can be reached by agent $i$ executing an event from a configuration in $C$.
-     \item$\Post(C,p)$ is the set of configurations reached during a program transition, when agents execute their events in the order $p$, where $p$ is a sequence of agent $\mathit{pids}$.
-     \item $\Post(C)$ is the union of $\Post(C,p)$ over all orders $p$.
-     \item$\Final(C)$ is the set of configurations reached from $C$ \emph{after} a program transition.
+     \item $\Post(c,i,e)$ is the set of configurations which can be reached by agent $i$ executing event $e \in \Event$ from a configuration in $c$.
+     \item$\Post(c,i)$ is the set of configurations which can be reached by agent $i$ executing an event from a configuration in $C$.
+     \item$\Post(c,p)$ is the set of configurations reached during a program transition, when agents execute their events in the order $p$, where $p$ is a sequence of agent $\mathit{pids}$.
+     \item $\Post(c)$ is the union of $\Post(c,p)$ over all orders $p$.
+     \item$\Final(c)$ is the set of configurations reached from $c$ \emph{after} a program transition.
  \end{inparaenum}
 \vspace{1mm}
 \begin{mdframed}
 \footnotesize
 \begin{align*}
-    \Post (C,i,e) &= \{ c^\prime\mid \exists c\in \pwg,  \ \ c\rightarrow_{e} c^\prime \},\\
-\Post(C,i) :=& \bigcup_e \Post(C,i,e),\\
-\Post(C,(i_1,i_2,\ldots ,i_p)) := & \ \Post(\Post(C,i_1),(i_2,i_3,\ldots,i_p))\\ & \cup \Post(C,i_1)\\
-\Post(C) :=& \bigcup_{p\in \mathit{perms}(\UINS)} \Post(C,p), \\
-\Final(C) :=& \left\{ c\in \Post(C)\mid \forall i \in \UINS, c.L_i.\turn = \env \right\}.
+    \Post (c,i,e) &= \{ c^\prime\mid \ \ c\rightarrow_{e} c^\prime \},\\
+\Post(c,i) :=& \bigcup_e \Post(c,i,e),\\
+\Post(c,(i_1,i_2,\ldots ,i_p)) := & \ \Post(\Post(c,i_1),(i_2,i_3,\ldots,i_p))\\ & \cup \Post(C,i_1)\\
+\Post(c) :=& \bigcup_{p\in \mathit{perms}(\UINS)} \Post(c,p), \\
+\Final(c) :=& \left\{ c\in \Post(c)\mid \forall i \in \UINS, c.L_i.\turn = \env \right\}.
 \end{align*}
 \end{mdframed}
 
