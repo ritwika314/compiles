@@ -1,23 +1,15 @@
 \section{\lgname Language Design}
 \label{sec:language}
 
-\chiao{
-\refsect{semantics} <= 2 pages,
-\refsect{memory} <= 1 page,
-\refsect{module} <= 0.5 page
-}
+\subsection{Synchronous Run-time System }
 
-\subsection{Run-time System Abstraction and Parameters}
-
-As mentioned in \refsect{overview}, the same \lgname program is expected to be run on a (distributed) system of robots,
-and the robots communicate with each other through distributed shared memory.
-
-\chiao{Introduce $\NMAX$, $\myuin$, $\UINS$, $\delta$.
-If necessary, we can also make modules and other platform-specific things as parameters and refer to appendix.}
+As mentioned in \refsect{overview}, instances of the same \lgname program runs on a distributed collection of $\NMAX$ robots. The robots communicate with each other through distributed shared memory.
 %
-We have $\NMAX$ robots in the system each executing the same \lgname application program.
-A synchronous \emph{round-by-round} execution,
-where each round lasts for $\delta$ time, where $\delta >0$ is a platform specific execution parameter.
+%\chiao{Introduce $\NMAX$, $\myuin$, $\UINS$, $\delta$.
+%If necessary, we can also make modules and other platform-specific things as parameters and refer to appendix.}
+%
+%We have  robots in the system.
+The execution of the \lgname program advances in a synchronous, \emph{round-by-round} fashion, where each round lasts for $\delta$ time, and $\delta >0$ is a platform specific execution parameter. During this period, the robots compute, move, and communicate.
 
 
 \subsection{Formal Syntax}\label{sec:syntax}
@@ -29,26 +21,32 @@ Each robot program consists of
 \item declarations of shared and local program variables, and
 \item events, consisting of preconditions and effects.
 \end{inparaenum}
-robot programs (rule \emph{Program}) can import a controller module.
+Robot programs (rule \emph{Program}) can import a controller module.
+%
+\marginpar{\scriptsize\sayan{one or more?}}
+%
 The module import grammar production specifies the interface of the controllers:
 it contains all input and output ports for actuators (\emph{APorts}) and sensors (\emph{SPorts}) that the program uses.
 The program can also contain shared and local declarations.
 
-\begin{enumerate}[i)]
+\begin{enumerate}[(i)]
 \item \emph{Local program variables} record the state of the program.
-\item \emph{Distributed shared variables} are used for coordination across robots.
-      \textbf{allwrite} is a multi-writer variable which can be updated by any participating robot.
-      Shared variables variables can also be single-writer (\textbf{allread}).
+\item \emph{Distributed shared variables} are used for coordination across robots. All shared variables can be read by all participating robots; an
+      \textbf{allwrite} variable can be written by any participating robot; while an 
+      \textbf{allread} variable variable can written by a single-writer.
 \item \emph{Sensor and actuator variables} are used to read from sensor ports and to write to actuator ports.
 \end{enumerate}
+%
+\marginpar{\scriptsize\sayan{are sensor ports different from sensor variables?}}
+%
 
-There can be an initialization process which sets certain program variable values.
-The program also includes events (rule \emph{Event}) which include a Boolean \textbf{pre}condition
-and an \textbf{eff}ect, which includes statements.
-The effect of an event may include the standard control flow constructs including a sequence of instructions,
-conditional statements, as well as atomic blocks of statements for mutual exclusion, function calls and assignment statements.
-The user is also allowed to define functions and abstract data types(which are tuples of the basic data types \lgname supports).
-\chiao{Should we mention atomic block for shared variables?
+There can initialization \sayan{statements} which set certain program variable values.
+The main body of the program is a sequence of  events (rule \emph{Event}) which include a Boolean \textbf{pre}condition
+and an \textbf{eff}ect.
+The effect of an event may include the standard control flow constructs including a sequence of instructions, conditional statements, as well as atomic blocks of statements for mutual exclusion, function calls, and assignment statements.
+The user can also define functions and abstract data types (tuples of the basic data types).
+\chiao{Should we mention atomic block for shared variables?}
+\sayan{add the atomic keyword in the syntax and add a sentence in the description.}
 Mutual exclusion is always an essential feature when shared variables are involved.
 \lgname provides a locking mechanism using the keyword \textbf{atomic} to update the shared variable safely.}
 
@@ -92,14 +90,16 @@ The expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$.
 \end{figure}
 
 
-\subsection{Configurations}\label{sec:configs}
+\subsection{Koord Semantics}
+\label{sec:configs}
 
-At a high level, \lgname program execution is based on synchronous rounds divided into event transitions and environment transitions.
-In each round, each robot performs an event.
+The semantics of a \lgname program execution is based on synchronous rounds divided into {\em event transitions\/} and {\em environment transitions\/} that update the {\em system configuration.\/}
+In each round, each robot performs \sayan{at most one} event.
 The update performed by a single robot executing an event is modeled as an transition of updating the program variables;
 however, different events executed by the different robots may interleave.
 In between the events of successive rounds, the program variables remain constant,
 but the sensor and actuator variables of all robots change continuously with time.
+\sayan{Need to choose the words carefully here. We should discuss. Whether the variables change value continuously or discretely is a modeling question and what we want to analyze.}
 These are modeled as environment transitions that advance time as well as the sensor and actuator variables.
 
 We now describe the system state, or \emph{system configurations} which we use to formalize \lgname semantics.
