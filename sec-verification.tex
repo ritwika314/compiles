@@ -17,7 +17,7 @@ Let $\rightarrow_{e}$ where $e$ is an event in the $\lgname$ program represent t
 \begin{align*}
     \Post (c,i,e) &= \{ c^\prime\mid \ \ c\rightarrow_{e} c^\prime \},\\
 \Post(c,i) :=& \bigcup_e \Post(c,i,e),\\
-\Post(c,(i_1,i_2,\ldots ,i_p)) := & \ \Post(\Post(c,i_1),(i_2,i_3,\ldots,i_p))\\ & \cup \Post(C,i_1)\\
+\Post(c,(i_1,i_2,\ldots ,i_p)) := & \ \Post(\Post(c,i_1),(i_2,i_3,\ldots,i_p))\\ & \cup \Post(c,i_1)\\
 \Post(c) :=& \bigcup_{p\in \mathit{perms}(\UINS)} \Post(c,p), \\
 \Final(c) :=& \left\{ c\in \Post(c)\mid \forall i \in \UINS, c.L_i.\turn = \env \right\}.
 \end{align*}
