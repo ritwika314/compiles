@@ -149,12 +149,12 @@ $f$ evaluates the physical dynamics and returns new values for all sensor and ac
 
 %%semantic rule references
 \newcommand{\SelectEventRule}{\textsc{SelectEvent}\xspace}
+\newcommand{\SkipEventRule}{\textsc{SkipEvent}\xspace}
 \newcommand{\EndEventRule}{\textsc{EndEvent}\xspace}
-\newcommand{\ProgTransRule}{\textsc{ProgTrans}\xspace}
-\newcommand{\RobotEnvTransRule}{\textsc{RobotEnvTrans}\xspace}
+\newcommand{\EventTransRule}{\textsc{EventTrans}\xspace}
+\newcommand{\EndProgTransRule}{\textsc{EndProgTrans}\xspace}
+\newcommand{\RobotEnvRule}{\textsc{RobotEnv}\xspace}
 \newcommand{\EnvTransRule}{\textsc{EnvTrans}\xspace}
-\newcommand{\RobotEnvToProgRule}{\textsc{RobotEnvToProg}\xspace}
-\newcommand{\EnvToProgRule}{\textsc{EnvToProg}\xspace}
 %%transition rules
 \newcommand{\exprule}{\rightarrow_E\xspace}
 \newcommand{\stmtrule}{\rightarrow_\mathit{stmt}\xspace}
@@ -173,25 +173,37 @@ $f$ evaluates the physical dynamics and returns new values for all sensor and ac
     \mprset{flushleft}
     \inferrule*[leftskip=1.5cm, Right=\SelectEventRule]
     {
-        ``\mathit{Name}\textbf{: pre: } \mathit{Cond} \textbf{ eff: }\mathit{Body}" \in \Event
-        \land \mathit{eval(\mathit{Cond}, M)}
+        \agnt.\turn = \prog
+        \land ``\mathit{Name}\textbf{: pre: } \mathit{Cond} \textbf{ eff: }\mathit{Body}" \in \Event
+        \land \mathit{\EvalExpr{\mathit{Cond}}}
     }
-    {\langle{S}, ({M},\cp,\prog), \SelectEvent \rangle \stmtrule  \langle{S}, ({M},\cp,\prog), \mathit{Body} \rangle }
+    {\langle{S}, \agnt, \SelectEvent \rangle \stmtrule  \langle{S}, \agnt, \mathit{Body} \rangle }
+    \\
+
+    \inferrule*[Right=\SkipEventRule]
+    {}
+    {\langle{S},({M},\cp,\prog), \SelectEvent \rangle \stmtrule  \langle{S},({M},\cp,\prog), \EndEvent \rangle }    \\
 
     \inferrule*[Right=\EndEventRule]
     {}
     {\langle{S},({M},\cp,\prog), \EndEvent \rangle \stmtrule  \langle{S},({M},\cp,\env), \EndEvent \rangle }
 
-    \inferrule*[Right=\ProgTransRule]
+    \inferrule*[Right=\EventTransRule]
     {
-        \forall i\in\UINS,
-        \langle S,\lconfig{i}, \SelectEvent \rangle \stmtrule\ldots\stmtrule
-        \langle S^{\prime},\lconfig{i}^{\prime}, \EndEvent\rangle \\
-        \land\ \lconfig{i}.\turn=\prog \land \lconfig{i}^{\prime}.\turn=\env
+        \exists i \in \UINS, \langle S,\lconfig{i}, \SelectEvent \rangle \stmtrule\ldots\stmtrule
+        \langle S^{\prime},\lconfig{i}', \EndEvent\rangle \\
+        \land\ \lconfig{i}.\turn = \prog \land \lconfig{i}^\prime.\turn = \env
     }
-    {(\lset, S, \tau, \prog)\rightarrow_G (\lsetp, S^{\prime}, \tau, \env)}
+    {(\lset, S, \tau, \prog)\rightarrow_G (\lsetp, S^{\prime}, \tau, \prog)}
 
-    \inferrule*[leftskip=2cm, Right=\RobotEnvTransRule]
+    \inferrule*[Right=\EndProgTransRule]
+    {
+        \forall i \in\UINS, \lconfig{i}.\turn=\env
+    }
+    {(\lset, S, \tau, \prog)\rightarrow_G (\lset, S, \tau, \env)}
+    \\
+
+    \inferrule*[leftskip=1cm, Right=\RobotEnvRule]
     {
         \forall x \in \mathit{Keys}({S}),M' = {M}[x \mapsto S[x]] \land \cp' = \mathit{f}(\cp,\delta)
     }
@@ -232,9 +244,10 @@ and maps it to a set of such tuples.
 The symbol `\SelectEvent' is a symbol not in \lgname to denote nondeterministic selection of events,
 and we use `\EndEvent' to indicate an ``empty" sequence.
 
-Rule~\SelectEventRule in \reffig{partial-semantics} shows that any event may be executed when the precondition is satisfied,
+Rule~\SelectEventRule in \reffig{partial-semantics} shows that any event may be executed when the precondition $Cond$ is evaluated to true,
 and by replacing \SelectEvent with the event effect $\mathit{Body}$, it ensures only one event is selected and executed.
-The event effect is then executed following the semantics of each statement in $\mathit{Body}$ defined in~\cite{}.
+The event effect is then executed following the semantics of each statement in $\mathit{Body}$.
+Rule~\SkipEventRule allows the robot to skip the event completely.
 At the end of the event, the sequence of statements becomes empty~`\EndEvent'.
 Rule~\EndEventRule then makes sure the $\turn$ of the robot is set to $\env$ indicating that
 an environment transition will occur afterwards.
@@ -245,7 +258,7 @@ The environment transition rule is of type
 \envtrans \subseteq (\pws \times \pwl) \mapsto \wp(\pws\times \pwl),
 \]
 which takes a global context and a robot configuration as input.
-Rule~\RobotEnvTransRule simply states that the new local context $M'$ is
+Rule~\RobotEnvRule simply states that the new local context $M'$ is
 old local context $M$ updated with the global context $S$;
 thus ensuring that all robots have consistent shared variable values before the next program transition.
 New sensor readings $\cp'$ is then obtained by evaluating the black-box dynamics $f$ with time $\delta$.
@@ -269,15 +282,18 @@ It has the type
 \]
 where $\pwg$ is the set of all possible global configurations.
 
-Rule~\ProgTransRule expresses that starting from a global configuration $\gconfig = (\lset, S, \tau, \env)$,
-each robot $i$ with the configuration $\lconfig{i}$ processes which starts by selecting an enabled event and executes the event via a sequence of $\stmtrule$ rewrites,
-and its $\turn$ set to $\env$ at the end of the event execution.
-The system can display nondeterministic behaviors arising from different robots executing their events in different orders.
-Overall, the system goes from a configuration $c$ to $c^{\prime}= (\lsetp, S^{\prime}, \tau, \env)$,
+Rule~\EventTransRule expresses that starting from a global configuration $\gconfig = (\lset, S, \tau, \prog)$,
+a robot $i$ with the configuration $\lconfig{i}$ starts by selecting an enabled event,
+executes the event via a sequence of $\stmtrule$ rewrites,
+and sets its own $\turn$ to $\env$ at the end of the event execution.
+The system goes from a configuration $\gconfig$ to $\gconfig^{\prime}= (\lsetp, S^{\prime}, \tau, \prog)$,
 with possibly different robot configurations and global context depending on
-whether any of the events executed resulted in writes to shared variables.
+whether any statement executed resulted in writes to shared variables.
+The system can display nondeterministic behaviors arising from different robots executing their events in different orders.
+After all robots enter the $\env$ turn, rule~\EndProgTransRule sets the global $\turn$ from $\prog$ to $\env$
+indicating the end of program transition, and an environment transition will occur afterwards.
 
-Rule~\EnvTransRule shows the semantics of the system configuration after rule~\ProgTransRule.
+Rule~\EnvTransRule shows the semantics of the system configuration after rule~\EndProgTransRule.
 This rule synchronizes the environment transitions of each robot and
 ensure that the global time $\tau$ advances to $\tau + \delta$.
 
@@ -286,8 +302,11 @@ ensure that the global time $\tau$ advances to $\tau + \delta$.
 \label{sec:sync}
 
 Following our semantic rules in \refsect{semantics},
-careful readers would notice the program transitions takes zero time,
-whereas the $\delta$-transitions denote the evolution of the sensor and the actuator ports with time, and take $\delta$ time.
+careful readers would notice all event transitions of \lgname program takes \emph{zero} time,
+whereas the environment transitions take $\delta$ time for the evolution of the sensor and the actuator ports
+together with the update of the local context from the global context.
+In other words, we assume the 
+In this section, we discuss the design rationale of this abstraction
 
 %\subsubsection{Shared memory updates}
 %
@@ -297,7 +316,8 @@ whereas the $\delta$-transitions denote the evolution of the sensor and the actu
 \rg{robot local states and propagation over messages.}
 
 The following are the timing assumptions on \lgname programs.
-\begin{assumption} A program step has zero logical execution time.
+\begin{assumption}
+    A program transition has zero logical execution time, and an environment transition has $\delta$ execution time.
 \end{assumption}
 This assumption is reasonable if the time taken to complete a program transition step is negligible compared to $\delta$.  The $\lgname$ middleware ensures that the participating robots begin executing their events synchronously.
 
@@ -307,9 +327,3 @@ This assumption is reasonable if the time taken to complete a program transition
 \end{assumption}
 The \lgname middleware uses message passing to implement shared memory, and compared to $\delta$, the time taken to observe a shared memory update as a received message from the time that it is sent is much smaller. We therefore can assume that in this setting, the shared memory semantics of \lgname wherein an update is visible in the next round of program transitions, is a reasonable implementation deliverable.
 
-
-
-\subsection{Specify Constraints over Modules}
-\label{sec:module}
-\chiao{As mentioned in \refsect{semantics}, the assumptions over modules will be directed by the target invariant/property.
-What does \lgname provide to help identify the assumptions?}
