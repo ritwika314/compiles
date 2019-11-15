@@ -1,10 +1,11 @@
-\section{verification}
+\section{Formal analysis of $\lgname$ programs}
 \label{sec:verification}
 \rg{round, program transition, event execution, $\delta$-transition are all defined at this point: program transition : events executed in some order, $\delta$-transition: simulataneous advancement of time, round = program + $\delta$-transition. }
 
+\subsection{Reachable Configurations}
 Let $\rightarrow_{e}$ where $e$ is an event in the $\lgname$ program represent the sequence of $\stmtrule$ rules that correspond to the execution of event $e$. Given a system configuration $C$, we define the following:
  \begin{inparaenum}[(i)]
-     \item $\Post(C,i,e)$ is the set of configurations which can be reached by agent $i$ executing event $e$ from a configuration in $C$.
+     \item $\Post(C,i,e)$ is the set of configurations which can be reached by agent $i$ executing event $e \in \Event$ from a configuration in $C$.
      \item$\Post(C,i)$ is the set of configurations which can be reached by agent $i$ executing an event from a configuration in $C$.
      \item$\Post(C,p)$ is the set of configurations reached during a program transition, when agents execute their events in the order $p$, where $p$ is a sequence of agent $\mathit{pids}$.
      \item $\Post(C)$ is the union of $\Post(C,p)$ over all orders $p$.
@@ -37,18 +38,55 @@ the set of states reachable with executions of length $n$ can be defined inducti
 \Reach(C_0,n) &:= \Post(\frontier(C_0,n-1) \cup \pt(\Post(\frontier(C_0,n-1)))
 \end{align*}
 
-Given a configuration $c \in \pwg$, $c(\mathit{inv})$ represtnts the substitution of variables in $\mathit{inv}$ with their values from $c$.
+
+\subsection{Inductive Invariants}
+Given a configuration $c \in \pwg$, $c(\mathit{inv})$ represents the substitution of variables in $\mathit{inv}$ with their values from $c$.
 
  Formally, we say that $\beta$ is an inductive invariant if given a set of initial configurations of a system $C_0 \in \pwg$, and an arbitrary configuration $c \in \pwg$,  $$\forall c_0 \in C_0, c_0(\beta) \wedge c(\beta) \Rightarrow \forall c^\prime \in \Reach(c,1), c^\prime(\beta).$$ In other words, if a property holds true in the initial states of a system, and it can be proved to hold for all configurations reachable in one round from any configuration it is known to hold in, then it is an invariant of the system.
 
 
 \begin{definition}
 \label{def:ii}
-A property $\beta$ is an inductive invariant of a system if given a set of initial configurations of the system $C_0$, and an arbitrary configuration $c\in \pwg$,
-\begin{align*}
-&\bigwedge_{c_0\in C_0}c_0(\beta) \wedge c(\beta) \Rightarrow\\ & \forall c' \in \Post(c), c'' \in c'(\beta)\wedge \forall c'' \in \pt(c') , c''(\beta)
-\end{align*}
+A property $\beta$ is an inductive invariant of a system if given a set of initial configurations of the system $C_0$, and an arbitrary configuration $c\in \pwg$, it satisfies the following :
+\begin{itemize}
+    \item \emph{Initial condition} : $\bigwedge_{c_0\in C_0}c_0(\beta) $
+\item  \emph{Induction Hypothesis} : $c(\beta) \Rightarrow \forall c' \in \Post(c), c'(\beta) \wedge \forall c'' \in \pt(\Final(c')) , c''(\beta)$
+\end{itemize}
 \end{definition}
+
+\rg{In the latter part of this section we present three case studies to illustrate some of the formal analysis enabled by our prover module}. Our proposed proof strategy for the presented case studies is a \emph{decoupling} of the environment and program transition behaviors, and separate analysis. Formal analysis of the dynamic behavior of the system during environment transitions is a difficult problem by itself. We express the constraintS on the configurations reached during environment transitions as assumptionS. Formally, given a configuration $c\in \pwg$, we state $c(\beta) \Rightarrow \forall c'' \in \pt(\Final(c')) , c''(\beta)$ as an assumption $A$, which can be verified separately by other tools, and tested using the CyPhyhouse simulator. The induction hypothesis then simplifies to:
+
+$$ c(\beta) \wedge A \Rightarrow \forall c' \in \Post(c), c'(\beta).$$
+
+
+
+
+ A major source of nondeterminism in the behavior of these distributed programs with shared variables can be the order of writes in one round, and we observe that under specific circumstances, we can eliminate the necessity of exploring these behaviors during formal analysis. We formally state some of these observations below.
+
+%For instance, if a $\lgname$ program has no shared variables or writes to shared variables, $\forall p_1, p_2 \in \mathit{perms}(\UINS),\Post(c,p_1) = \Post(c,p_2)$.
+
+
+
+\begin{lemma}
+    \label{noninter}
+     Consider $\Event = \left\{e_1,e_2,\ldots, e_n\right\}$ and a proposed invariant $\beta$. Given that any of the events $e_i\in \Event$  either \begin{inparaenum} [(i)]\item contain only writes to an \emph{allread} variable, \item or at most \emph{atomic}writes to a shared variable, \item or no writes to a shared variable \end{inparaenum},
+    $$ \bigwedge_{i\in \UINS}\bigwedge_{e \in \Event} \forall c' \in  \Post(c, i, e),  c'(\beta) \Leftrightarrow \forall c'' \in \Post(c), c''(\beta) $$
+\end{lemma}
+\begin{proof}
+    The proof follows from the following two facts: the semantics of \emph{atomic} statements in $\lgname$ ensure that in a round, at most one agent can write to the shared variables contained in the atomic block, and the semantics of \emph{allread} variables in $\lgname$ ensure that an agent can only write to the index of the allread variable corresponding to its own $pid$.
+\end{proof}
+
+Given an event $e\in \Event$, we represent the precondition of an event as $\pre(e)$. The semantics ensures an event will not occur if the precondition is not satisfied. This, along with the premise of \lem{noninter}, allows us to sharpen the induction hypothesis further :
+    $$ \bigwedge_{i\in \UINS} \bigwedge_{e \in \Event}  (c(\beta) \wedge \pre(e) \Rightarrow \forall c' \in  \Post(c, i, e) c'(\beta)) $$
+
+ The remainder of this section demonstrates the verification of proposed invariants on three case studies.
+
+%In practice, we prove an inductive invariant, for a \emph{specific number of agents}. \footnote{we can generalize the proof for an arbitrary number of agents manually}.
+
+%(\rg{as we demonstrate in the following case studies})
+
+
+
 
 
 %\begin{align}
@@ -58,22 +96,18 @@ A property $\beta$ is an inductive invariant of a system if given a set of initi
 %\end{align}
 %%\fTBD{need help formatting this}
 %%There are three parts to this definition:
-This definition states that if that every initial configuration satisfies $\mathit{inv}$, and  program and $\delta$-transitions preserve it, then $\mathit{inv}$ is defined as an inductive invariant of the system.
+%This definition states that if that every initial configuration satisfies $\mathit{inv}$, and  program and $\delta$-transitions preserve it, then $\mathit{inv}$ is defined as an inductive invariant of the system.
 
 
-We use a symbolic execution of the $\lgname$ semantics to compute $\Post(c)$. For an arbitrary program with arbitrary events, the set of reachable states computed takes into consideration every possible order of execution, every possible combination of events, but we exploit specific properties of our case study applications to reduce unnecessary reachability computation. \rg{We push the analysis of $\pt(c)$ into assumptions, which we can validate empirically in certain cases.}
 
-     We prove an inductive invariant, for a \emph{specific number of agents}. \footnote{we can generalize the proof for an arbitrary number of agents manually}. The user specifies the desired inductive invariant along with any additional assumptions, which may include assumptions on properties such as the vehicle dynamics, or any functions used in the code. The semantics first generates and propagates \emph{constraints} on the variables determined by the effects of each event separately. We use bookkeeping to collect the constraints generated by the property specification along with the context to evaluate them as part of the configuration in \K. For instance, suppose the precondition of an event $e$ is the predicate $E$, and the proposed inductive invariant is $I$. Let any additional assumptions on the memory (state) of the agent be captured by the predicate $A$. The inductive invariant holds for an agent $i$ after this event if
-            $$\mathit{pid} = i \wedge c(E)\wedge c(I)\wedge c'(A)\Rightarrow c(I),$$
 
-for all $c' \in \Post(c,i,e)$.
 
 
 
  %\rg{Detailed analysis of conditional statements within events?}.
 
-\subsubsection*{Lineform}
-The executable $\lgname$ semantics is used to prove \inv{lineform} inductively, using the strategy explained at a high level in \refsect{overview}. Let us denote the variables $\mathit{Motion.Position}$ and $\mathit{Motion.Target}$ by $\mathit{mp}$ and $\mathit{mt}$ respectively,  and denote the value of agent $i$'s local copies of these variables before the event is executed by $\mathit{mp}_i$ and $\mathit{mt}_i$ respectively. The \emph{allread} variable $x[i]$ is denoted by $x_i$. The primed copies of these variables ($\mathit{mp_i', mt_i',x_i'}$) denote their values after a round (event execution and $\delta$-transition) has occured. For the \emph{Lineform} application, it has only one event \emph{TargetUpdate}, which is executed only when $\neg (\myuin = \NMAX - 1 \vee \myuin = 0)$ holds. $\myuin = 0 \wedge E$ is unsatisfiable, meaning these invariant is vacuously validated for the extremal robots.
+\subsubsection*{Case Study: Lineform}
+The executable $\lgname$ semantics is used to prove \inv{lineform} inductively, using the strategy explained at a high level in \refsect{overview}. Let us denote the variables $\mathit{Motion.Position}$ and $\mathit{Motion.Target}$ by $\mathit{mp}$ and $\mathit{mt}$ respectively,  and denote the value of agent $i$'s local copies of these variables before the event is executed by $\mathit{mp}_i$ and $\mathit{mt}_i$ respectively. The \emph{allread} variable $x[i]$ is denoted by $x_i$. The primed copies of these variables ($\mathit{mp_i', mt_i',x_i'}$) denote their values after a round (event execution and $\delta$-transition) has occured. For the \emph{Lineform} application, it has only one event \emph{TargetUpdate}, which is executed only when $\neg (\myuin = \UINS - 1 \vee \myuin = 0)$ holds. $\myuin = 0 \wedge E$ is unsatisfiable, meaning these invariant is vacuously validated for the extremal robots.
 
 
 Executing the effect of the event (for agent $i$) using \K semantics gives us the constraint $$E := mt_i' = (x_{i-1} + x_{i+1})/2  \wedge x_i' = mp_i$$.  The assumption (as stated earlier) is \begin{align*}A := &mp_i' \leq mt_i \wedge mp_i' \geq mp_i \\ &\wedge  x_{i-1} \in [x_{min}, x_{max}] \wedge x_{i+1}\in [x_{min},x_{max}].\end{align*} The invariant is $I: \mathit{mp}_i \in [x_{min}, x_{max}]$ and $I'$ denotes the invariant $\mathit{mp}_i' \in [x_{min}, x_{max}].$  The overall constraint then becomes $E \wedge A \wedge I \Rightarrow I',$. Now, given a configuration $c$, since there is only one event, $\Post(c,i,\mathit{TargetUpdate}) = \Post(c,i)$. Additionally, since given any two agents $i$ and $j$ do not write to the same variable, $\Post(\Post(c,i), j) = \Post(\Post(c,j),i)$. Therefore, we can consider a single order of execution for computing $\Post(c)$.
