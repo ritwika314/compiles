@@ -36,13 +36,13 @@ To summarize, there are following three types of names for reading/writing value
       \textbf{allread} variable can be written only by a single-writer.
 \end{enumerate}
 
-User can then optionally specify a sequence of statements to set the initial values of program variables~(rule~\emph{Init}).
+User can then optionally specify a statement to set the initial values of program variables~(rule~\emph{Init}).
 The main body of the program is a sequence of events (rule~\emph{Event}) which include a Boolean \textbf{pre}condition
 and an \textbf{eff}ect.
-The effect of an event is a sequence of statements~(rule~\emph{Effect}).
+The effect of an event is also a statement~(rule~\emph{Effect}).
 We skip the syntax rules for statements, expressions, data types, and functions due to the page limit.
-Statements in \lgname resembles those in most imperative languages and includes
-conditional statements, function calls, assignments, atomic blocks of statements for mutual exclusion, etc.
+A statement~(rule~\emph{Stmt}) in \lgname resembles those in most imperative languages and includes
+conditional statements, function calls, assignments, blocks of statements, atomic statements for mutual exclusion, etc.
 Mutual exclusion is always an essential feature when shared variables are involved.
 \lgname provides a locking mechanism using the keyword \textbf{atomic} to update the shared variable safely.
 The user can also define functions and abstract data types (tuples of the basic data types).
@@ -77,12 +77,12 @@ The expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$.
     VarDecl   & ::= & Type identifier \vbar Type identifier \mterm{=} Val               \\
     ARVarDecl & ::= & Type identifier \mterm{[ $\NMAX$ ]}                               \\
               &     &                                                                   \\
-    Init      & ::= & \mterm{init} \delim Stmt\onemore                                  \\
+    Init      & ::= & \mterm{init} \delim Stmt                                          \\
     Event     & ::= & identifier \delim Precond Effect                                  \\
     Precond   & ::= & \mterm{pre} \delim Expr                                           \\
-    Effect    & ::= & \mterm{eff} \delim Stmt\onemore                                   \\
+    Effect    & ::= & \mterm{eff} \delim Stmt                                           \\
               &     &                                                                   \\
-    Stmt      & ::= & \mterm{atomic} Stmt\onemore \vbar \textellipsis
+    Stmt      & ::= & \mterm{atomic} Stmt \vbar Stmt StmtList \vbar \textellipsis
 \end{tabular}
 
 \caption{Partial \lgname syntax rules.}\label{fig:partial-syntax}
@@ -153,6 +153,8 @@ $f$ evaluates the physical dynamics and returns new values for all sensor and ac
 \subsection{Formal Semantics}\label{sec:semantics}
 
 %%semantic rule references
+\newcommand{\StmtSeqRuleOne}{\textsc{StmtSeq1}\xspace}
+\newcommand{\StmtSeqRuleTwo}{\textsc{StmtSeq2}\xspace}
 \newcommand{\SelectEventRule}{\textsc{SelectEvent}\xspace}
 \newcommand{\SkipEventRule}{\textsc{SkipEvent}\xspace}
 \newcommand{\EndEventRule}{\textsc{EndEvent}\xspace}
@@ -168,7 +170,7 @@ $f$ evaluates the physical dynamics and returns new values for all sensor and ac
 \newcommand{\envtrans}{\rightarrow_\mathit{env}\xspace}
 %%
 \newcommand{\SelectEvent}{\ensuremath{\mathtt{\oplus}}\xspace}
-\newcommand{\EndEvent}{\ensuremath{\mathtt{\cdot}}\xspace}
+\newcommand{\EndEvent}{\ensuremath{\mathtt{\boldsymbol{\cdot}}}\xspace}
 
 \newcommand{\lsetp}{\{\lconfig{i}^\prime\}}
 \newcommand{\lsetpp}{\{\lconfig{i}^{\prime\prime}\}}
@@ -176,6 +178,14 @@ $f$ evaluates the physical dynamics and returns new values for all sensor and ac
 \scriptsize
 \begin{mathpar}
     \mprset{flushleft}
+    \inferrule*[Right=\StmtSeqRuleOne]
+    {\langle{S}, \agnt, St \rangle \stmtrule  \langle{S'}, \agnt', St' \rangle}
+    {\langle{S}, \agnt, St\ StList \rangle \stmtrule  \langle{S'}, \agnt', St'\ StList \rangle }
+
+    \inferrule*[Right=\StmtSeqRuleTwo]
+    {}
+    {\langle{S}, \agnt, \EndEvent\ StList \rangle \stmtrule  \langle{S}, \agnt, StList \rangle }
+
     \inferrule*[leftskip=1.5cm, Right=\SelectEventRule]
     {
         \agnt.\turn = \prog
@@ -195,8 +205,8 @@ $f$ evaluates the physical dynamics and returns new values for all sensor and ac
 
     \inferrule*[Right=\EventTransRule]
     {
-        \exists i \in \UINS, \langle S,\lconfig{i}, \SelectEvent \rangle \stmtrule\ldots\stmtrule
-        \langle S^{\prime},\lconfig{i}', \EndEvent\rangle \\
+        \exists i \in \UINS, \langle S,\lconfig{i}, \SelectEvent \rangle \stmtrule
+        \langle S^{\prime},\lconfig{i}', \EndEvent\rangle \\\\
         \land\ \lconfig{i}.\turn = \prog \land \lconfig{i}^\prime.\turn = \env
     }
     {(\lset, S, \tau, \prog)\rightarrow_G (\lsetp, S^{\prime}, \tau, \prog)}
@@ -232,22 +242,24 @@ $f$ evaluates the physical dynamics and returns new values for all sensor and ac
 \end{figure}
 
 For simplicity, we describe only part of semantic rules of \lgname that is above event level.
-\sayan{Let us give some statement level semantics as well. 2-3 as examples.}
+As an example for statement level semantic rules,
+rule~\StmtSeqRuleOne and \StmtSeqRuleTwo show how a statement representing a sequence of statements should be executed.
 The detailed statement and expression level semantics of \lgname is available in the extended version of the paper~\cite{}.
-\sayan{Do they allow appendices?}
+\sayan{Do they allow appendices?}\chiao{No appendix, but supplemental materials can be provided separately.}
 
 \paragraph{Per Robot Semantics.}
 First, we present the semantics of executing the events for each robot.
 which will help us discuss the semantics of the whole system.
-Following~\cite{}, we know that all rules for statement semantics are of type
+All rules for statement semantics are of type
 \[
-\stmtrule \subseteq (\pws \times \pwl\times (\pwstmt^+ \cup \{\SelectEvent\})) \mapsto \wp(\pws\times \pwl \times \pwstmt^*),
+\stmtrule \subseteq (\pws \times \pwl\times (\pwstmt \cup \{\SelectEvent, \EndEvent\})) \mapsto \wp(\pws\times \pwl \times \pwstmt\cup \{\EndEvent\}),
 \]
 where $\pwstmt$ refers to the set of all possible statements allowed by language syntax.
-This relation takes as input a tuple of (1) a global context, (2) an robot configuration, and (3) a sequence of statements or \SelectEvent,
+This relation takes as input a tuple of (1) a global context, (2) an robot configuration, and (3) a statement,
 and maps it to a set of such tuples.
-The symbol `\SelectEvent' is a symbol not in \lgname to denote nondeterministic selection of events,
-and we use `\EndEvent' to indicate an ``empty" sequence.
+The symbols `\SelectEvent' and `\EndEvent' are not in \lgname but internal syntactic structures.
+`\SelectEvent' is to denote nondeterministic selection of events,
+and `\EndEvent' is to indicate an ``empty" statement.
 
 Rule~\SelectEventRule in \reffig{partial-semantics} shows that any event may be executed when the precondition $Cond$ is evaluated to true,
 and by replacing \SelectEvent with the event effect $\mathit{Body}$, it ensures only one event is selected and executed.
