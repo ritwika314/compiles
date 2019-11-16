@@ -1,47 +1,52 @@
 \section{Formal analysis of $\lgname$ programs}
 \label{sec:verification}
-\rg{round, program transition, event execution, $\delta$-transition are all defined at this point: program transition : events executed in some order, $\delta$-transition: simulataneous advancement of time, round = program + $\delta$-transition. }
+%\rg{round, program transition, event execution, $\delta$-transition are all defined at this point: program transition : events executed in some order, $\delta$-transition: simulataneous advancement of time, round = program + $\delta$-transition. }
+% connect to definition of e.
+%make the post definition on a set.
+The semantics of $\lgname$ has been constructed to enable decoupled analyses of discrete and dynamic components of distributed multi-robot systems. As discussed in the previous sections, the \emph{events} in an $\lgname$ program comprise the discrete computations in the system. The effect of an agent $i$ executing event $e\in \Event$ on a configuration $c\in \pwg$, can be seen as a sequence of $\stmtrule$ applications to $c$, where each rule corresponds to a statement in the effect of $e$, and the turn of agent $i$ changes from $\prog$ to $\env$ when all the rules in the sequence have been applied. We represent the execution of $e$ succinctly as $\rightarrow_e \subseteq (\pws \times \pwl\times (\pwstmt^+) \mapsto \wp(\pws\times \pwl \times \{\cdot\} )$. For convenient representation, we say $c \rightarrow_e c'$, if $$ \left \langle c.S, c.L, B \right\rangle \rightarrow_e \left\langle c'.S, c'.L, \cdot \right\rangle$$ where $B$ is the effect of $e$.
 
 \subsection{Reachable Configurations}
-Let $\rightarrow_{e}$ where $e$ is an event in the $\lgname$ program represent the sequence of $\stmtrule$ rules that correspond to the execution of event $e$. Given a system configuration $C$, we define the following:
+
+ Given a set of system configurations $C$, we define the following:
  \begin{inparaenum}[(i)]
-     \item $\Post(c,i,e)$ is the set of configurations which can be reached by agent $i$ executing event $e \in \Event$ from a configuration in $c$.
-     \item$\Post(c,i)$ is the set of configurations which can be reached by agent $i$ executing an event from a configuration in $C$.
-     \item$\Post(c,p)$ is the set of configurations reached during a program transition, when agents execute their events in the order $p$, where $p$ is a sequence of agent $\mathit{pids}$.
-     \item $\Post(c)$ is the union of $\Post(c,p)$ over all orders $p$.
-     \item$\Final(c)$ is the set of configurations reached from $c$ \emph{after} a program transition.
+     \item $\Post(C,i,e)$ is the set of configurations which can be reached by robot $i$ executing event $e \in \Event$ from a configuration in $C$.
+     \item$\Post(C,i)$ is the set of configurations which can be reached by robot $i$ executing an event from a configuration in $C$.
+     \item$\Post(C,p)$ is the set of configurations reached during a program transition, when robots execute their events in the order $p$, where $p$ is a sequence of robot $\mathit{pids}$.
+     \item $\Post(C)$ is the union of $\Post(C,p)$ over all orders $p$.
+     \item$\Final(C)$ is the set of configurations reached from $C$ \emph{after} a program transition.
  \end{inparaenum}
 \vspace{1mm}
 \begin{mdframed}
 \footnotesize
 \begin{align*}
-    \Post (c,i,e) &= \{ c^\prime\mid \ \ c\rightarrow_{e} c^\prime \},\\
-\Post(c,i) :=& \bigcup_e \Post(c,i,e),\\
-\Post(c,(i_1,i_2,\ldots ,i_p)) := & \ \Post(\Post(c,i_1),(i_2,i_3,\ldots,i_p))\\ & \cup \Post(c,i_1)\\
-\Post(c) :=& \bigcup_{p\in \mathit{perms}(\UINS)} \Post(c,p), \\
-\Final(c) :=& \left\{ c\in \Post(c)\mid \forall i \in \UINS, c.L_i.\turn = \env \right\}.
+    \Post (C,i,e) &= \{ c^\prime\mid \ \ \exists c \in C, c \rightarrow_{e} c^\prime \},\\
+\Post(C,i) :=& \bigcup_e \Post(C,i,e),\\
+\Post(C,p) := & \ \Post(\Post(C,\pinit), \prest)\\ & \cup \Post(C,\pinit)\\
+\Post(C) :=& \bigcup_{p\in \mathit{perms}(\UINS)} \Post(C,p), \\
+\Final(C) :=& \left\{ c\in \Post(C)\mid \forall i \in \UINS, c.L_i.\turn = \env \right\}.
 \end{align*}
 \end{mdframed}
 
-Here $\mathit{perms}(\UINS)$ is the set of permutations of $\UINS$.
-We define a function $\traj: \pwg \times \left[0,\delta\right]$, which represents the \emph{trajectory} of the system, or the intermediate values of the sensor ports during a $\delta$-transition. Given a $c\in \pwg, t\in \left[0,\delta\right]$, $\traj(c,t)$ represents the configuration at time $t$. $\pt(C)$ is  the set of configurations over the interval $[0,\delta]$.
+Given a sequence (permutation) $p$,  $\pinit$ refers to the first element (robot $\myuin$) of the permutation and $\prest$ refers to the rest of sequence. Also, $\mathit{perms}(\UINS)$ refers to the set of permutations of $\UINS$.
 
-$$\pt(C) := \left\{c^\prime \mid \exists c\in C, t\leq \delta , c^\prime = \traj(c,t)\right\}$$
+We define a function $\traj: \pwg \times \left[0,\delta\right]$, which represents the \emph{trajectory} of the system, or the intermediate values of the sensor ports during a $\delta$-transition. Given $c\in \pwg, t\in \left[0,\delta\right]$, $\traj(c,t)$ represents the configuration at time $t$. $\pt{t_1}{t_2}(C)$ is the set of configurations reached by the system over the interval $[t_1,t_2]$.
+$$\pt{t_1}{t_2}(C) := \left\{c^\prime \mid \exists c\in C, t_1 \leq t\leq t_2 , c^\prime = \traj(c,t)\right\}$$
 
-The set of points reached by an $\delta$-transition at $\delta$ time from $C$ can be expressed as $\ft(C) := \Post_{[\delta,\delta]}(C)$. A \emph{frontier} set of configurations represents the set of configurations that can be reached from an initial configuration $C$ after completing rounds of execution. We define $\frontier(C,0) := C$ and,
-$$\frontier(C,n) := \ft(\Final(\frontier(C,n-1))).$$
+The set of points reached by an $\delta$-transition at $\delta$ time from $C$ is represented as $\ft{\delta}(C) := \pt{\delta}{\delta}(C)$. A \emph{frontier} set of configurations represents the set of configurations that can be reached from an initial configuration $C$ after \emph{completing} rounds of execution. We define $\frontier(C,0) := C$ and,
+$$\frontier(C,n) := \ft{\delta}(\Final(\frontier(C,n-1))).$$
 
-Finally, we are ready to define the set of \emph{reachable} configurations of a system. Given an initial set of configurations $C_0\subset\pwg$,
-
-the set of states reachable with executions of length $n$ can be defined inductively as follows: $\Reach(C_0,0) := C_0$,
+Finally, we are ready to define the set of \emph{reachable} configurations of a system. Given an initial set of configurations $C_0\subset\pwg$, the set of states reachable in $n$ rounds can be defined inductively as $\Reach(C_0,0) := C_0$ and,
 \begin{align*}
-\Reach(C_0,n) &:= \Post(\frontier(C_0,n-1) \cup \pt(\Post(\frontier(C_0,n-1)))
+\Reach(C_0,n) := \Reach(C_0 &,n-1) \cup \Post(\frontier(C_0,n-1) \\ &\cup \pt{0}{\delta}(\Post(\frontier(C_0,n-1)))
 \end{align*}
 
 
-\subsection{Inductive Invariants}
-Given a configuration $c \in \pwg$, $c(\mathit{inv})$ represents the substitution of variables in $\mathit{inv}$ with their values from $c$.
 
+\subsection{Inductive Invariants}
+
+%define invariants, pointer to syntax
+Given a configuration $c \in \pwg$, $c(\mathit{inv})$ represents the substitution of variables in $\mathit{inv}$ with their values from $c$.
+%fix notation of evalution
  Formally, we say that $\beta$ is an inductive invariant if given a set of initial configurations of a system $C_0 \in \pwg$, and an arbitrary configuration $c \in \pwg$,  $$\forall c_0 \in C_0, c_0(\beta) \wedge c(\beta) \Rightarrow \forall c^\prime \in \Reach(c,1), c^\prime(\beta).$$ In other words, if a property holds true in the initial states of a system, and it can be proved to hold for all configurations reachable in one round from any configuration it is known to hold in, then it is an invariant of the system.
 
 
@@ -73,7 +78,7 @@ $$ c(\beta) \wedge A \Rightarrow \forall c' \in \Post(c), c'(\beta).$$
     $$ \bigwedge_{i\in \UINS}\bigwedge_{e \in \Event} \forall c' \in  \Post(c, i, e),  c'(\beta) \Leftrightarrow \forall c'' \in \Post(c), c''(\beta) $$
 \end{lemma}
 \begin{proof}
-    The proof follows from the following two facts: the semantics of \emph{atomic} statements in $\lgname$ ensure that in a round, at most one agent can write to the shared variables contained in the atomic block, and the semantics of \emph{allread} variables in $\lgname$ ensure that an agent can only write to the index of the allread variable corresponding to its own $pid$.
+    The proof follows from the following two facts: the semantics of \emph{atomic} statements in $\lgname$ ensure that in a round, at most one robot can write to the shared variables contained in the atomic block, and the semantics of \emph{allread} variables in $\lgname$ ensure that an robot can only write to the index of the allread variable corresponding to its own $pid$.
 \end{proof}
 
 Given an event $e\in \Event$, we represent the precondition of an event as $\pre(e)$. The semantics ensures an event will not occur if the precondition is not satisfied. This, along with the premise of \lem{noninter}, allows us to sharpen the induction hypothesis further :
@@ -81,7 +86,7 @@ Given an event $e\in \Event$, we represent the precondition of an event as $\pre
 
  The remainder of this section demonstrates the verification of proposed invariants on three case studies.
 
-%In practice, we prove an inductive invariant, for a \emph{specific number of agents}. \footnote{we can generalize the proof for an arbitrary number of agents manually}.
+%In practice, we prove an inductive invariant, for a \emph{specific number of robots}. \footnote{we can generalize the proof for an arbitrary number of robots manually}.
 
 %(\rg{as we demonstrate in the following case studies})
 
@@ -107,20 +112,20 @@ Given an event $e\in \Event$, we represent the precondition of an event as $\pre
  %\rg{Detailed analysis of conditional statements within events?}.
 
 \subsubsection*{Case Study: Lineform}
-The executable $\lgname$ semantics is used to prove \inv{lineform} inductively, using the strategy explained at a high level in \refsect{overview}. Let us denote the variables $\mathit{Motion.Position}$ and $\mathit{Motion.Target}$ by $\mathit{mp}$ and $\mathit{mt}$ respectively,  and denote the value of agent $i$'s local copies of these variables before the event is executed by $\mathit{mp}_i$ and $\mathit{mt}_i$ respectively. The \emph{allread} variable $x[i]$ is denoted by $x_i$. The primed copies of these variables ($\mathit{mp_i', mt_i',x_i'}$) denote their values after a round (event execution and $\delta$-transition) has occured. For the \emph{Lineform} application, it has only one event \emph{TargetUpdate}, which is executed only when $\neg (\myuin = \UINS - 1 \vee \myuin = 0)$ holds. $\myuin = 0 \wedge E$ is unsatisfiable, meaning these invariant is vacuously validated for the extremal robots.
+The executable $\lgname$ semantics is used to prove \inv{lineform} inductively, using the strategy explained at a high level in \refsect{overview}. Let us denote the variables $\mathit{Motion.Position}$ and $\mathit{Motion.Target}$ by $\mathit{mp}$ and $\mathit{mt}$ respectively,  and denote the value of robot $i$'s local copies of these variables before the event is executed by $\mathit{mp}_i$ and $\mathit{mt}_i$ respectively. The \emph{allread} variable $x[i]$ is denoted by $x_i$. The primed copies of these variables ($\mathit{mp_i', mt_i',x_i'}$) denote their values after a round (event execution and $\delta$-transition) has occured. For the \emph{Lineform} application, it has only one event \emph{TargetUpdate}, which is executed only when $\neg (\myuin = \UINS - 1 \vee \myuin = 0)$ holds. $\myuin = 0 \wedge E$ is unsatisfiable, meaning these invariant is vacuously validated for the extremal robots.
 
 
-Executing the effect of the event (for agent $i$) using \K semantics gives us the constraint $$E := mt_i' = (x_{i-1} + x_{i+1})/2  \wedge x_i' = mp_i$$.  The assumption (as stated earlier) is \begin{align*}A := &mp_i' \leq mt_i \wedge mp_i' \geq mp_i \\ &\wedge  x_{i-1} \in [x_{min}, x_{max}] \wedge x_{i+1}\in [x_{min},x_{max}].\end{align*} The invariant is $I: \mathit{mp}_i \in [x_{min}, x_{max}]$ and $I'$ denotes the invariant $\mathit{mp}_i' \in [x_{min}, x_{max}].$  The overall constraint then becomes $E \wedge A \wedge I \Rightarrow I',$. Now, given a configuration $c$, since there is only one event, $\Post(c,i,\mathit{TargetUpdate}) = \Post(c,i)$. Additionally, since given any two agents $i$ and $j$ do not write to the same variable, $\Post(\Post(c,i), j) = \Post(\Post(c,j),i)$. Therefore, we can consider a single order of execution for computing $\Post(c)$.
+Executing the effect of the event (for robot $i$) using \K semantics gives us the constraint $$E := mt_i' = (x_{i-1} + x_{i+1})/2  \wedge x_i' = mp_i$$.  The assumption (as stated earlier) is \begin{align*}A := &mp_i' \leq mt_i \wedge mp_i' \geq mp_i \\ &\wedge  x_{i-1} \in [x_{min}, x_{max}] \wedge x_{i+1}\in [x_{min},x_{max}].\end{align*} The invariant is $I: \mathit{mp}_i \in [x_{min}, x_{max}]$ and $I'$ denotes the invariant $\mathit{mp}_i' \in [x_{min}, x_{max}].$  The overall constraint then becomes $E \wedge A \wedge I \Rightarrow I',$. Now, given a configuration $c$, since there is only one event, $\Post(c,i,\mathit{TargetUpdate}) = \Post(c,i)$. Additionally, since given any two robots $i$ and $j$ do not write to the same variable, $\Post(\Post(c,i), j) = \Post(\Post(c,j),i)$. Therefore, we can consider a single order of execution for computing $\Post(c)$.
 
  \begin{table}[!t]
 \scriptsize
  \centering
-  \caption{\small Summary of semantics based verification.  The \emph{Agents}(N) is the number of agents in the system, $T_R$ is the total verification time in seconds (K + Z3).}
+  \caption{\small Summary of semantics based verification.  The \emph{robots}(N) is the number of robots in the system, $T_R$ is the total verification time in seconds (K + Z3).}
   \label{tab:verif}
    %\begin{tabular}{|l|l|l|l|l|l|l|l|c|}
    \begin{tabular}{ l|  c c  c  }
  \hline
- \tb{Benchmark}       & \tb{Agents}(N) & $T_R$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
+ \tb{Benchmark}       & \tb{robots}(N) & $T_R$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
  Lineform       & 3       &9.09   & \Checkmark  \\
 Lineform       & 4      & 11.21  & \Checkmark   \\
  Lineform       & 5        &  12.41  & \Checkmark   \\
@@ -131,7 +136,7 @@ Task       & 4      & 18.28  & \Checkmark   \\
  \end{tabular}
  \end{table}
 
-%The effect of the event (for agent $i$) is $E := mt_i' = (x_{i-1} + x_{i+1})/2  \wedge x_i' = mp_i$.  The assumption (as stated earlier) is $A := mp_i' \leq mt_i \wedge mp_i' \geq mp_i)$. \rg{Additionally, we need a constraint $F:= x_{i-1} \in [x_{min}, x_{max}] \wedge x_{i+1}\in [x_{min},x_{max}]$.} The invariant is $I: \mathit{mp}_i \in [x_{min}, x_{max}]$ and $I'$ denotes the invariant $\mathit{mp}_i' \in [x_{min}, x_{max}]$.  The overall constraint then becomes :
+%The effect of the event (for robot $i$) is $E := mt_i' = (x_{i-1} + x_{i+1})/2  \wedge x_i' = mp_i$.  The assumption (as stated earlier) is $A := mp_i' \leq mt_i \wedge mp_i' \geq mp_i)$. \rg{Additionally, we need a constraint $F:= x_{i-1} \in [x_{min}, x_{max}] \wedge x_{i+1}\in [x_{min},x_{max}]$.} The invariant is $I: \mathit{mp}_i \in [x_{min}, x_{max}]$ and $I'$ denotes the invariant $\mathit{mp}_i' \in [x_{min}, x_{max}]$.  The overall constraint then becomes :
                    %$E \wedge A \wedge F \wedge I \Rightarrow I'$, which we verified for models of size 3,4 and 5 using \K and Z3.
 
 

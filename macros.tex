@@ -46,16 +46,16 @@
 
 \newcommand{\End}{\mathit{End}\xspace}
 
-\newcommand{\Post}{\mathit{Pe}\xspace}
-\newcommand{\Final}{\mathit{Fn}\xspace}
+\newcommand{\Post}{\mathit{Post}\xspace}
+\newcommand{\Final}{\mathit{Final}\xspace}
 \newcommand{\traj}{\mathit{traj}\xspace}
-\newcommand{\pt}{\mathit{Pt}_{[0,\delta]}}
-\newcommand{\ft}{\mathit{Pt}_\delta}
+\newcommand{\pt}[2]{\mathit{Pt}_{[#1,#2]}}
+\newcommand{\ft}[1]{\mathit{Pt}_{#1}}
 %evaluation property semantics
 \newcommand{\eval}{\mathit{eval}}
 \newcommand{\sat}{\rightarrow_\mathit{sat}}
 \newcommand{\frontier}{\mathit{Fr}}
-\newcommand{\Reach}{\mathit{Rc}}
+\newcommand{\Reach}{\mathit{Reach}}
 % For references
 \newcommand{\fig}[1]{Figure~\ref{#1}}
 \newcommand{\lem}[1]{Lemma~\ref{#1}}
@@ -350,3 +350,5 @@
 \newcommand{\Access}{\mathit{access}}
 \newcommand{\ps}{\mathit{ps}}
 \newcommand{\pre}{\mathit{pre}}
+\newcommand{\pinit}{p_0}
+\newcommand{\prest}{p_{[1:]}}
