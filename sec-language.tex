@@ -96,10 +96,11 @@ The semantics of a \lgname program execution is based on synchronous rounds divi
 In each round, each robot performs at most one event.
 The update performed by a single robot executing an event is modeled as an transition of updating the program variables;
 however, different events executed by the different robots may interleave.
-In between the events of successive rounds, the program variables remain constant,
-but the sensor and actuator ports of all robots change continuously with time.
-\sayan{Need to choose the words carefully here. We should discuss. Whether the variables change value continuously or discretely is a modeling question and what we want to analyze.}
-These are modeled as environment transitions that advance time as well as the sensor and actuator variables.
+In between the events of successive rounds, the program variables remain constant
+while the sensor and actuator ports of all robots change continuously with time.
+However, the \lgname program can only read sampled values from and write to the ports every $\delta$ cycle.
+%\sayan{Need to choose the words carefully here. We should discuss. Whether the variables change value continuously or discretely is a modeling question and what we want to analyze.}
+These are modeled as environment transitions that advance time as well as the sensor and actuator ports.
 
 We now describe the system state, or \emph{system configurations} which we use to formalize \lgname semantics.
 
@@ -112,7 +113,7 @@ A \emph{system configuration} is a tuple $\gconfig = (\lset_{i\in\UINS},{S},\tau
       $\lconfig{i}$ refers to the configuration of the $i$-th element, i.e., the $i$-th robot in the system.
 \item ${S} : \Var \mapsto \Val$ is the {\em global context\/}, mapping all shared variable names to their values.
 \item $\tau\in \nnreals$ is the {\em global time\/}.
-\item $\turn\in\{\prog,\env\}$ is a binary \emph{bookkeeping} variable determining whether  program or environment transitions are being processed.
+\item $\turn\in\{\prog,\env\}$ is a binary \emph{bookkeeping} variable determining whether program or environment transitions are being processed.
 \end{enumerate}
 
 Bookkeeping variables are invisible in the language syntax, and only used in the semantics.
@@ -243,7 +244,7 @@ The detailed statement and expression level semantics of \lgname is available in
 \sayan{Do they allow appendices?}\chiao{No appendix, but supplemental materials can be provided separately.}
 
 \paragraph{Per Robot Semantics.}
-First, we present the semantics of executing the events for each robot.
+First, we present the semantics of executing an event for each robot,
 which will help us discuss the semantics of the whole system.
 All rules for statement semantics are of type
 \[
