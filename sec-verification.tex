@@ -3,7 +3,7 @@
 %\rg{round, program transition, event execution, $\delta$-transition are all defined at this point: program transition : events executed in some order, $\delta$-transition: simulataneous advancement of time, round = program + $\delta$-transition. }
 % connect to definition of e.
 %make the post definition on a set.
-The semantics of $\lgname$ has been constructed to enable decoupled analyses of discrete and dynamic components of distributed multi-robot systems. As discussed in the previous sections, the \emph{events} in an $\lgname$ program comprise the discrete computations in the system. The effect of an agent $i$ executing event $e\in \Event$ on a configuration $c\in \pwg$, can be seen as a sequence of $\stmtrule$ applications to $c$, where each rule corresponds to a statement in the effect of $e$, and the turn of agent $i$ changes from $\prog$ to $\env$ when all the rules in the sequence have been applied. We represent the execution of $e$ succinctly as $\rightarrow_e \subseteq (\pws \times \pwl\times (\pwstmt^+) \mapsto \wp(\pws\times \pwl \times \{\cdot\} )$. For convenient representation, we say $c \rightarrow_e c'$, if $$ \left \langle c.S, c.L, B \right\rangle \rightarrow_e \left\langle c'.S, c'.L, \cdot \right\rangle$$ where $B$ is the effect of $e$.
+The semantics of $\lgname$ has been constructed to enable decoupled analyses of discrete and dynamic components of distributed multi-robot systems. As discussed in the previous sections, the \emph{events} in an $\lgname$ program comprise the discrete computations in the system. The effect of an agent $i$ executing event $e\in \Event$ on a configuration $c\in \pwg$, can be seen as a $\stmtrule$ application to  $\left\langle c.S, c.L, B \right\rangle $, where $B$ is the effect of $e$.
 
 \subsection{Reachable Configurations}
 
@@ -19,7 +19,7 @@ The semantics of $\lgname$ has been constructed to enable decoupled analyses of 
 \begin{mdframed}
 \footnotesize
 \begin{align*}
-    \Post (C,i,e) &= \{ c^\prime\mid \ \ \exists c \in C, c \rightarrow_{e} c^\prime \},\\
+    \Post (C,i,e) &= \{ c^\prime\mid \ \ \exists c \in C, \left\langle c.S, c.L, B \right\rangle \stmtrule \left\langle c^\prime.S, c^\prime.L, \cdot \right\rangle \},\\ &\mbox{ where B is the effect of }e.\\
 \Post(C,i) :=& \bigcup_e \Post(C,i,e),\\
 \Post(C,p) := & \ \Post(\Post(C,\pinit), \prest)\\ & \cup \Post(C,\pinit)\\
 \Post(C) :=& \bigcup_{p\in \mathit{perms}(\UINS)} \Post(C,p), \\
