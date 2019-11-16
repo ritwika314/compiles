@@ -57,9 +57,9 @@ therefore, each participating robot would have its own set of module ports and l
 \lgname provides \emph{shared} variables to allow participating robots to communicate with each other.
 At Line~\ref{lineform-allread} in \reffig{lineform}, an \textbf{allread} variable, $x$, is a shared variable of array type which all robots can read from,
 but each robot \myuin can only write to $x[\myuin]$.
-This shared array is used to share the current position of each robot with all other robots.
-\chiao{Should we discuss about atomic blocks and mutual exclusion here.}
-\sayan{not in any detail. 1 sentence forward pointer.} 
+This shared array is used to share the current position of each robot with all other robots. $\lgname$ provides mutual exclusion, as it is an essential requirement for any system using distributed shared memory. The \emph{Task} and \emph{Mapping} applications discussed in \refsect{verification} use \emph{atomic} blocks of statements to update shared variables in a mutually exclusive fashion.
+%\chiao{Should we discuss about atomic blocks and mutual exclusion here.}
+%\sayan{not in any detail. 1 sentence forward pointer.}
 % Sayan: Not in detail 
 
 The robot also has access to system-level \emph{constant} parameters.
@@ -68,16 +68,14 @@ For \LineForm as an example, it uses
     \item the unique integer identifier \myuin for itself and
     \item the number \NMAX of all participating robots.
 \end{inparaenum}
-A detail list of system parameters will be discussed later in \refsect{language}.
+A detailed list of system parameters will be discussed later in \refsect{language}.
 
 
 \subsection{Formal Semantics and Invariant Checking}
 
-\sayan{We have developed/implemented the full semantics of \lgname using \K~\cite{Kcite}. The details are presented in Section~\ref{}.}
-This formalization not only enables us to formally define the execution semantics for \lgname applications, 
-\marginpar{\scriptsize\sayan{Elaborate why this is challenging? CPS, shared memory, asynchrony?}}
-but we can also implement different formal analyses using \sayan{search/rewriting/which system/artifact of} \K.
-In this work, we demonstrate an approach that checks invariant for \lgname programs using the symbolic execution semantics in \K~\cite{}.
+We have developed the full semantics of \lgname using \K~\cite{rosu-serbanuta-2013-k}, and present the details in \refsect{sec:language}. The execution semantics of any applications for multi-robot system are difficult to formalize, as aside from the usual concerns of any distributed system such as asynchrony, consistency of shared memory, etc., these systems may contain interactions with the physical environment of the robots.
+The \K rewriting engine makes the formal language semantics \emph{executable}, and has inherent support for exploration of non-deterministic behaviors of a rewriting system, which makes it suitable for formal analysis of distributed systems.
+In this work, we demonstrate an approach that checks invariant for \lgname programs using symbolic execution of the $\lgname$ semantics in \K.
 
 For \LineForm, a natural requirement is to restrict all the robots to stay within a certain safe area, at all times (Geofencing).
 More precisely, given a (hyper)rectangle $rect(x_{min}, x_{max})$ defined by its two corners $x_{min}$ and $x_{max}$,
@@ -90,26 +88,28 @@ if all robots are initialized within the rectangle, then all robots should alway
     \land\ x[\myuin] \in rect(x_{min}, x_{max})
 \end{split}
 \]
-\normalfont{where $M.pos$ is the shorthand for $Motion.position$ and $M.tgt$ for $Motion.target$.}
+\normalfont{where $M.pos$ is the shorthand for $Motion.position$.}
 \end{invariant}
+The behavior of a robot when Motion module is given a new target is only observable through the $Motion.position$ sensor port: how each robot moves when its Motion module is given a target is specific to the robot hardware. Our approach towards proving \inv{inv:lineform} involves assuming the following about the behavior of the robot when its $Motion.target$ actuator is set:
 
-\chiao{Explain why we need assumptions over modules.}
-\sayan{Drop the extra line after Invariant~1. Why bother with the shorthand M.pos? M.tgt does not even appear in the invariant.}
-\sayan{Ok, you can state the invariant...then what? can it be proved automatically using K? We should say that then with the appropriate qualifiers, and give a forward pointer.}
-
-Motion module should ensure the device is moving within the bounding rectangle between its position and target
-within a period of time $\delta$.
-That is, given a black-box function $f$ returning positions of the device in continuous time,
-we can formally define the assumption over the \emph{Motion} module as follows.
+Given a black-box function $f$ returning positions of the device in continuous time,
 \begin{assumption}\label{lineform-assume}
 \[
 \forall \tau \in [0, \delta], f(M.pos, M.tgt, \tau) \in rect(M.pos, M.tgt)
 \]
 \end{assumption}
+\normalfont {where $M.tgt$ is the shorthand for $Motion.target$}
+This assumption states that the robot's motion module should ensure that it is moving within the bounding rectangle between its position and target
+within a period of time $\delta$.
 
-With the assumption, we can prove \inv{inv:lineform} inductively.
-The \K semantics of \lgname allows us to construct the symbolic post states of event \emph{TargetUpdate}.
-\chiao{Give the formula representing the symbolic post or transition relation of \emph{TargetUpdate}}
+The \K semantics of \lgname allows us to construct the symbolic post states of event \emph{TargetUpdate} and with \asum{lineform-assume}, we prove \inv{inv:lineform} automatically using the $\lgname$ prover (\reffig{fig:tools}) as detailed in \refsect{verification}.
+%\chiao{Explain why we need assumptions over modules.}
+%\sayan{Drop the extra line after Invariant~1. Why bother with the shorthand M.pos? M.tgt does not even appear in the invariant.}
+%\sayan{Ok, you can state the invariant...then what? can it be proved automatically using K? We should say that then with the appropriate qualifiers, and give a forward pointer.}
+
+
+
+%\chiao{Give the formula representing the symbolic post or transition relation of \emph{TargetUpdate}}
 
 \begin{figure}
 \begin{tikzpicture}[
@@ -128,6 +128,7 @@ The \K semantics of \lgname allows us to construct the symbolic post states of e
                ;
 \end{tikzpicture}
 \caption{\K semantics based invariant checking for \lgname.}
+\label{fig:tools}
 \end{figure}
 \marginpar{\scriptsize\sayan{Shouldn't this flowchart also have inputs Koord application code/requirement? Also, too much white space.}}
 
