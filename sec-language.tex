@@ -3,13 +3,15 @@
 
 \subsection{Synchronous Run-time System }
 
-As mentioned in \refsect{overview}, instances of the same \lgname program runs on a distributed collection of $\NMAX$ robots. The robots communicate with each other through distributed shared memory.
-%
-%\chiao{Introduce $\NMAX$, $\myuin$, $\UINS$, $\delta$.
-%If necessary, we can also make modules and other platform-specific things as parameters and refer to appendix.}
-%
-%We have  robots in the system.
-The execution of the \lgname program advances in a synchronous, \emph{round-by-round} fashion, where each round lasts for $\delta$ time, and $\delta >0$ is a platform specific execution parameter. During this period, the robots compute, move, and communicate.
+As mentioned in \refsect{overview}, instances of the same \lgname program runs on a distributed collection of $\NMAX$ robots.
+The robots communicate with each other through distributed shared memory.
+Without loss of generality, we assume a set of indexes $\UINS = \{0,1,\dots,\NMAX-1\}$,
+and each robot is assigned with an unique index $\myuin \in \UINS$.
+Users can use $\NMAX$ and $\myuin$ as constant values in a \lgname program.
+
+The execution of the \lgname program advances in a synchronous, \emph{round-by-round} fashion, where each round lasts for $\delta$ time,
+and $\delta >0$ is a platform specific execution parameter.
+During this period, the robots compute, move, and communicate.
 
 
 \subsection{Formal Syntax}\label{sec:syntax}
@@ -21,34 +23,29 @@ Each robot program consists of
 \item declarations of shared and local program variables, and
 \item events, consisting of preconditions and effects.
 \end{inparaenum}
-Robot programs (rule \emph{Program}) can import a controller module.
-%
-\marginpar{\scriptsize\sayan{one or more?}}
-%
+Robot programs (rule \emph{Program}) first can import controller modules.
 The module import grammar production specifies the interface of the controllers:
 it contains all input and output ports for actuators (\emph{APorts}) and sensors (\emph{SPorts}) that the program uses.
 The program can also contain shared and local declarations.
-
+To summarize, there are following three types of names for reading/writing values:
 \begin{enumerate}[(i)]
+\item \emph{Sensor and actuator ports} are used to read from sensor ports and write to actuator ports of controllers.
 \item \emph{Local program variables} record the state of the program.
 \item \emph{Distributed shared variables} are used for coordination across robots. All shared variables can be read by all participating robots; an
       \textbf{allwrite} variable can be written by any participating robot; while an 
-      \textbf{allread} variable variable can written by a single-writer.
-\item \emph{Sensor and actuator variables} are used to read from sensor ports and to write to actuator ports.
+      \textbf{allread} variable can be written only by a single-writer.
 \end{enumerate}
-%
-\marginpar{\scriptsize\sayan{are sensor ports different from sensor variables?}}
-%
 
-There can initialization \sayan{statements} which set certain program variable values.
-The main body of the program is a sequence of  events (rule \emph{Event}) which include a Boolean \textbf{pre}condition
+User can then optionally specify a sequence of statements to set the initial values of program variables~(rule~\emph{Init}).
+The main body of the program is a sequence of events (rule~\emph{Event}) which include a Boolean \textbf{pre}condition
 and an \textbf{eff}ect.
-The effect of an event may include the standard control flow constructs including a sequence of instructions, conditional statements, as well as atomic blocks of statements for mutual exclusion, function calls, and assignment statements.
-The user can also define functions and abstract data types (tuples of the basic data types).
-\chiao{Should we mention atomic block for shared variables?}
-\sayan{add the atomic keyword in the syntax and add a sentence in the description.}
+The effect of an event is a sequence of statements~(rule~\emph{Effect}).
+We skip the syntax rules for statements, expressions, data types, and functions due to the page limit.
+Statements in \lgname resembles those in most imperative languages and includes
+conditional statements, function calls, assignments, atomic blocks of statements for mutual exclusion, etc.
 Mutual exclusion is always an essential feature when shared variables are involved.
 \lgname provides a locking mechanism using the keyword \textbf{atomic} to update the shared variable safely.
+The user can also define functions and abstract data types (tuples of the basic data types).
 
 In the syntax presented in \reffig{partial-syntax}, given an nonterminal \textit{NT},
 {\it NT\textsuperscript{?}} means that it is optional in the syntax at that position,
@@ -80,10 +77,12 @@ The expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$.
     VarDecl   & ::= & Type identifier \vbar Type identifier \mterm{=} Val               \\
     ARVarDecl & ::= & Type identifier \mterm{[ $\NMAX$ ]}                               \\
               &     &                                                                   \\
-    Init      & ::= & \mterm{init} \delim stmt\onemore                                  \\
+    Init      & ::= & \mterm{init} \delim Stmt\onemore                                  \\
     Event     & ::= & identifier \delim Precond Effect                                  \\
-    Precond   & ::= & \mterm{pre} \delim expr                                           \\
-    Effect    & ::= & \mterm{eff} \delim stmt\onemore
+    Precond   & ::= & \mterm{pre} \delim Expr                                           \\
+    Effect    & ::= & \mterm{eff} \delim Stmt\onemore                                   \\
+              &     &                                                                   \\
+    Stmt      & ::= & \mterm{atomic} Stmt\onemore \vbar \textellipsis
 \end{tabular}
 
 \caption{Partial \lgname syntax rules.}\label{fig:partial-syntax}
@@ -93,12 +92,12 @@ The expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$.
 \subsection{Koord Semantics}
 \label{sec:configs}
 
-The semantics of a \lgname program execution is based on synchronous rounds divided into {\em event transitions\/} and {\em environment transitions\/} that update the {\em system configuration.\/}
-In each round, each robot performs \sayan{at most one} event.
+The semantics of a \lgname program execution is based on synchronous rounds divided into \emph{event transitions} and \emph{environment transitions} that update the \emph{system configuration}.
+In each round, each robot performs at most one event.
 The update performed by a single robot executing an event is modeled as an transition of updating the program variables;
 however, different events executed by the different robots may interleave.
 In between the events of successive rounds, the program variables remain constant,
-but the sensor and actuator variables of all robots change continuously with time.
+but the sensor and actuator ports of all robots change continuously with time.
 \sayan{Need to choose the words carefully here. We should discuss. Whether the variables change value continuously or discretely is a modeling question and what we want to analyze.}
 These are modeled as environment transitions that advance time as well as the sensor and actuator variables.
 
@@ -106,17 +105,10 @@ We now describe the system state, or \emph{system configurations} which we use t
 
 \paragraph{System Configurations.}
 
-%
-\marginpar{\scriptsize\sayan{$\delta$ subscript necessary? Looks odd.}}
-%
-A {\em system configuration\/} with the parameter $\delta$ is a tuple $\gconfig_\delta = (\lset_{i\in\UINS},{S},\tau,\turn)$, where
+A \emph{system configuration} is a tuple $\gconfig = (\lset_{i\in\UINS},{S},\tau,\turn)$, where
 
 \begin{enumerate}[(i)]
-\item $\lset_{i\in\UINS}$ or $\lset$ in short is an indexed set of \emph{robot configurations}--one for each participating robot,
-      where $\UINS$ is the known set of participating robots.
-  %
-\marginpar{\scriptsize\sayan{$\UINS$ should be defined earlier with N\_SYS and pid. It was used in Invariant 1.}}
-%    
+\item $\lset_{i\in\UINS}$ or $\lset$ in short is an indexed set of \emph{robot configurations}--one for each participating robot.
       $\lconfig{i}$ refers to the configuration of the $i$-th element, i.e., the $i$-th robot in the system.
 \item ${S} : \Var \mapsto \Val$ is the {\em global context\/}, mapping all shared variable names to their values.
 \item $\tau\in \nnreals$ is the {\em global time\/}.
@@ -144,19 +136,13 @@ Let the set of events for each robot be denoted by $\Event$.
 The configuration of an robot is a tuple $\agnt = ({M},\cp,\turn)$, where
 
 \begin{enumerate}[(i)]
-\item ${M} : \Var \mapsto \Val$ is its \emph{local context} mapping all variables in $P$ to robot local values.
-%
-\marginpar{\scriptsize\sayan{Was $P$ ever introduced?}}
-%
-      Note that $M$ also includes a copy of shared variable values.
-\item $\cp : \Cfield \mapsto \Val$ is the mapping of sensor and actuator variables to values.
+\item ${M} : \Var \mapsto \Val$ is its \emph{local context} mapping both local and shared variables to values.
+      Note that this implies $M$ includes a copy of shared variable values.
+\item $\cp : \Cfield \mapsto \Val$ is the mapping of sensor and actuator ports to values.
 \item $\turn \in \{\prog,\env\}$ is a bookkeeping variable indicating whether this robot should be executing a program or environment transition.
 \end{enumerate}
-The components of a robot configuration  $l$ are accessed
-using the dot (``$.$'') notation, for example, $l.M\equiv \pi_2(l)$ and $l.w \equiv \pi_3(l)$.
-%
-\marginpar{\scriptsize\sayan{$\pi$ not defined. }}
-%
+For readability, we use the dot (``$.$'') notation to access components of a robot configuration $\agnt$.
+For example, $\agnt.M$ means accessing the local context $M$ in the tuple $\agnt$.
 
 The controller module is modeled as a black-box functions
 $f: [\Cfield \mapsto \Val] \times \nnreals \mapsto [\Cfield \mapsto \Val]$.
