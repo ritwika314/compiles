@@ -35,7 +35,7 @@ $$\pt{t_1}{t_2}(C) := \left\{c^\prime \mid \exists c\in C, t_1 \leq t\leq t_2 , 
 The set of points reached by an $\delta$-transition at $\delta$ time from $C$ is represented as $\ft{\delta}(C) := \pt{\delta}{\delta}(C)$. A \emph{frontier} set of configurations represents the set of configurations that can be reached from an initial configuration $C$ after \emph{completing} rounds of execution. We define $\frontier(C,0) := C$ and,
 $$\frontier(C,n) := \ft{\delta}(\Final(\frontier(C,n-1))).$$
 
-Finally, given an initial set of configurations $C_0\subset\pwg$, the set of states reachable in $n$ rounds can be defined inductively as $\Reach(C_0,0) := C_0$ and,
+Finally, given a set of configurations $C_0\subset\pwg$, the set of states reachable in $n$ rounds can be defined inductively as $\Reach(C_0,0) := C_0$ and,
 \begin{align*}
 \Reach(C_0,n) := \Reach(C_0 &,n-1) \cup \Post(\frontier(C_0,n-1) \\ &\cup \pt{0}{\delta}(\Post(\frontier(C_0,n-1)))
 \end{align*}
@@ -51,37 +51,37 @@ Given a configuration $c \in \pwg$, let $\eec{\mathit{inv}}{c}$ represent an \em
 
 \begin{definition}
 \label{def:ii}
-A property $\mathit{inv}$ is an inductive invariant of a system if given a set of initial configurations of the system $C_0$, and an arbitrary configuration $c\in \pwg$, it satisfies the following :
+A property $\mathit{inv}$ is an \emph{inductive invariant} of a system if given a set of initial configurations of the system $C_0$, and an arbitrary configuration $c\in \pwg$, it satisfies the following :
 $\bigwedge_{c_0\in C_0} \eec{\mathit{inv}}{c_0}\mbox{\textit{ (initial condition)}}$ and
-$$\eec{\mathit{inv}}{c} \Rightarrow \forall c' \in \Reach(\left\{c\right\},1), \eec{\mathit{inv}}{c'} \mbox{\textit{ (induction hypothesis)}}$$.
+$$\eec{\mathit{inv}}{c} \Rightarrow \forall c' \in \Reach(\left\{c\right\},1), \eec{\mathit{inv}}{c'} \mbox{\textit{ (induction hypothesis)}}.$$
 \end{definition}
-
 This definition states that property that is satisfied by the initial configuration(s) of a system, and also by any configuration reached during one round of execution from any configuration satisfying the property, is an invariant of the system.
-\rg{CONCRETE UPTO HERE}
-\rg{In the latter part of this section we present three case studies to illustrate some of the formal analysis enabled by our prover module}. Our proposed proof strategy for the presented case studies is a \emph{decoupling} of the environment and program transition behaviors, and separate analysis. Formal analysis of the dynamic behavior of the system during environment transitions is a difficult problem by itself. We express the constraintS on the configurations reached during environment transitions as assumptionS. Formally, given a configuration $c\in \pwg$, we state $c(\beta) \Rightarrow \forall c'' \in \pt(\Final(c')) , c''(\beta)$ as an assumption $A$, which can be verified separately by other tools, and tested using the CyPhyhouse simulator. The induction hypothesis then simplifies to:
-
-$$ c(\beta) \wedge A \Rightarrow \forall c' \in \Post(c), c'(\beta).$$
 
 
 
+\rg{In the latter part of this section we present three case studies to illustrate some of the formal analysis enabled by our prover module}.
 
- A major source of nondeterminism in the behavior of these distributed programs with shared variables can be the order of writes in one round, and we observe that under specific circumstances, we can eliminate the necessity of exploring these behaviors during formal analysis. We formally state some of these observations below.
+Our proposed proof strategy for the presented case studies is a \emph{decoupling} of the environment and program transition behaviors, and separate analysis. Formal analysis of the dynamic behavior of the system during environment transitions is a difficult problem by itself. We express the constraints on the configurations reached during environment transitions as assumptions. The induction hypothesis can be restated as \begin{align*}\eec{\mathit{inv}}{c} \Rightarrow &(\forall c' \in \Post(\left\{c\right\}), \eec{\mathit{inv}}{c'} \wedge \\ &\forall c'' \in \pt{0}{\delta}(\Final(c)) \eec{\mathit{inv}}{c''})\end{align*} We state $\eec{\mathit{inv}}{c} \Rightarrow \forall c'' \in \pt{0}{\delta}(\Final(c)) $ as an assumption $A$, which can be verified separately by other tools, and tested using the CyPhyhouse simulator. Given an event $e\in \Event$, we represent the precondition of an event as $\pre(e)$. The semantics ensures an event will not occur if the precondition is not satisfied. This allows us to sharpen the induction hypothesis further :
+    $$ \bigwedge_{i\in \UINS} \bigwedge_{e \in \Event}  \eec{\mathit{inv}}{c} \wedge \pre(e) \wedge A \Rightarrow \forall c' \in  \Post(c, i, e) \eec{\mathit{inv}}{c}.$$
+
+
+
+ A major source of nondeterminism in the behavior of these distributed programs with shared variables can be the order of writes in one round, however, this is not a factor in proving inductive invariants.
 
 %For instance, if a $\lgname$ program has no shared variables or writes to shared variables, $\forall p_1, p_2 \in \mathit{perms}(\UINS),\Post(c,p_1) = \Post(c,p_2)$.
 
 
+%
+%\begin{lemma}
+%    \label{noninter}
+%     Consider $\Event = \left\{e_1,e_2,\ldots, e_n\right\}$ and a proposed invariant $\beta$. Given that any of the events $e_i\in \Event$  either \begin{inparaenum} [(i)]\item contain only writes to an \emph{allread} variable, \item or at most \emph{atomic}writes to a shared variable, \item or no writes to a shared variable \end{inparaenum},
+%    $$ \bigwedge_{i\in \UINS}\bigwedge_{e \in \Event} \forall c' \in  \Post(c, i, e),  c'(\beta) \Leftrightarrow \forall c'' \in \Post(c), c''(\beta) $$
+%\end{lemma}
+%\begin{proof}
+%    The proof follows from the following two facts: the semantics of \emph{atomic} statements in $\lgname$ ensure that in a round, at most one robot can write to the shared variables contained in the atomic block, and the semantics of \emph{allread} variables in $\lgname$ ensure that an robot can only write to the index of the allread variable corresponding to its own $pid$.
+%\end{proof}
 
-\begin{lemma}
-    \label{noninter}
-     Consider $\Event = \left\{e_1,e_2,\ldots, e_n\right\}$ and a proposed invariant $\beta$. Given that any of the events $e_i\in \Event$  either \begin{inparaenum} [(i)]\item contain only writes to an \emph{allread} variable, \item or at most \emph{atomic}writes to a shared variable, \item or no writes to a shared variable \end{inparaenum},
-    $$ \bigwedge_{i\in \UINS}\bigwedge_{e \in \Event} \forall c' \in  \Post(c, i, e),  c'(\beta) \Leftrightarrow \forall c'' \in \Post(c), c''(\beta) $$
-\end{lemma}
-\begin{proof}
-    The proof follows from the following two facts: the semantics of \emph{atomic} statements in $\lgname$ ensure that in a round, at most one robot can write to the shared variables contained in the atomic block, and the semantics of \emph{allread} variables in $\lgname$ ensure that an robot can only write to the index of the allread variable corresponding to its own $pid$.
-\end{proof}
 
-Given an event $e\in \Event$, we represent the precondition of an event as $\pre(e)$. The semantics ensures an event will not occur if the precondition is not satisfied. This, along with the premise of \lem{noninter}, allows us to sharpen the induction hypothesis further :
-    $$ \bigwedge_{i\in \UINS} \bigwedge_{e \in \Event}  (c(\beta) \wedge \pre(e) \Rightarrow \forall c' \in  \Post(c, i, e) c'(\beta)) $$
 
  The remainder of this section demonstrates the verification of proposed invariants on three case studies.
 
