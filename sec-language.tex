@@ -106,12 +106,17 @@ We now describe the system state, or \emph{system configurations} which we use t
 
 \paragraph{System Configurations.}
 
-A {\em system configuration\/} with the parameter $\delta$ is a tuple
-$\gconfig_\delta = (\lset_{i\in\UINS},{S},\tau,\turn)$, where
+%
+\marginpar{\scriptsize\sayan{$\delta$ subscript necessary? Looks odd.}}
+%
+A {\em system configuration\/} with the parameter $\delta$ is a tuple $\gconfig_\delta = (\lset_{i\in\UINS},{S},\tau,\turn)$, where
 
-\begin{enumerate}[i)]
+\begin{enumerate}[(i)]
 \item $\lset_{i\in\UINS}$ or $\lset$ in short is an indexed set of \emph{robot configurations}--one for each participating robot,
       where $\UINS$ is the known set of participating robots.
+  %
+\marginpar{\scriptsize\sayan{$\UINS$ should be defined earlier with N\_SYS and pid. It was used in Invariant 1.}}
+%    
       $\lconfig{i}$ refers to the configuration of the $i$-th element, i.e., the $i$-th robot in the system.
 \item ${S} : \Var \mapsto \Val$ is the {\em global context\/}, mapping all shared variable names to their values.
 \item $\tau\in \nnreals$ is the {\em global time\/}.
@@ -124,22 +129,36 @@ Bookkeeping variables are invisible in the language syntax, and only used in the
 \paragraph{Robot Configurations.}
 
 A \emph{robot configurations} is used to specify the semantics of each robot.
-Given that $\mathbb{P}$ is the set of all possible lists of statements in \lgname grammar,
-$\Var$ is the set of variables, $\Val$ be is set of values that an expression in \lgname can evaluate to,
-and $\Cfield$ is the set of sensor and actuator ports of the controller being used,
-the configuration of an robot is a tuple $\agnt = ({M},\cp,\turn)$, where
+For the rest of this section, 
+let $\mathbb{P}$ be the set of all possible lists of statements in \lgname grammar,
+%
+\marginpar{\scriptsize\sayan{set of all lists of statements? Lets at least say something about syntax of stmt in the previous section.}}
+%
+$\Var$ be the set of variables, $\Val$ be the set of values that an expression in \lgname can evaluate to,
+and $\Cfield$ be the set of sensor and actuator ports of the controller being used. 
+%
+Let the set of events for each robot be denoted by $\Event$.
+%
+\marginpar{\scriptsize\sayan{Cfield is an odd name. All of the above has to be defined after we fix a Koord program $P$.}}
+%
+The configuration of an robot is a tuple $\agnt = ({M},\cp,\turn)$, where
 
-\begin{enumerate}[i)]
+\begin{enumerate}[(i)]
 \item ${M} : \Var \mapsto \Val$ is its \emph{local context} mapping all variables in $P$ to robot local values.
-      Do note that $M$ also includes a copy of shared variable values.
+%
+\marginpar{\scriptsize\sayan{Was $P$ ever introduced?}}
+%
+      Note that $M$ also includes a copy of shared variable values.
 \item $\cp : \Cfield \mapsto \Val$ is the mapping of sensor and actuator variables to values.
 \item $\turn \in \{\prog,\env\}$ is a bookkeeping variable indicating whether this robot should be executing a program or environment transition.
 \end{enumerate}
-The components of an robot configuration in the tuple $l$ are accessed
+The components of a robot configuration  $l$ are accessed
 using the dot (``$.$'') notation, for example, $l.M\equiv \pi_2(l)$ and $l.w \equiv \pi_3(l)$.
+%
+\marginpar{\scriptsize\sayan{$\pi$ not defined. }}
+%
 
-Further, the set of events for each robot is denoted as $\Event$,
-and the controller module is modeled as a black-box functions
+The controller module is modeled as a black-box functions
 $f: [\Cfield \mapsto \Val] \times \nnreals \mapsto [\Cfield \mapsto \Val]$.
 That is, given old sensor and actuator values as well as a period of continuous time,
 $f$ evaluates the physical dynamics and returns new values for all sensor and actual ports.
@@ -226,10 +245,10 @@ $f$ evaluates the physical dynamics and returns new values for all sensor and ac
 \caption{Partial Semantic Rules for \lgname.}\label{fig:partial-semantics}
 \end{figure}
 
-\sayan{SM: The final ``theorem'' might be the bounded reachability soundness.}
-
 For simplicity, we describe only part of semantic rules of \lgname that is above event level.
-The detailed statement and expression level semantics of \lgname is available in~\cite{}.
+\sayan{Let us give some statement level semantics as well. 2-3 as examples.}
+The detailed statement and expression level semantics of \lgname is available in the extended version of the paper~\cite{}.
+\sayan{Do they allow appendices?}
 
 \paragraph{Per Robot Semantics.}
 First, we present the semantics of executing the events for each robot.
