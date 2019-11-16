@@ -121,15 +121,10 @@ Bookkeeping variables are invisible in the language syntax, and only used in the
 \paragraph{Robot Configurations.}
 
 A \emph{robot configurations} is used to specify the semantics of each robot.
-For the rest of this section, 
-let $\mathbb{P}$ be the set of all possible lists of statements in \lgname grammar,
-%
-\marginpar{\scriptsize\sayan{set of all lists of statements? Lets at least say something about syntax of stmt in the previous section.}}
-%
-$\Var$ be the set of variables, $\Val$ be the set of values that an expression in \lgname can evaluate to,
-and $\Cfield$ be the set of sensor and actuator ports of the controller being used. 
-%
-Let the set of events for each robot be denoted by $\Event$.
+Given a \lgname program $P$, we can define $\Var$ be the set of variables,
+$\Val$ be the set of values that an expression in \lgname can evaluate to,
+$\Cfield$ be the set of sensor and actuator ports of the controller being used,
+and $\Event$ the set of events in $P$.
 %
 \marginpar{\scriptsize\sayan{Cfield is an odd name. All of the above has to be defined after we fix a Koord program $P$.}}
 %
@@ -254,7 +249,7 @@ All rules for statement semantics are of type
 \[
 \stmtrule \subseteq (\pws \times \pwl\times (\pwstmt \cup \{\SelectEvent, \EndEvent\})) \mapsto \wp(\pws\times \pwl \times \pwstmt\cup \{\EndEvent\}),
 \]
-where $\pwstmt$ refers to the set of all possible statements allowed by language syntax.
+where $\pwstmt$ refers to the set of all possible statements allowed by \lgname syntax.
 This relation takes as input a tuple of (1) a global context, (2) an robot configuration, and (3) a statement,
 and maps it to a set of such tuples.
 The symbols `\SelectEvent' and `\EndEvent' are not in \lgname but internal syntactic structures.
@@ -281,11 +276,9 @@ thus ensuring that all robots have consistent shared variable values before the 
 New sensor readings $\cp'$ is then obtained by evaluating the black-box dynamics $f$ with time $\delta$.
 In an actual execution, the controller would run the program on hardware,
 whose sensor ports evolve for $\delta$ time between program transitions.
-\sayan{%
 This formalization allows the ports to behave arbitrarily over $\delta$-transitions.
-In order to establish invariant properties of applications;
-therefore, we will need to constrain the behavior of the sensor and actuator ports with additional assumptions.
-}%
+In verification of invariant properties,
+additional assumptions will be needed to constrain the behavior of the sensor and actuator ports.
 Finally, the $\turn$ of the robot is set back to $\prog$.
 
 
