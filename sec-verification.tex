@@ -27,15 +27,15 @@ The semantics of $\lgname$ has been constructed to enable decoupled analyses of 
 \end{align*}
 \end{mdframed}
 
-Given a sequence (permutation) $p$,  $\pinit$ refers to the first element (robot $\myuin$) of the permutation and $\prest$ refers to the rest of sequence. Also, $\mathit{perms}(\UINS)$ refers to the set of permutations of $\UINS$.
-
+Given a sequence (permutation) $p$, $\pinit$ refers to the first element (robot $\myuin$) of the permutation and $\prest$ refers to the rest of sequence. Also, $\mathit{perms}(\UINS)$ refers to the set of permutations of $\UINS$.
+\TBD{\rg{$\pinit, \prest$ are macros.}}
 We define a function $\traj: \pwg \times \left[0,\delta\right]$, which represents the \emph{trajectory} of the system, or the intermediate values of the sensor ports during a $\delta$-transition. Given $c\in \pwg, t\in \left[0,\delta\right]$, $\traj(c,t)$ represents the configuration at time $t$. $\pt{t_1}{t_2}(C)$ is the set of configurations reached by the system over the interval $[t_1,t_2]$.
 $$\pt{t_1}{t_2}(C) := \left\{c^\prime \mid \exists c\in C, t_1 \leq t\leq t_2 , c^\prime = \traj(c,t)\right\}$$
 
 The set of points reached by an $\delta$-transition at $\delta$ time from $C$ is represented as $\ft{\delta}(C) := \pt{\delta}{\delta}(C)$. A \emph{frontier} set of configurations represents the set of configurations that can be reached from an initial configuration $C$ after \emph{completing} rounds of execution. We define $\frontier(C,0) := C$ and,
 $$\frontier(C,n) := \ft{\delta}(\Final(\frontier(C,n-1))).$$
 
-Finally, we are ready to define the set of \emph{reachable} configurations of a system. Given an initial set of configurations $C_0\subset\pwg$, the set of states reachable in $n$ rounds can be defined inductively as $\Reach(C_0,0) := C_0$ and,
+Finally, given an initial set of configurations $C_0\subset\pwg$, the set of states reachable in $n$ rounds can be defined inductively as $\Reach(C_0,0) := C_0$ and,
 \begin{align*}
 \Reach(C_0,n) := \Reach(C_0 &,n-1) \cup \Post(\frontier(C_0,n-1) \\ &\cup \pt{0}{\delta}(\Post(\frontier(C_0,n-1)))
 \end{align*}
@@ -43,22 +43,21 @@ Finally, we are ready to define the set of \emph{reachable} configurations of a 
 
 
 \subsection{Inductive Invariants}
-
+An invariant of a system is a property that holds true for all reachable configurations of a system. Invariants can be used to specify, for instance, a safety property of a system such as no two robots are ever within a specified radius of each other. \rg{The types of invariants allowed by our prover module are shown in appendix...}.
 %define invariants, pointer to syntax
-Given a configuration $c \in \pwg$, $c(\mathit{inv})$ represents the substitution of variables in $\mathit{inv}$ with their values from $c$.
+Given a configuration $c \in \pwg$, let $\eec{\mathit{inv}}{c}$ represent an \emph{evaluation} i.e. the substitution of variables in $\mathit{inv}$ with their values from $c$.
 %fix notation of evalution
- Formally, we say that $\beta$ is an inductive invariant if given a set of initial configurations of a system $C_0 \in \pwg$, and an arbitrary configuration $c \in \pwg$,  $$\forall c_0 \in C_0, c_0(\beta) \wedge c(\beta) \Rightarrow \forall c^\prime \in \Reach(c,1), c^\prime(\beta).$$ In other words, if a property holds true in the initial states of a system, and it can be proved to hold for all configurations reachable in one round from any configuration it is known to hold in, then it is an invariant of the system.
-
+ %Formally, we say that $\beta$ is an inductive invariant if given a set of initial configurations of a system $C_0 \in \pwg$, and an arbitrary configuration $c \in \pwg$,  $$\forall c_0 \in C_0, \eec{\mathit{inv}}{c_0} \wedge c(\beta) \Rightarrow \forall c^\prime \in \Reach(c,1), c^\prime(\beta).$$ In other words, if a property holds true in the initial states of a system, and it can be proved to hold for all configurations reachable in one round from any configuration it is known to hold in, then it is an invariant of the system.
 
 \begin{definition}
 \label{def:ii}
-A property $\beta$ is an inductive invariant of a system if given a set of initial configurations of the system $C_0$, and an arbitrary configuration $c\in \pwg$, it satisfies the following :
-\begin{itemize}
-    \item \emph{Initial condition} : $\bigwedge_{c_0\in C_0}c_0(\beta) $
-\item  \emph{Induction Hypothesis} : $c(\beta) \Rightarrow \forall c' \in \Post(c), c'(\beta) \wedge \forall c'' \in \pt(\Final(c')) , c''(\beta)$
-\end{itemize}
+A property $\mathit{inv}$ is an inductive invariant of a system if given a set of initial configurations of the system $C_0$, and an arbitrary configuration $c\in \pwg$, it satisfies the following :
+$\bigwedge_{c_0\in C_0} \eec{\mathit{inv}}{c_0}\mbox{\textit{ (initial condition)}}$ and
+$$\eec{\mathit{inv}}{c} \Rightarrow \forall c' \in \Reach(\left\{c\right\},1), \eec{\mathit{inv}}{c'} \mbox{\textit{ (induction hypothesis)}}$$.
 \end{definition}
 
+This definition states that property that is satisfied by the initial configuration(s) of a system, and also by any configuration reached during one round of execution from any configuration satisfying the property, is an invariant of the system.
+\rg{CONCRETE UPTO HERE}
 \rg{In the latter part of this section we present three case studies to illustrate some of the formal analysis enabled by our prover module}. Our proposed proof strategy for the presented case studies is a \emph{decoupling} of the environment and program transition behaviors, and separate analysis. Formal analysis of the dynamic behavior of the system during environment transitions is a difficult problem by itself. We express the constraintS on the configurations reached during environment transitions as assumptionS. Formally, given a configuration $c\in \pwg$, we state $c(\beta) \Rightarrow \forall c'' \in \pt(\Final(c')) , c''(\beta)$ as an assumption $A$, which can be verified separately by other tools, and tested using the CyPhyhouse simulator. The induction hypothesis then simplifies to:
 
 $$ c(\beta) \wedge A \Rightarrow \forall c' \in \Post(c), c'(\beta).$$
