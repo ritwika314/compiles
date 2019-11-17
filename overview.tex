@@ -39,14 +39,13 @@ For example, \LineForm uses a \emph{module} (library) called \Motion which provi
 %
 Thus, these  ports provide an abstraction over various possible sensor and controller implementations and environments.
 %
-\sayan{Implementations of the modules are part of the {\em Koord runtime system\/} and they implement hardware specific functions.}
+Implementations of the modules are part of the {\em Koord runtime system\/} and they implement hardware specific functions.
 %, the actuator ports of different modules can be used to provide input to the controllers,
 %which drives the underlying physical plant and environment.
-
-\sayan{For example, our implementation of the \Motion module for a quadcopter uses an indoor camera based positioning system to update the \emph{position} port and it uses an RRT based~\cite{} path planner and motion controller.
+For example, our implementation of the \Motion module for a quadcopter uses an indoor camera based positioning system to update the \emph{position} port and it uses an RRT based~\cite{} path planner and motion controller.
 %
 The \Motion module abstraction is implemented for a small racing vehicle platform using the same indoor positioning system but a different model-predictive controller.
-}
+
 %\sayan{Similarly, an implementation \emph{target}}
 
 %
@@ -67,7 +66,7 @@ This shared array is used to share the current position of each robot with all o
 \end{inparaenum}
 A detailed list of system parameters will be discussed later in \refsect{language}.
 
-\sayan{$\lgname$ provides concurrency control with mutual exclusion and \textbf{atomic} blocks, for multiple robot programs writing to shared variables (see  {\sf Task} and {\sf Mapping} applications  in Section~\ref{}).}
+$\lgname$ provides concurrency control with mutual exclusion and \textbf{atomic} blocks, for multiple robot programs writing to shared variables (see  {\sf Task} and {\sf Mapping} applications  in Section~\ref{}).
 
 
 \subsection{Semantics and invariant properties}
@@ -95,18 +94,15 @@ This requirement can be stated as:
 \noindent
 where $M.pos$ is the shorthand for $Motion.position$.
 
-\sayan{%
 Using \lgname's supporting proof tools, an invariant like the above can be established in two steps:
 first, assuming that all the robot positions are in $\mathit{rect}(x_{min}, x_{max})$,
 we show that the targets computed by \LineForm are also in $\mathit{rect}(x_{min}, x_{max})$.
 The \K semantics of \lgname allows us to construct the symbolic post states of the \emph{TargetUpdate} event
 and we can automatically prove this using the $\lgname$ prover (\reffig{tools}) as detailed in \refsect{verification}.
-}
 
-\sayan{%
 The second step is to show, that for any robot, assuming that the computed target are in $\mathit{rect}(x_{min}, x_{max})$,
 the controller implementing \Motion module indeed keeps the robot inside $\mathit{rect}(x_{min}, x_{max})$.
-}
+%
 For this step, one has to reason about how each robot moves when its implementation of the \Motion module is given a \emph{target}.
 \lgname helps to identify and decompose the overall proof into assumptions that the \emph{Module} implementations need to guarantee.
 For example, we can state the key assumption needed for Invariant~\ref{inv:lineform} as:
@@ -148,25 +144,24 @@ In \refsect{verification}, we will discuss how these types of assumptions about 
 
 \subsection{Simulation based assumption validation}
 
-\asum{lineform-assume} seems reasonable at the first glance, but may not be satisfied, for example, by nonholonomic dynamics of wheeled robots. 
-Using the simulation engine, we can monitor the sensor and actuator values to evaluate how often the assumption is violated.
-For \asum{lineform-assume}, we can identify and demonstrate two common scenarios
-where it is invalidated.
-\chiao{We can use simulator screenshot to show the violation.}
-
+\asum{lineform-assume} may appear benign at a glance, but it may be violated in some conditions. Using the high-fidelity \lgname simulator, a designer can gain insights about when such assumptions are violated.
+%
+The simulator executes  complied \lgname code together with detailed physical  models for the robots, ROS-based interactions with sensor models, and UDP-based message passing.
+%
+A Gazebo visualization of the simulator's output for 16 robots executing a 3D version of \LineForm is shown in Figure~\ref{}.
+%
+Using the \lgname simulator, we can discover that \asum{lineform-assume} is violated in two rather common scenarios:
+\chiao{Refer to simulator screenshot to show the violation.}
 First, if a robot has to avoid obstacles,
-then it may have to go around the obstacle and hence out of the bound.
-Second, the assumption simply fails over certain types of devices.
-For example, four wheel cars doing parallel parking may easily go out of the rectangle
-because the cars need more space to make turns.
+then it may have to go around the obstacle and hence out of the bound. Second, the assumption  fails for robots with nonholonomic dynamics such as wheeled robots. 
+%For example, four wheel cars doing parallel parking may easily go out of the rectangle
+%because the cars need more space to make turns.
 
-In short, users can use the simulator to early detect whether
-the assumptions for correctness are too strong under specific scenarios,
-and revise the assumptions iteratively.
+In short, users can use the simulator to early detect whether the assumptions for correctness are too strong under specific scenarios, and revise the assumptions iteratively.
 For example, to run the line formation program on cars,
 a different module including the orientation of cars as well as more relaxed assumptions are needed.
 
-\subsection{Compilation and Deployment.}
+\subsection{Compilation and deployment.}
 In addition to the formal language, semantics, analysis, and simulation,
 our complete tool chain also includes compilation and deployment to heterogeneous platforms including drones and race cars.
 Once developers install our ROS~\cite{ros} based run-time libraries~(middleware) on a platform
