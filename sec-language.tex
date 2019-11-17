@@ -145,10 +145,12 @@ The configuration of an robot is a tuple $\agnt = ({M},\cp,\turn)$, where
 For readability, we use the dot (``$.$'') notation to access components of a robot configuration $\agnt$.
 For example, $\agnt.M$ means accessing the local context $M$ in the tuple $\agnt$.
 
-The controller module is modeled as a black-box functions
+\paragraph{Black-box functions for environment transitions}
+To define the  executable \K semantics of  \lgname applications, we have to provide executable descriptions for the environment transitions. The type of this executable object ($f$) is defined by $\Cfield$, namely, 
 $f: [\Cfield \mapsto \Val] \times \nnreals \mapsto [\Cfield \mapsto \Val]$.
-That is, given old sensor and actuator values as well as a period of continuous time,
-$f$ evaluates the physical dynamics and returns new values for all sensor and actual ports.
+That is, given old sensor and actuator values and a time point, $f$ should return the new values for all sensor and actual ports.
+%
+Depending on whether  we have an explicit or a black-box model for $f$, the executable semantics will enable different types of analysis as we shall see in Section~\ref{}.
 
 
 \subsection{Formal Semantics}\label{sec:semantics}
@@ -239,7 +241,7 @@ $f$ evaluates the physical dynamics and returns new values for all sensor and ac
 %    {  \forall i \in \UINS, \lconfig{i}.\turn = \prog }
 %    {  (\lset, S,\tau, \env)\rightarrow_G (\lset, S, \tau, \prog)}
 \end{mathpar}
-\caption{Partial Semantic Rules for \lgname.}\label{fig:partial-semantics}
+\caption{Partial semantic rules for \lgname.}\label{fig:partial-semantics}
 \end{figure}
 
 For simplicity, we describe only part of semantic rules of \lgname that is above event level.
@@ -288,7 +290,7 @@ additional assumptions will be needed to constrain the behavior of the sensor an
 Finally, the $\turn$ of the robot is set back to $\prog$.
 
 
-\paragraph{Global Semantics.}
+\paragraph{Global semantics.}
 
 With the event semantic for each robot, we can then define the execution for the distributed \lgname program.
 The rewrite rule is a mapping from an initial system configuration to a set of configurations.
