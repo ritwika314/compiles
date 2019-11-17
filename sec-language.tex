@@ -1,32 +1,36 @@
-\section{\lgname Language Design}
+\section{\lgname language design}
 \label{sec:language}
 
-\subsection{Synchronous Run-time System }
-
-As mentioned in \refsect{overview}, instances of the same \lgname program runs on a distributed collection of $\NMAX$ robots.
-The robots communicate with each other through distributed shared memory.
-Without loss of generality, we assume a set of indexes $\UINS = \{0,1,\dots,\NMAX-1\}$,
-and each robot is assigned with an unique index $\myuin \in \UINS$.
-Users can use $\NMAX$ and $\myuin$ as constant values in a \lgname program.
-
+In this section, we present the syntax and the semantics of \lgname.
+%
+%\subsection{Synchronous run-time system }
+%
+When a \lgname application is deployed on a fleet of robots, multiple instances of the same program runs on a collection of $\NMAX$ robots.
+There is a known set of identifiers $\UINS=\{0,1,\dots,\NMAX-1\}$, and each robot is assigned  a unique index $\myuin \in \UINS$.
+% Sayan. This is out of place here.
+%Programmers can use $\NMAX$ and $\myuin$ as constant values in a \lgname program.
+%
+The robots communicate with each other through distributed shared memory. 
 The execution of the \lgname program advances in a synchronous, \emph{round-by-round} fashion, where each round lasts for $\delta$ time,
 and $\delta >0$ is a platform specific execution parameter.
-During this period, the robots compute, move, and communicate.
+During this period, the robots compute, move, and 
+communicate with each other through distributed shared memory. 
 
 
-\subsection{Formal Syntax}\label{sec:syntax}
+
+\subsection{Syntax}\label{sec:syntax}
 
 \reffig{partial-syntax} shows the partial grammar of \lgname syntax.
 Each robot program consists of
 \begin{inparaenum}[(a)]
-\item declarations of the interfaces between the program and the controller modules,
+\item declarations of the interfaces between the program and the sensor/actuator modules,
 \item declarations of shared and local program variables, and
 \item events, consisting of preconditions and effects.
 \end{inparaenum}
-Robot programs (rule \emph{Program}) first can import controller modules.
-The module import grammar production specifies the interface of the controllers:
+Robot programs (rule \emph{Program}) first can import sensor/actuator modules.
+The module import grammar production specifies the interfaces or ports:
 it contains all input and output ports for actuators (\emph{APorts}) and sensors (\emph{SPorts}) that the program uses.
-The program can also contain shared and local declarations.
+%The program can also contain shared and local declarations.
 To summarize, there are following three types of names for reading/writing values:
 \begin{enumerate}[(i)]
 \item \emph{Sensor and actuator ports} are used to read from sensor ports and write to actuator ports of controllers.
@@ -89,22 +93,23 @@ The expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$.
 \end{figure}
 
 
-\subsection{Koord Semantics}
+\subsection{Koord semantics}
 \label{sec:configs}
 
 The semantics of a \lgname program execution is based on synchronous rounds divided into \emph{event transitions} and \emph{environment transitions} that update the \emph{system configuration}.
 In each round, each robot performs at most one event.
-The update performed by a single robot executing an event is modeled as an transition of updating the program variables;
-however, different events executed by the different robots may interleave.
-In between the events of successive rounds, the program variables remain constant
-while the sensor and actuator ports of all robots change continuously with time.
-However, the \lgname program can only read sampled values from and write to the ports every $\delta$ cycle.
+The update performed by a single robot executing an event is modeled as an instantaneous transition that updates the program variables; however, different events executed by the different robots may interleave in an arbitrary sequence.
+In between the events of successive rounds, $\delta>0$ duration of time elapses, the program variables remain constant while the values held by the sensor and actuator ports may change. 
+%This is captured by an {\em environment transition\/}.
+%The \lgname program can only read the sampled values from and write to the ports every $\delta$ time.
 %\sayan{Need to choose the words carefully here. We should discuss. Whether the variables change value continuously or discretely is a modeling question and what we want to analyze.}
 These are modeled as environment transitions that advance time as well as the sensor and actuator ports.
+%
+Thus, each round consists of a burst of (at most \NMAX) event transitions followed by an environment transition. This is a standard model for synchronous distributed systems where the speed of computation is much faster than the speed of communication and physical movement~\cite{lynch1996a,attiyawelch}. 
 
 We now describe the system state, or \emph{system configurations} which we use to formalize \lgname semantics.
 
-\paragraph{System Configurations.}
+\paragraph{System configurations.}
 
 A \emph{system configuration} is a tuple $\gconfig = (\lset_{i\in\UINS},{S},\tau,\turn)$, where
 
@@ -119,7 +124,7 @@ A \emph{system configuration} is a tuple $\gconfig = (\lset_{i\in\UINS},{S},\tau
 Bookkeeping variables are invisible in the language syntax, and only used in the semantics.
 
 
-\paragraph{Robot Configurations.}
+\paragraph{Robot configurations.}
 
 A \emph{robot configurations} is used to specify the semantics of each robot.
 Given a \lgname program $P$, we can define $\Var$ be the set of variables,
