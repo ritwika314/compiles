@@ -153,7 +153,7 @@ That is, given old sensor and actuator values and a time point, $f$ should retur
 Depending on whether  we have an explicit or a black-box model for $f$, the executable semantics will enable different types of analysis as we shall see in Section~\ref{}.
 
 
-\subsection{Formal Semantics}\label{sec:semantics}
+\subsection{Semantics}\label{sec:semantics}
 
 %%semantic rule references
 \newcommand{\StmtSeqRuleOne}{\textsc{StmtSeq1}\xspace}
@@ -244,13 +244,12 @@ Depending on whether  we have an explicit or a black-box model for $f$, the exec
 \caption{Partial semantic rules for \lgname.}\label{fig:partial-semantics}
 \end{figure}
 
-For simplicity, we describe only part of semantic rules of \lgname that is above event level.
-As an example for statement level semantic rules,
-rule~\StmtSeqRuleOne and \StmtSeqRuleTwo show how a statement representing a sequence of statements should be executed.
-The detailed statement and expression level semantics of \lgname is available in the extended version of the paper~\cite{}.
-\sayan{Do they allow appendices?}\chiao{No appendix, but supplemental materials can be provided separately.}
+%
+We will describe only the interesting semantic rules of \lgname  above the event level.
+Rule~\StmtSeqRuleOne and \StmtSeqRuleTwo show how a statement representing a sequence of statements should be executed (for more details on statement and expression level semantics we refer the readers to the extended version of the paper~\cite{}).
+%
 
-\paragraph{Per Robot Semantics.}
+\paragraph{Per robot semantics.}
 First, we present the semantics of executing an event for each robot,
 which will help us discuss the semantics of the whole system.
 All rules for statement semantics are of type
