@@ -5,8 +5,8 @@
 \newcommand{\LineForm}{\textsf{LineForm}\xspace}
 
 We will discuss the key features of the \lgname language and programming system with an example.
-The \lgname application shown in \reffig{lineform} is a simple formation control protocol of the type often used for drone shows like the one seen in \reffig{firefly}.
-The code in \reffig{lineform} makes an arbitrary number of robots (drones) line up uniformly between two extremal robots.
+The \lgname application \LineForm shown in \reffig{lineform} implements a simple formation control protocol of the type  used for drone shows like the one seen in \reffig{firefly}.
+\LineForm makes an arbitrary number of robots (drones) line up uniformly between two extremal robots.
 Small modifications to the code make the drones form other shapes like squares, cubes, and stars.
 
 \subsection{\lgname language}
@@ -28,48 +28,61 @@ In a distributed robotics setting, instances of the same \lgname program is exec
     \label{fig:lineform}
 \end{figure}
 
-\paragraph{Module ports and local variables.}
+\paragraph{Modules and port abstractions.}
 A \lgname program interacts with the sensors and low-level controllers of the robot platform through \emph{sensor} and \emph{actuator} ports.
+%
+%
 The program can read data from the sensor ports and can write data to actuator ports.
 %
-The \LineForm application uses a \emph{module} (library) called \emph{Motion} which provides a sensor port called \emph{position} that publishes the robot's position.
-The \emph{Motion} module also provides a port called \emph{target} for specifying a target position.
+For example, \LineForm uses a \emph{module} (library) called \emph{Motion} which provides a sensor port called \emph{position} that publishes the robot's position, and an actuator port called \emph{target} for specifying a target position.
+%
+%A \lgname program can use several modules providing different sensor and actuator ports.
+Thus, these  ports provide an abstraction over various possible sensor and controller implementations and environments.
+%
+\sayan{Implementations of the modules are part of the {\em Koord runtime system\/} and they implement hardware specific functions.}
+%, the actuator ports of different modules can be used to provide input to the controllers,
+%which drives the underlying physical plant and environment.
 
-A \lgname program can use multiple modules providing different sensor and actuator ports.
-As shown in \reffig{arch}, the actuator ports of different modules can be used to provide input to the controllers,
-which drives the underlying physical plant and environment.
-The sensor ports are  updated according to the real world physics, as perceived by the controllers.
+\sayan{For example, our implementation of the  \emph{Motion} module for a quadcopter uses an indoor camera based positioning system to update the \emph{position} port and it uses an RRT based~\cite{} path planner and motion controller.
 %
-\marginpar{\scriptsize\sayan{1. actuator ports ``can be'' used or ``are used'' ? How else could they be used? 2. The term controller is confusing there and in Fig 1.}}
-%
-Thus, the module ports provide an abstraction over various possible controller implementations and environments.
-For example, our implementation of the \emph{position} port for \emph{Motion} module uses an indoor camera based positioning system to track positions of drones.
-Alternatively, users may use GPS to implement the \emph{Motion} module in an outdoor setting.
-In short, different controllers in use would largely affect the behavior of each robot and its interaction with the environment.
+The  \emph{Motion} module abstraction is implemented for a small racing vehicle platform using the same indoor positioning system but a different model-predictive controller.
+}
+%\sayan{Similarly, an implementation \emph{target}}
 
-In addition to sensors and actuators, \lgname also allows declaring \emph{local} variables similar to most programming languages.
-Note that a \lgname is run on a system of robots;
-therefore, each participating robot would have its own set of module ports and local variables, along with a local copy of each  shared variable.
 %
+%For example the \emph{position} sensor port in \LineForm is periodically updated by the implemented \emph{Motion} module with the current position of the robot using  GPS or an indoor positioning system.
+%
+%\marginpar{\scriptsize\sayan{1. actuator ports ``can be'' used or ``are used'' ? How else could they be used? 2. The term controller is confusing there and in Fig 1.}}
+%
+%In short, different controllers in use would largely affect the behavior of each robot and its interaction with the environment.
+
+\paragraph{Local and shared variables.}
+ \lgname programs can have  \emph{local} variables similar to most programming languages.%
 %\marginpar{\scriptsize\sayan{What does ``system point of view'' mean?}}
 %
-\paragraph{Shared variables and system parameters.}
-\lgname provides \emph{shared} variables to allow participating robots to communicate with each other.
+%\paragraph{Shared variables and system parameters.}
+In addition, \lgname programs can also used \emph{shared} variables for participating robots to communicate with each other.
 At Line~\ref{lineform-allread} in \reffig{lineform}, an \textbf{allread} variable, $x$, is a shared variable of array type which all robots can read from,
 but each robot \myuin can only write to $x[\myuin]$.
-This shared array is used to share the current position of each robot with all other robots. $\lgname$ provides mutual exclusion, as it is an essential requirement for any system using distributed shared memory. The \emph{Task} and \emph{Mapping} applications discussed in \refsect{verification} use \emph{atomic} blocks of statements to update shared variables in a mutually exclusive fashion.
-%\chiao{Should we discuss about atomic blocks and mutual exclusion here.}
-%\sayan{not in any detail. 1 sentence forward pointer.}
-% Sayan: Not in detail 
-
-The robot also has access to system-level \emph{constant} parameters.
-For \LineForm as an example, it uses
+This shared array is used to share the current position of each robot with all other robots. 
+There are several system-level \emph{constant} parameters that the program can use.
+\LineForm uses
 \begin{inparaenum}[(a)]
     \item the unique integer identifier \myuin for itself and
     \item the number \NMAX of all participating robots.
 \end{inparaenum}
 A detailed list of system parameters will be discussed later in \refsect{language}.
 
+
+$\lgname$ provides mutual exclusion, as it is an essential requirement for any system using distributed shared memory. The \emph{Task} and \emph{Mapping} applications discussed in \refsect{verification} use \emph{atomic} blocks of statements to update shared variables in a mutually exclusive fashion.
+%\chiao{Should we discuss about atomic blocks and mutual exclusion here.}
+%\sayan{not in any detail. 1 sentence forward pointer.}
+% Sayan: Not in detail 
+
+
+
+As a \lgname program is run on a system of robots,
+therefore, each participating robot would have its own set of module ports and local variables, along with a local copy of each  shared variable.
 
 \subsection{Formal Semantics and Invariant Checking}
 
