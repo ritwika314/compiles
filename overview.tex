@@ -8,6 +8,7 @@ We will discuss the key features of the \lgname language and programming system 
 The \lgname application \LineForm shown in \reffig{lineform} implements a simple formation control protocol of the type  used for drone shows like the one seen in \reffig{firefly}.
 \LineForm makes an arbitrary number of robots (drones) line up uniformly between two extremal robots.
 Small modifications to the code make the drones form other shapes like squares, cubes, and stars.
+The \lgname programming tools can compile and deploy this code on a heterogeneous fleet of robots platforms; they can  help automate the verification of these types of applications by decomposing the proofs into platform dependent and independent proof obligations. Finally, the \lgname simulator can help find violations of assumptions made in for verification.
 
 \subsection{\lgname language}
 \label{sec:koord-language}
@@ -114,16 +115,16 @@ The \K semantics of \lgname allows us to construct the symbolic post states of t
 
 \sayan{The second step is to show,  that for any robot, assuming that the computed target are in $\mathit{rect}(x_{min}, x_{max})$, the controller implementing \emph{Motion} module indeed keeps the robot inside $\mathit{rect}(x_{min}, x_{max})$. 
 } 
-For this step, one has to reason about how each robot hardware moves when its implementation of the Motion module is given a target. In order to complete the proof of Invariant~\ref{inv:lineform}, we can state this as the following assumption with 
+For this step, one has to reason about how each robot hardware moves when its implementation of the \emph{Motion} module is given a \emph{target}. \lgname helps to identify and decompose the overall proof into  assumptions that the \emph{Module} implementations need to guarantee. For example,  we can state the key assumption needed for Invariant~\ref{inv:lineform} as: 
 \begin{assumption}
 \label{lineform-assume}
 \[
-\forall t \in [0, \delta], f(M.pos, M.tgt, t) \in rect(M.pos, M.tgt)
+\forall t \in [0, \delta], f(M.pos, M.tgt, t) \subseteq rect(M.pos, M.tgt),
 \]
 \end{assumption}
 \normalfont {where $M.tgt$ is the shorthand for $Motion.target$, 
-$f$ is a function giving the position of the robot at time $t$, moving to $M.tgt$, from $M.pos$.}.
-This assumption states that the robot's motion module should ensure that it is moving within the bounding rectangle between its position and target within the duration of a round.
+$f$ is a function giving the set of positions of the robot at time $t$, moving to $M.tgt$, from $M.pos$.}.
+Assumption~\ref{lineform-assume} states that the robot's implementation of \emph{Motion} module should ensure that it is moving within the bounding rectangle between its position and target within the duration of a round.
 %
 %Given a black-box function $f$ returning positions of the device in continuous time,
 %
