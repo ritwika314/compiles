@@ -28,7 +28,7 @@ The semantics of $\lgname$ has been constructed to enable decoupled analyses of 
 \end{mdframed}
 
 Given a sequence (permutation) $p$, $\pinit$ refers to the first element (robot $\myuin$) of the permutation and $\prest$ refers to the rest of sequence. Also, $\mathit{perms}(\UINS)$ refers to the set of permutations of $\UINS$.
-\TBD{\rg{$\pinit, \prest$ are macros.}}
+\fTBD{\rg{$\pinit, \prest$ are macros.}}
 We define a function $\traj: \pwg \times \left[0,\delta\right]$, which represents the \emph{trajectory} of the system, or the intermediate values of the sensor ports during a $\delta$-transition. Given $c\in \pwg, t\in \left[0,\delta\right]$, $\traj(c,t)$ represents the configuration at time $t$. $\pt{t_1}{t_2}(C)$ is the set of configurations reached by the system over the interval $[t_1,t_2]$.
 $$\pt{t_1}{t_2}(C) := \left\{c^\prime \mid \exists c\in C, t_1 \leq t\leq t_2 , c^\prime = \traj(c,t)\right\}$$
 
@@ -66,20 +66,18 @@ Our proposed proof strategy for the presented case studies is a \emph{decoupling
 
 
 
- A major source of nondeterminism in the behavior of these distributed programs with shared variables can be the order of writes in one round, however, this is not a factor in proving inductive invariants.
+ A major source of nondeterminism in the behavior of these distributed programs with shared variables can be the order of writes to shared variables in one round, however, this is not a factor in proving inductive invariants.
 
 %For instance, if a $\lgname$ program has no shared variables or writes to shared variables, $\forall p_1, p_2 \in \mathit{perms}(\UINS),\Post(c,p_1) = \Post(c,p_2)$.
 
-
-%
-%\begin{lemma}
-%    \label{noninter}
-%     Consider $\Event = \left\{e_1,e_2,\ldots, e_n\right\}$ and a proposed invariant $\beta$. Given that any of the events $e_i\in \Event$  either \begin{inparaenum} [(i)]\item contain only writes to an \emph{allread} variable, \item or at most \emph{atomic}writes to a shared variable, \item or no writes to a shared variable \end{inparaenum},
-%    $$ \bigwedge_{i\in \UINS}\bigwedge_{e \in \Event} \forall c' \in  \Post(c, i, e),  c'(\beta) \Leftrightarrow \forall c'' \in \Post(c), c''(\beta) $$
-%\end{lemma}
-%\begin{proof}
-%    The proof follows from the following two facts: the semantics of \emph{atomic} statements in $\lgname$ ensure that in a round, at most one robot can write to the shared variables contained in the atomic block, and the semantics of \emph{allread} variables in $\lgname$ ensure that an robot can only write to the index of the allread variable corresponding to its own $pid$.
-%\end{proof}
+\begin{lemma}
+   \label{noninter}
+Given a set of events $\Event$, an arbitrary configuration $c$,
+   $$\bigwedge_{i\in \UINS}\bigwedge_{e \in \Event} \forall c' \in  \Post(c, i, e), \eec{\mathit{inv}}{c} \Leftrightarrow \forall c'' \in \Post(c), \eec{\mathit{inv}}{c}$$
+\end{lemma}
+\begin{proof}
+   \rg{In process of writing this now}.
+\end{proof}
 
 
 
