@@ -2,6 +2,27 @@
 
 \input{syntax.tex}
 
+% We implemented \lgname semantics in \K, which a rewriting-based executable framework for defining language semantics. One can view a language semantics naturally as a set of reduction rules over configurations. Components of a configuration are called {\em cells} in \K. To implement the semantics discussed in \refsect{semantics}, the configuration in \K includes several bookkeeping variables as well.
+%
+%
+
+
+%Semantics in \K is expressed using configurations, which organize the components in elements called {\em cells}. Cells are labelled, have types indicating what kind of elements can be contained in them, and help specify the rewrite rule in context. \K allows underspecification of rewrite rules, meaning, only the rewrite rules affecting part of the configurations need to be specified if the rule doesn't affect the other parts of the rule. Our notion of configurations translate in a straightforward manner to \K configurations. We present a couple of example rewrite rules in \K to demonstrate how the executable semantics is implemented.
+%
+%
+%We use a top level {\em system} cell with nested cells corresponding to the elements discussed in \refsect{semantics}, as well as other cells which are used to store information like number of robots in the system, simulation parameters of the program, and other bookkeeping information we used to implement the semantics. There is a special cell called the {\em k} cell, which is used to store the current computation in the program. Each robot has a {\em k} cell to store its computation. Recall that a local variable is updated only in the local memory. The rule for this checks whether the variable is not in the keys of the map {\em sysLoc} from shared variables to their locations. The following rule in \K that corresponds to our \textsc{lvar-assign} rule in the semantics.
+%\vspace{2pt}
+%\begin{mdframed}
+%\begin{Verbatim}[fontsize=\tiny]
+%<robot> ... <k> V:Id = I:Val => .  ... </k>
+%            <loc> ... V |-> L ... </loc>
+%            <locstore> ... L |-> _ => I ... </locstore>
+%        ... </robot>
+%<sysloc> Rho </sysloc>                    when L notBool inKeys(Rho)
+%\end{Verbatim}
+%\end{mdframed}
+%
+
 
 \section{Code and Figures}
 \chiao{Appendix should not be included for PLDI and should be provided separately as supplementary materials.
@@ -66,3 +87,59 @@ The $\lgname$ program corresponding to this solution has three \emph{events}: \e
 In the design of the $\dmap$ application, we employ the use of \emph{sampled} sensors, which is essentially a sequence of timestamped sensor readings between rounds. The \emph{LUpdate} event can occur while each robot is traversing a path and hasn't reached the final destination, during which the robot uses a sampled sensor reading of the positions $\mathit{Motion.trace}$, of type $\mathit{PosStamped}[]$, which denotes an array of timestamped positions; and a sampled sensor reading of LIDAR scans $\mathit{Lidar.ldata}$ of type $\mathit{ScanStamped}$, which denotes an array of timestamped LIDAR scans. These sampled sensor readings are then synchronized to associate a LIDAR scan with a position.
 
 Mutual exclusion is an essential feature required in a distributed system with shared variables. The robot updates the shared variable $\gmap$ in the event \emph{GUpdate} using the value of its $\lmap$, which may have been updated with newly detected obstacles
+
+
+
+%
+% Algorithm~\ref{ag1}  computes reachable states of a given system based on the above functions and check $n$-invariance.
+%$\mathit{Unique}(\mathit{Perms}(\UINS), P_\mathit{events})$ is the set of permutations of the robots that may result in unique behaviors,
+% and we compute this set by analyzing the shared variables written to during enabled and urgent events of each robot during a round of program transitions.
+% The input to \refalg{ag1} is \begin{inparaenum}[(i)]
+%    \item $P$: the program,
+%    \item $\mathit{inv}$: a candidate invariant function,
+%    \item {\UINS}: set of robots,
+%    \item $\delta$: time step size and
+%    \item $n$: length executions to check.
+%\end{inparaenum}
+%
+%%
+%
+%\begin{algorithm}
+%\scriptsize
+%\textbf{Input}: $P$, $\mathit{inv}$, $\UINS$, $\delta$, $n$\\
+%$c\leftarrow \mathit{Init}(P,N)$\quad$p \leftarrow \mathit{Unique}(\mathit{Perms}(\UINS),P_{\mathit{events}})$\\
+%\lIf{
+%$ \mathit{Sat}(c,\neg\mathit{inv})$} { \Return `unsafe'}
+%$C \leftarrow$ \{c\} \\
+%\For{$i = 0$ \KwTo n}{
+%\For{$j = 0$ \KwTo $\mathit{len}(p)$ }{
+%$C^\prime\leftarrow\Post(C,p[j])$\\
+%\For{$c$ $\mathbf{in}$ $C'$} {
+%\lIf{
+%$ \mathit{Sat}(c,\neg\mathit{inv})$} { \Return (`unsafe',c)}
+%}
+%$C^\prime \leftarrow \Final(C,p[j])$\\
+%\rg{\emph{continuous reachability here}}
+%}}
+%\Return `safe'
+%\caption{Bounded invariant checking algorithm}\label{ag1}
+%\end{algorithm}
+%  In the next iteration, $C$ is set to be the frontier set of configurations.
+%Theorem~\ref{thm:bmcsound} summarizes the soundness of \refalg{ag1}.
+%
+%\begin{theorem}
+%    \label{thm:bmcsound}
+%    If Algorithm~\ref{ag1}  returns `unsafe' then there exists a counter-example to \emph{inv} of length at most $n$, \rg{state assumption on continuous behavior here}.
+%    if Algorithm~\ref{ag1} returns `safe' then \emph{inv} is an $n$-invariant.
+%\end{theorem}
+%\begin{proof}
+%{\em Sketch.} If algorithm \ref{ag1} returns {\em safe}, then for the $n$ loop iterations of the outer loop, given a set of states $C$ and the property \texttt{inv}, according to the algorithm $\forall c \in \Post(C), c \models \texttt{inv}$. $\Post(C)$ is the set of configurations that can be reached from $C$ using any possible sequence of rewrite rules allowed by the system before an environment transition. Therefore, if the algorithm returns safe, then the set of configurations reached from $C$ before an environment transition is also safe. \rg{continue proof of soundness of reachability of continuous behavior}
+%\end{proof}
+%\fTBD{Relate this to assumptions}
+%
+
+
+\subsection{Specify Constraints over Modules}
+\label{sec:module}
+\chiao{As mentioned in \refsect{semantics}, the assumptions over modules will be directed by the target invariant/property.
+    What does \lgname provide to help identify the assumptions?}
