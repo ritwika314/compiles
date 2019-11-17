@@ -2,6 +2,7 @@
 \label{sec:overview}
 
 \newcommand{\LineForm}{\textsf{LineForm}\xspace}
+\newcommand{\Motion}{\emph{Motion}\xspace}
 
 We will discuss the key features of the \lgname language and programming system with an example.
 The \lgname application \LineForm shown in \reffig{lineform} implements a simple formation control protocol of the type  used for drone shows like the one seen in \reffig{firefly}.
@@ -34,7 +35,7 @@ A \lgname program interacts with the sensors and low-level controllers of the ro
 %
 The program can read data from the sensor ports and can write data to actuator ports.
 %
-For example, \LineForm uses a \emph{module} (library) called \emph{Motion} which provides a sensor port called \emph{position} that publishes the robot's position, and an actuator port called \emph{target} for specifying a target position.
+For example, \LineForm uses a \emph{module} (library) called \Motion which provides a sensor port called \emph{position} that publishes the robot's position, and an actuator port called \emph{target} for specifying a target position.
 %
 Thus, these  ports provide an abstraction over various possible sensor and controller implementations and environments.
 %
@@ -42,25 +43,18 @@ Thus, these  ports provide an abstraction over various possible sensor and contr
 %, the actuator ports of different modules can be used to provide input to the controllers,
 %which drives the underlying physical plant and environment.
 
-\sayan{For example, our implementation of the \emph{Motion} module for a quadcopter uses an indoor camera based positioning system to update the \emph{position} port and it uses an RRT based~\cite{} path planner and motion controller.
+\sayan{For example, our implementation of the \Motion module for a quadcopter uses an indoor camera based positioning system to update the \emph{position} port and it uses an RRT based~\cite{} path planner and motion controller.
 %
-The  \emph{Motion} module abstraction is implemented for a small racing vehicle platform using the same indoor positioning system but a different model-predictive controller.
+The \Motion module abstraction is implemented for a small racing vehicle platform using the same indoor positioning system but a different model-predictive controller.
 }
 %\sayan{Similarly, an implementation \emph{target}}
 
 %
-%For example the \emph{position} sensor port in \LineForm is periodically updated by the implemented \emph{Motion} module with the current position of the robot using  GPS or an indoor positioning system.
-%
 %\marginpar{\scriptsize\sayan{1. actuator ports ``can be'' used or ``are used'' ? How else could they be used? 2. The term controller is confusing there and in Fig 1.}}
 %
-%In short, different controllers in use would largely affect the behavior of each robot and its interaction with the environment.
 
 \paragraph{Local and shared variables.}
- \lgname programs can have  \emph{local} variables similar to most programming languages.
-%
-%\marginpar{\scriptsize\sayan{What does ``system point of view'' mean?}}
-%
-%\paragraph{Shared variables and system parameters.}
+\lgname programs can have  \emph{local} variables similar to most programming languages.
 In addition, they can also use \emph{shared} variables for participating robots to communicate with each other.
 At Line~\ref{lineform-allread} in \reffig{lineform},
 an \textbf{allread} variable, $x$, is a shared array which all robots can read from,
@@ -78,9 +72,12 @@ A detailed list of system parameters will be discussed later in \refsect{languag
 
 \subsection{Semantics and invariant properties}
 
-We have developed the full semantics of \lgname using \K~\cite{rosu-serbanuta-2013-k}, and present the details in \refsect{sec:language}. The execution semantics of any applications for multi-robot system are complicated by issues of asynchrony, consistency of shared memory, and interactions between software and  the physical environment.
-The \K rewriting engine makes the formal language semantics \emph{executable}, and enables exhaustive exploration of non-deterministic behaviors of \lgname applications.
-In Section~\ref{}, we present a method for checking invariant properties for \lgname applications using symbolic execution of the $\lgname$ semantics in \K.
+We have developed the full semantics of \lgname using \K~\cite{rosu-serbanuta-2013-k}, and present the details in \refsect{language}.
+The execution semantics of any applications for multi-robot system are complicated by issues of asynchrony,
+consistency of shared memory, and interactions between software and the physical environment.
+The \K rewriting engine makes the formal language semantics \emph{executable},
+and enables exhaustive exploration of non-deterministic behaviors of \lgname applications.
+In \refsect{verification}, we present a method for checking invariant properties for \lgname applications using symbolic execution of the $\lgname$ semantics in \K.
 
 For \LineForm, a natural requirement is to restrict all the robots to stay within a certain safe area, at all times (Geofencing).
 More precisely, given a (hyper)rectangle $\mathit{rect}(x_{min}, x_{max})$ defined by its two corners $x_{min}$ and $x_{max}$,
@@ -106,42 +103,23 @@ The \K semantics of \lgname allows us to construct the symbolic post states of t
 and we can automatically prove this using the $\lgname$ prover (\reffig{tools}) as detailed in \refsect{verification}.
 }
 
-%<<<<<<< HEAD
-%\sayan{The second step is to show,  that for any robot, assuming that the computed target are in $\mathit{rect}(x_{min}, x_{max})$, the controller implementing \emph{Motion} module indeed keeps the robot inside $\mathit{rect}(x_{min}, x_{max})$. 
-%} 
-%For this step, one has to reason about how each robot hardware moves when its implementation of the \emph{Motion} module is given a \emph{target}. \lgname helps to identify and decompose the overall proof into  assumptions that the \emph{Module} implementations need to guarantee. For example,  we can state the key assumption needed for Invariant~\ref{inv:lineform} as: 
-%\begin{assumption}
-%\label{lineform-assume}
-%=======
 \sayan{%
 The second step is to show, that for any robot, assuming that the computed target are in $\mathit{rect}(x_{min}, x_{max})$,
-the controller implementing \emph{Motion} module indeed keeps the robot inside $\mathit{rect}(x_{min}, x_{max})$.
+the controller implementing \Motion module indeed keeps the robot inside $\mathit{rect}(x_{min}, x_{max})$.
 }
-For this step, one has to reason about how each robot  moves when its implementation of the \emph{Motion} module is given a \emph{target}.
-\lgname helps to identify and decompose the overall proof into  assumptions that the \emph{Module} implementations need to guarantee. For example,  we can state the key assumption needed for Invariant~\ref{inv:lineform} as: 
+For this step, one has to reason about how each robot moves when its implementation of the \Motion module is given a \emph{target}.
+\lgname helps to identify and decompose the overall proof into assumptions that the \emph{Module} implementations need to guarantee.
+For example, we can state the key assumption needed for Invariant~\ref{inv:lineform} as:
 \begin{assumption}
 \label{lineform-assume}
 \[
 \forall t \in [0, \delta], f(M.pos, M.tgt, t) \subseteq rect(M.pos, M.tgt),
 \]
 \end{assumption}
-%<<<<<<< HEAD
-%\normalfont {where $M.tgt$ is the shorthand for $Motion.target$, 
-%$f$ is a function giving the set of positions of the robot at time $t$, moving to $M.tgt$, from $M.pos$.}.
-%Assumption~\ref{lineform-assume} states that the robot's implementation of \emph{Motion} module should ensure that it is moving within the bounding rectangle between its position and target within the duration of a round.
-%%
-%%Given a black-box function $f$ returning positions of the device in continuous time,
-%%
-%In Section~\ref{}, we will discuss how these types of assumptions about the control system can be discharged using verification engines for reasoning about continuous behavior of dynamical systems.
-
-%\chiao{Explain why we need assumptions over modules.}
-%\sayan{Drop the extra line after Invariant~1. Why bother with the shorthand M.pos? M.tgt does not even appear in the invariant.}
-%\sayan{Ok, you can state the invariant...then what? can it be proved automatically using K? We should say that then with the appropriate qualifiers, and give a forward pointer.}
-%=======
-%\noindent
+\noindent
 where $M.tgt$ is the shorthand for $Motion.target$,
 $f$ is a function giving the position of the robot at time $t$, moving to $M.tgt$, from $M.pos$.
-This assumption states that the robot's motion module should ensure that it is moving within the bounding rectangle between its position and target within the duration of a round.
+This assumption states that the robot's \Motion module should ensure that it is moving within the bounding rectangle between its position and target within the duration of a round.
 In \refsect{verification}, we will discuss how these types of assumptions about the control system can be discharged using verification engines for reasoning about continuous behavior of dynamical systems.
 
 %\chiao{Give the formula representing the symbolic post or transition relation of \emph{TargetUpdate}}
