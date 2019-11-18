@@ -90,7 +90,25 @@ Symbolically executing the effect of the event (for robot $i$) using \K semantic
 
 The assumption we make to prove the inductive invariant, following directly from \asum{lineform-assume} in \refsect{overview} is $$A := \mathit{M.pos}_i' \in \mathit{rect}[\mathit{M.pos}_i,\mathit{M.tgt}_i] .$$
 Again, the operators $\leq$ and $\geq$ indicate a component-wise re, The invariant for the current configuration is $$I: \mathit{M.pos}_i \in \mathit{rect}[x_{min}, x_{max}] \wedge x[i] \in \mathit{rect}[x_{min}, x_{max}]$$ and  the invariant in the post event configuration is $$I' := \mathit{M.pos}_i' \in \mathit{rect}[x_{min}, x_{max}] \wedge x'[i] \in \mathit{rect}[x_{min}, x_{max}].$$
-The overall constraint then becomes $$ \bigwedge_{i\in \UINS}\mathit{Pr} \wedge E \wedge A \wedge  I \Rightarrow I'$$.
+The overall induction hypothesis then becomes $$ \bigwedge_{i\in \UINS}\mathit{Pr} \wedge E \wedge A \wedge  I \Rightarrow I'$$.
+Table \ref{tab:lineform} summarizes the verification of this constraints on systems of different sizes.
+\begin{table}
+    \label{tab:lineform}
+    \scriptsize
+ \centering
+   \begin{tabular}{ l|  c c c c  }
+ \hline
+ \tb{Benchmark}       & \tb{robots}(N) & $T_K$ (s) & $T_V$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
+ Lineform       & 3     &4.90  &9.09   & \Checkmark  \\
+Lineform       & 4      &4.79  &12.21  & \Checkmark   \\
+ Lineform       & 5      &4.91  &18.46  & \Checkmark   \\
+Lineform        & 10     &10.92   &32.34   & \Checkmark  \\
+Lineform         & 15    &12.23  & 53.89   &\Checkmark
+
+\end{tabular}
+    \caption{ \small Summary of semantics based verification for \emph{Lineform}.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the verification time in Z3 and \emph{robots}(N) is the number of robots in the system.}
+\end{table}
+
 
 % \begin{table}[!t]
 %\scriptsize
@@ -160,6 +178,22 @@ Clearly, $f'(x,y) \rightarrow f(x,y)$. From \asum{pathclear} and \asum{stlinemot
 \]
 \end{invariant}
 \noindent
+
+Table \ref{tab:task} summarizes the verification of this constraints on systems of different sizes.
+\begin{table}
+    \label{tab:task}
+    \scriptsize
+ \centering
+   \begin{tabular}{ l|  c c c c  }
+ \hline
+ \tb{Benchmark}       & \tb{robots}(N) & $T_K$ (s) & $T_V$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
+ Task       & 3     &9.90  &10.6   & \Checkmark  \\
+Task       & 4      &9.79  &11.78  & \Checkmark   \\
+ Task       & 5      &9.91  &14.92  & \Checkmark   \\
+Task        & 10     &12.92   &18.34   & \Checkmark  \\
+\end{tabular}
+    \caption{ \small Summary of semantics based verification for \Task.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the verification time in Z3 and \emph{robots}(N) is the number of robots in the system.}
+\end{table}
 
 
 
