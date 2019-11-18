@@ -165,11 +165,11 @@ Computing the $\mathit{pathIsClear}$ function,involves two nested loops over the
 The second assumption we make is that an agent moves closely along its $\mathit{Motion.path}$ actuator whose value is denoted by $\mathit{M.path}$ until it finishes traversing the path.  We also denote $\mathit{Motion.reached}$ by $\mathit{M.reached}$.
 \begin{assumption}
         \label{stlinemotion}
- There is an $\epsilon << d_s$, such that given a function $f' : [Point] \times [Point] \mapsto \mathbb{B}$  where $f'(x, y)$ is \emph{True} if $x$ and $y$ are at least $\epsilon$ distance apart, where $x$ and $y$ are either paths or positions,
+ There is an $\epsilon << d_s$, such that given a function $f' : [Point] \times [Point] \mapsto \mathbb{B}$  where $f'(x, y)$ is \emph{True} if $x$ and $y$ are at \emph{most} $\epsilon$ distance apart, where $x$ and $y$ are either paths or positions,
     $$\neg M.reached_i \Rightarrow f'(M.pos_i, sp[i])$$
 \end{assumption}
 
-Clearly, $f'(x,y) \rightarrow f(x,y)$. From \asum{pathclear} and \asum{stlinemotion}, to prove \inv{inv:lineform}, we only need to prove the following invariant.
+ From \asum{pathclear} and \asum{stlinemotion}, to prove \inv{inv:lineform}, we only need to prove the following invariant.
 
 \begin{invariant}
 \label{inv:paths}
