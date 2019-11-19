@@ -1,3 +1,4 @@
+
 \section{Formal analysis of $\lgname$ programs}
 \label{sec:verification}
 
@@ -278,3 +279,36 @@ In $\dmap$, the \MotionWithScan module provides a $\mathit{pscan}$ sensor used t
  The $\lgname$ program corresponding to this solution has three \emph{events}: \emph{NewPoint, LUpdate, GUpdate}. The shared allwrite variable $\gmap$ is used to construct a shared map of obstacles within the domain $D$, and has type $\mathit{GridMap}$, which is a 2-D array representing a grid over $D$. The local variable $\lmap$ represents each robot's \emph{local} knowledge of the domain $D$, and has the same type as $D$. A robot executing the \emph{NewPoint} event, finds an unoccupied point to move to using a user defined function $\mathit{pickFrontierPos}$ and plans a path to it using $\mathit{MotionWithScan.planner}$. It then updates its $\lmap$ from the shared variable $\gmap$. The $\mathit{LUpdate}$ event updates the $\lmap$ with scanned sensor data while the robot is in motion, and the $\mathit{GUpdate}$ event updates the shared $\gmap$ with the updated $\lmap$ information corresponding to the scanned data.
 
 
+Suppose we have a function $\mathit{snd}: GridMap \mapsto \mathbb{B}$, such that $\mathit{snd}(g)$ returns True if $g$ is consistent with the ground truth function $\world_Q$, and False otherwise. We want to prove that $\gmap$ as well as each agent $i$'s $\lmap_i$ is consistent with the ground truth function:
+\begin{invariant}
+    \label{inv:mapping}
+    $\forall i \in \UINS \mathit{snd(\lmap_i)} \wedge \mathit{snd(\gmap)}$
+\end{invariant}
+
+For the \emph{NewPoint} event, the post event configuration for agent $i$ is $E:= \lmap_i' = \gmap \wedge \gmap' = \gmap$.
+The induction hypothesis is $I:= \bigwedge_{i\in \UINS} \mathit{snd}(\lmap_i) \wedge \mathit{snd}(\gmap)$, and $I':= \bigwedge_{i\in \UINS} \mathit{snd}(\lmap_i') \wedge \mathit{snd}(\gmap')$ The overall constraint for this event along with its precondition is $\bigwedge_{i\in \UINS}\mbox{!}\mathit{on\_path}\wedge E\wedge I\Rightarrow I' $.
+
+We also assume that the $\mathit{merge}$ function is such that given two maps satisfying $\mathit{snd}$, it returns a map satisfying $\mathit{snd}$. The specific assumption we use then is as follows:
+\begin{assumption}
+    \label{merge}
+    $\forall i \in \UINS, \mathit{snd(\lmap_i)}\wedge \mathit{snd(\gmap)}\Rightarrow \mathit{snd(merge(\gmap,\lmap_i))}$,
+\end{assumption}
+
+For the event \emph{GUpdate}, we get the post event configuration for agent $i$ as $G:= \lmap_i' = \lmap_i \wedge \gmap' = \mathit{merge}(\gmap,\lmap_i)$. \asum{merge} is stated as $M:= \bigwedge_{i\in \UINS}, \mathit{snd(\lmap_i)}\wedge \mathit{snd(\gmap)}\Rightarrow \mathit{snd(merge(\gmap,\lmap_i))}$. The overall constraint for this event along with its precondition is therefore : $\bigwedge_{i\in \UINS} \mathit{MWS}.reached \wedge G \wedge M \wedge I \Rightarrow I'$. We omit the discussion for \emph{LUpdate} in the interest of space, as it follows along the lines of the previous constraints. It requires an additional assumption on the $\mathit{scanToMap}$ function and the consistency of the sensor data $\mathit{MotionWithScan.pscan}$ with the ground truth, along with unrolling the \emph{for-loop} to the number of sensor observations. The overall induction hypothesis is a conjunction of the three.
+
+
+Table \ref{tab:map} summarizes the verification of these constraints on systems of different $N_sys$ .
+\begin{table}
+    \label{tab:map}
+    \scriptsize
+ \centering
+   \begin{tabular}{ l|  c c c c  }
+ \hline
+ \tb{Benchmark}       & \tb{robots}(N) & $T_K$ (s) & $T_V$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
+ \dmap       & 3     &  &   & \Checkmark  \\
+ \dmap      & 4      &  &  & \Checkmark   \\
+ \dmap       & 5      &  &  & \Checkmark   \\
+\dmap        & 10     &   &   & \Checkmark  \\
+\end{tabular}
+    \caption{ \small Summary of semantics based verification for \dmap.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for generation of constraints and verification in Z3 and \emph{robots}(N) is the number of robots in the system.}
+\end{table}
