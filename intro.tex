@@ -1,11 +1,14 @@
 \section{Introduction}
 \label{sec:intro}
 
-\chiao{
-Summary on page limits: abstract(<=0.5), intro(1--1.5), related work(<=0.5), overview/motivating example(1--1.5), language(3--3.5),
-case study(2.5--3), experiment(1--1.5), conclusion(<=0.5).
-Total: 10--12.5 pages. PLDI limit is 12 pages excluding references.
-}
+Distributed robotic applications have significant potential in transforming manufacturing, transportation, delivery, surveillance, and mapping~\cite{}. Following the trends in the cloud, mobile, and machine learning applications, programmability is going to be important in unlocking this potential  as platforms become more open and hardware developers shift to the applications marketplace. Unfortunately, domain specific languages (DSL) for robotics are surgically platform dependent, and they combine low-level sensing, communication, and control tasks with the application-level logic~\cite{}. This tight-coupling of applications with platform-specfic details can hinder development, modularity, portability, code reuse, and testing.
+
+
+\begin{figure}[h!]
+\includegraphics[width=\linewidth]{figs/koorduser.png}
+\caption{\small \lgname language  enables programmers to develop distributed robotics applications using a high-level language and prove properties using symbolic executable semantics in \K. Platform specific assumptions are abstracted and can be checked using simulations and hardware deployments.}
+\label{fig:koorduser}	
+\end{figure}
 
 Programming applications for distributed cyberphysical systems is challenging.
 Enumerate some of the challenges.
