@@ -337,7 +337,7 @@ To reiterate, the following are the timing requirements for rule~\EventTransRule
 \item a global clock is used to synchronize each $\delta$-time round.
 \end{inparaenum}
 The first two requirements are achievable if the time taken to complete a program transition is negligible compared to $\delta$,
-and $\delta$ is a common divisor of the sampling intervals of all controller ports in use.
+and $\delta$ can be a common multiple of the sampling intervals of all controller ports in use.
 These constraints are reasonable for cyberphysical systems where the computation and communication is comparatively much faster.
 For \Motion module as an example, our position sensor on each device publishes every 0.01 sec~(100Hz) while the CPU on each drone is 1.4 GHz.
 If we set $\delta$ to be 0.01 sec, an event transition taking 10K CPU cycles is still less than 0.1\% of $\delta$.
