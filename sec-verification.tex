@@ -109,11 +109,15 @@ The remainder of this section demonstrates the verification of proposed invarian
  %\rg{Detailed analysis of conditional statements within events?}.
 
 \subsection{Case Study: Lineform}
- We use the executable $\lgname$ semantics to prove \inv{lineform} inductively, as discussed in \refsect{overview}. For the \emph{Lineform} application, it has only one event \emph{TargetUpdate}.
 
-We represent the variables in the symbolic post configuration using \emph{primed copies} of the variables in the current configuration. Symbolically executing the effect of the event (for robot $i$) using \K semantics gives us the constraint $$E := \mathit{M.tgt_i}' = (x[i-1] + x[i+1])/2 \wedge x[i]' = \mathit{M.pos}_i,$$. We omitted the details of the $+$ operation, as it is overloaded to extend to vectors.
+ We use the executable $\lgname$ semantics to prove \inv{inv:lineform} inductively, as discussed in \refsect{overview}.
 
-The assumption we make to prove the inductive invariant, following directly from \asum{lineform-assume} in \refsect{overview} is $$A := \mathit{M.pos}_i' \in \mathit{rect}[\mathit{M.pos}_i,\mathit{M.tgt}_i'] .$$
+We represent the variables in the symbolic post configuration using \emph{primed copies} of the variables in the current configuration. Symbolically executing the effect of the event \evname{TargetUpdate} (for robot $i$) using \K semantics gives us the constraint:
+
+\begin{align*}E := \mathit{M.pos_i}' = M.pos_i &\wedge \mathit{M.tgt_i}' = (x[i-1] + x[i+1])/2 \\ &\wedge x[i]' = \mathit{M.pos}_i\end{align*}.
+We omit the details of the $+$ operation, as it is overloaded to extend to vectors.
+
+The assumption we make to prove the inductive invariant, following directly from \asum{lineform-assume} in \refsect{overview} is $$A := \mathit{M.pos}_i' \in \mathit{rect}[\mathit{M.pos}_i,\mathit{M.tgt}_i'].$$
 For robot $i$, Let the precondition of this event be denoted by $\mathit{Pr}:= \neg (i = \NMAX - 1 \vee i = 0)$.
 
 %The premise of the induction hypothesis is unsatisfiable with the the precondition of this effect for the robots $0$ and $\NMAX-1$, meaning this invariant is vacuously validated for these robots.
@@ -143,11 +147,11 @@ Table \ref{tab:lineform} summarizes the verification of these constraints on sys
  15  & 1 &12.23  & 53.89   &\Checkmark
 
 \end{tabular}
-    \caption{ \small Summary of semantics based verification for \emph{Lineform}.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for construction of constraints and verification in Z3. Robots moving along a line are represented by \tb{dim} = 1, along a plane by \tb{dim} = 2, and in a 3D space by \tb{dim} = 3.}
+    \caption{ \small Summary of semantics based verification for \Lineform.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for construction of constraints and verification in Z3. Robots moving along a line are represented by \tb{dim} = 1, along a plane by \tb{dim} = 2, and in a 3D space by \tb{dim} = 3.}
 \end{table}
 
 
-
+We relaxed
 % \begin{table}[!t]
 %\scriptsize
 % \centering
@@ -173,9 +177,9 @@ Table \ref{tab:lineform} summarizes the verification of these constraints on sys
 \newcommand{\Task}{\textsf{Task}\xspace}
 
 \subsubsection{Case Study: \Task}
-The problem statement for the \Task application is as follows: {\small \em \Task: Given a set of (possibly heterogeneous) robots, a safety distance $d_s>0$, and a fixed sequence of points (tasks) $\mathit{list} = x_1, x_2, \ldots \in \reals^3$, it is required that: (a) every unvisited $x_i$ in the sequence is {\em visited\/} exactly by one robot; and (b) no two robots ever get closer than $d_s$.\/}
+The problem statement for the \Task application is as follows: Given a set of (possibly heterogeneous) robots, a safety distance $d_s>0$, and a fixed sequence of points (tasks) $\mathit{list} = x_1, x_2, \ldots \in \reals^3$, it is required that: (a) every unvisited $x_i$ in the sequence is {\em visited\/} exactly by one robot; and (b) no two robots ever get closer than $d_s$.
 
-The $\lgname$ program used to solve this problem in this paper implements a fairly straightforward solution shown in \reffig{fig:taskapp}. Robot $i$ looks for an unassigned task $x$ from $\mathit{list}$; if there is a clear path to $x$ then $i$ assigns itself the task $x$. It shares its path with all other robots, and  visits $x$ following the path; once done it repeats the process.  We aim to prove the \emph{safety} of this application with respect to collisions among robots, i.e. \emph{no two robots ever get closer than $d_s$}.
+We implemented a fairly straightforward solution shown in \reffig{fig:taskapp}. Robot $i$ looks for an unassigned task $x$ from $\mathit{list}$; if there is a clear path to $x$ then $i$ assigns itself the task $x$. It shares its path with all other robots, and  visits $x$ following the path; once done it repeats the process.  We aim to prove the \emph{safety} of this application with respect to collisions among robots, i.e. \emph{no two robots ever get closer than $d_s$}.
 
 \begin{figure}[t]
     \two{0.4}{0.6}
@@ -190,10 +194,10 @@ The $\lgname$ program used to solve this problem in this paper implements a fair
 \end{figure}
 
 
-This application has two events \begin{inparaenum} \item {Assign}, in which each robot tries to assign itself to an unassigned task with a clear path  and \item \emph{Complete}, which checks whether an robot has visited its assigned task. \end{inparaenum} The robots use a shared allread variable $\pathvar$ to communicate the current path they are following to get to a task location, or their current position if they are stationary. A path here is a list of points that the robot visits in sequence. The \Motion module drives the robot along a path, as directed by the position value set at its actuator port $\mathit{Motion.path}$. The sensor port $\mathit{Motion.planner}$ returns a path to the target of an unassigned task, and a (user-defined) function called $\mathit{pathIsClear}$ is used to determine whether the currently planned path is within $d_s$ distance of any of paths (or positions) in $\pathvar$.
+This application has two events \begin{inparaenum} \item {Assign}, in which each robot tries to assign itself to an unassigned task with a clear path  and \item \emph{Complete}, which checks whether an robot has visited its assigned task. \end{inparaenum} The allread variable $\pathvar$ stores either the current path each robot is following to get to a task location, or the current position of a stationary robot. A path here is a list of points that a robot visits in sequence. The \Motion module drives the robot along a path, as directed by the position value set at its actuator port $\mathit{Motion.path}$. The sensor port $\mathit{Motion.planner}$ returns a path to the target of an unassigned task, and a (user-defined) function called $\mathit{pathIsClear}$ is used to determine whether the currently planned path is within $d_s$ distance of any of paths (or positions) in $\pathvar$.
 
 \newcommand{\dist}{\mathit{dist}}
-Suppose there is a function $\dist : [Point] \times [Point] \mapsto \mathbb{R}$, where $x$ and $y$ are either paths or positions of the robots, that returns the minimum distance between $x$ and $y$.
+Suppose there is a function $\dist : [Point] \times [Point] \mapsto \mathbb{R}$, where $x$ and $y$ are paths (or positions) of the robots, that returns the minimum distance between $x$ and $y$.
 \begin{invariant}
 \label{inv:task}
 \[\begin{split}
@@ -203,14 +207,13 @@ Suppose there is a function $\dist : [Point] \times [Point] \mapsto \mathbb{R}$,
 \end{invariant}
 \noindent
 
-Computing the $\mathit{pathIsClear}$ function,involves two nested loops over the length of each path, computing the minimum distance between each path segment. Proving invariants over these loops is by itself a difficult (and well studied) problem, so our symbolic execution treats any user-defined functions as uninterpreted functions. We require assumptions on the output of these functions. For any robot $i$ trying to assign itself to a task, we  assume that $\mathit{pathIsClear}(\mathit{sp}, \mathit{cp} ,i, \mathit{ds})$ returns true only if the shared paths the proposed path $\mathit{cp}$ never comes within $d_s$ distance of any of the shared paths (or positions).
+Computing the $\mathit{pathIsClear}$ function involves two nested loops over the length of each path, then computing the minimum distance between each path segment. Proving invariants over these loops is by itself a difficult (and well studied) problem, so our symbolic execution treats any user-defined functions as uninterpreted functions. We require assumptions on the output of these functions. For any robot $i$ trying to assign itself to a task, we  assume that $\mathit{pathIsClear}(\mathit{sp}, \mathit{cp} ,i, \mathit{ds})$ returns true only if the shared paths the proposed path $\mathit{cp}$ is always more than $d_s$ distance of any of the shared paths (or positions). \footnote{ The index $i$ in the $\mathit{pathIsClear}$ function indicates that the previously shared path or position of the robot $i$ shouldn't be considered in the computation.}
 
 \begin{assumption}
     \label{pathclear} There is an $\epsilon > 0$:
     $$\forall j \in \UINS, pathIsClear(sp, cp,  i, d_s) \wedge j \neq i \Rightarrow  \dist(sp[j], cp) \geq d_s + \epsilon$$
 \end{assumption}
 
- The index $i$ in the $\mathit{pathIsClear}$ function indicates that the previously shared path or position of the robot $i$ shouldn't be considered in the computation.
 
 The second assumption we make is that an robot moves closely along its $\mathit{Motion.path}$ actuator whose value is denoted by $\mathit{M.path}$ until it finishes traversing the path. We also denote $\mathit{Motion.reached}$ by $\mathit{M.reached}$.
 \begin{assumption}
@@ -218,13 +221,13 @@ The second assumption we make is that an robot moves closely along its $\mathit{
     $$\mathit{on\_task}_i\wedge \neg \mathit{M.reached}_i \Rightarrow \dist(M.pos_i, sp[i]) \leq \epsilon $$
 \end{assumption}
 
-We verified this protocol for four tasks signified by $\incurly{t_1,t_2,t_3,t_4}$ and, we unrolled the for loop iterating through the task list into a sequence of (nested) \emph{if-else} statements. The updates to the symbolic post event configuration of the \emph{Assign} event for robot $i$ on picking $t_1$ are captured by the \K executable semantics as follows: \begin{align*}E_{t_1} &:= \mathit{on\_task}_i' \wedge \mathit{curr\_path}_i' = \mathit{M.planner(t_1.target)} \\ &\wedge \pathvar[i]' = \mathit{curr\_path_i}' \wedge \mathit{M.path}_i' = \pathvar[i]' \\
+Since we do not want to deal with loop invariants, we verified this protocol for four tasks signified by $\incurly{t_1,t_2,t_3,t_4}$ and we unrolled the for loop iterating through the task list into a sequence of (nested) \emph{if-else} statements. The constraints on the symbolic post event configuration of the \emph{Assign} event for robot $i$ on picking $t_1$ generated by the \K executable semantics as follows: \begin{align*}E_{t_1} &:= \mathit{on\_task}_i' \wedge \mathit{curr\_path}_i' = \mathit{M.planner(t_1.target)} \\ &\wedge \pathvar[i]' = \mathit{curr\_path_i}' \wedge \mathit{M.path}_i' = \pathvar[i]' \\
   &\wedge (\bigwedge_j j\neq i \Rightarrow \pathvar[j]'= \pathvar[j] )
  \end{align*}
-Similarly, we get $E_{t_2}$, $E_{t_3}$ and $E_{t_4}$ for the other tasks. For $t_1$, an additional constraint capturing \asum{pathclear} on the function $\mathit{PathIsClear}$ is generated as follows :  $A_{t_1} := \forall j \in \UINS, j \neq id, \mathit{dist}(\pathvar[j], \mathit{curr\_path}_i') \geq d_s + \epsilon$ where $\epsilon$ is a positive constant. Similarly we have constraints $A_{t_2}, A_{t_3}$  and $A_{t_4}$ for the other tasks. When none of the tasks is picked, the post event configuration generated is $$ E_{none} :=\mbox{!}\mathit{on\_task}_i' \wedge \pathvar[i]' = M.pos_i $$. Since the positions of the robots don't change after the event, \inv{inv:task} for the current configuration for robot $i$ reduces to $$I: \forall j \in \UINS, j \neq i \Rightarrow \mathit{dist}(\pathvar[j], \pathvar[i]) \geq d_s  $$ and the invariant in the post event configuration is $$I' := \forall j \in \UINS, j \neq i \Rightarrow \mathit{dist}(\pathvar[j]', \pathvar[i]') \geq d_s  .$$
 
-The induction hypothesis for event \emph{Assign} then becomes $$ \bigwedge_{i\in \UINS}\mathit{on\_task_i} \wedge \bigvee_{t_j}(E_{t_j} \wedge A_{t_j} \wedge  I) \Rightarrow I'.$$ The induction hypothesis for event \emph{Complete} is generated similarly, and omitted here, and the overall induction hypothesis is a conjunction of the two.
+Similarly, we get $E_{t_2}$, $E_{t_3}$ and $E_{t_4}$ for the other tasks. For each task, an additional constraint capturing \asum{pathclear} on the function $\mathit{PathIsClear}$ is generated as follows:  $A_{t_1} := \forall j \in \UINS, j \neq id, \mathit{dist}(\pathvar[j], \mathit{curr\_path}_i') \geq d_s + \epsilon$ where $\epsilon$ is a positive constant. Similarly we have constraints $A_{t_2}, A_{t_3}$  and $A_{t_4}$ for the other tasks. When none of the tasks is picked, the post event configuration generated is $$ E_{none} :=\mbox{!}\mathit{on\_task}_i' \wedge \pathvar[i]' = M.pos_i $$. Since the positions of the robots don't change after the event, \inv{inv:task} for the current configuration for robot $i$ reduces to $$I: \forall j \in \UINS, j \neq i \Rightarrow \mathit{dist}(\pathvar[j], \pathvar[i]) \geq d_s  $$ and the invariant in the post event configuration is $$I' := \forall j \in \UINS, j \neq i \Rightarrow \mathit{dist}(\pathvar[j]', \pathvar[i]') \geq d_s  .$$
 
+The induction hypothesis for event \emph{Assign} then becomes $$ \bigwedge_{i\in \UINS}\mathit{on\_task_i} \wedge \bigvee_{t_j}(E_{t_j} \wedge A_{t_j} \wedge  I) \Rightarrow I'.$$ The induction hypothesis for event \emph{Complete} is generated similarly (omitted here), and the overall induction hypothesis is a conjunction of the two.
 
 Table \ref{tab:task} summarizes the verification of these constraints on systems of different $N_sys$ .
 \begin{table}
@@ -248,8 +251,7 @@ Task        & 10     &12.92   &18.34   & \Checkmark  \\
 
  Our approach requires each robot to construct a \emph{local mapping} of the grid over $D$ using sensors, and update it using information from other robots shared via a \emph{global mapping}. Each mapping essentially maps a set $\qdom \subseteq D \cap \mathbb{Q}^2$ where $\qdom$ is a quantized representation of $D$, to 0 or 1 based on its occupancy.
 
-
-Suppose there is a \emph{ground truth} function $\world_Q : Q \mapsto \left\{0,1\right\}$ that gives the actual occupancy of obstacles in this arena. That is, $\forall p \in Q$,
+Suppose there is a \emph{ground truth} function $\world_Q : Q \mapsto \left\{0,1\right\}$ that gives the actual occupancy of obstacles in this quantized arena. That is, $\forall p \in Q$,
 \begin{align}
 \world_Q(p) =
 		\left\{
@@ -297,7 +299,7 @@ We also assume that the $\mathit{merge}$ function is such that given two maps sa
 For the event \emph{GUpdate}, we get the post event configuration for robot $i$ as $G:= \lmap_i' = \lmap_i \wedge \gmap' = \mathit{merge}(\gmap,\lmap_i)$. \asum{merge} is stated as $M:= \bigwedge_{i\in \UINS}, \mathit{snd(\lmap_i)}\wedge \mathit{snd(\gmap)}\Rightarrow \mathit{snd(merge(\gmap,\lmap_i))}$. The overall constraint for this event along with its precondition is therefore : $\bigwedge_{i\in \UINS} \mathit{MWS}.reached \wedge G \wedge M \wedge I \Rightarrow I'$. We omit the discussion for \emph{LUpdate} in the interest of space, as it follows along the lines of the previous constraints. It requires an additional assumption on the $\mathit{scanToMap}$ function and the consistency of the sensor data $\mathit{MotionWithScan.pscan}$ with the ground truth, along with unrolling the \emph{for-loop} to the number of sensor observations. The overall induction hypothesis is a conjunction of the three.
 
 
-Table \ref{tab:map} summarizes the verification of these constraints on systems of different $N_sys$ .
+Table \ref{tab:map} summarizes the verification of these constraints on systems of different $N\_sys$ .
 \begin{table}
     \label{tab:map}
     \scriptsize
