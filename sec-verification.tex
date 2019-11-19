@@ -50,10 +50,12 @@ Finally, given a set of configurations $C_0\subset\pwg$, the set of states reach
 
 
 
-\subsection{Inductive Invariants}
-An invariant of a system is a property that holds true for all reachable configurations of a system. Invariants can be used to specify, for instance, a safety property of a system such as no two robots are ever within a specified radius of each other. \rg{The types of invariants allowed by our prover module are shown in appendix...}.
+\subsection{Invariant requirements}
+An invariant of a system is a property that holds in all reachable configurations. Invariants can be used to specify, for instance, a safety property of a system such as no two robots are ever within a specified radius of each other. 
+%\rg{The types of invariants allowed by our prover module are shown in appendix...}.
 %define invariants, pointer to syntax
 Given a configuration $c \in \pwg$, let $\eec{\mathit{inv}}{c}$ represent an \emph{evaluation} i.e. the substitution of variables in $\mathit{inv}$ with their values from $c$.
+\sayan{what is inv? an expression a predicate? on what? Lets pull out some of these general notations about evaluation, permutations, etc. to be at the beginning of 5.}
 %fix notation of evalution
  %Formally, we say that $\beta$ is an inductive invariant if given a set of initial configurations of a system $C_0 \in \pwg$, and an arbitrary configuration $c \in \pwg$,  $$\forall c_0 \in C_0, \eec{\mathit{inv}}{c_0} \wedge c(\beta) \Rightarrow \forall c^\prime \in \Reach(c,1), c^\prime(\beta).$$ In other words, if a property holds true in the initial states of a system, and it can be proved to hold for all configurations reachable in one round from any configuration it is known to hold in, then it is an invariant of the system.
 
