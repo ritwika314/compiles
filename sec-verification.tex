@@ -3,15 +3,17 @@
 %\rg{round, program transition, event execution, $\delta$-transition are all defined at this point: program transition : events executed in some order, $\delta$-transition: simulataneous advancement of time, round = program + $\delta$-transition. }
 % connect to definition of e.
 %make the post definition on a set.
-The semantics of $\lgname$ has been constructed to enable decoupled analyses of discrete and dynamic components of distributed multi-robot systems. As discussed in the previous sections, the \emph{events} in an $\lgname$ program comprise the discrete computations in the system. The effect of an agent $i$ executing event $e\in \Event$ on a configuration $c\in \pwg$, can be seen as a $\stmtrule$ application to  $\left\langle c.S, c.L, B \right\rangle $, where $B$ is the effect of $e$.
+We have built the semantics of $\lgname$  in the \K framework to enable decoupled analyses of discrete and dynamic parts of distributed multi-robot systems. As discussed in the previous sections, the \emph{events} in an $\lgname$ program comprise the discrete computations in the system. The effect of an agent $i$ executing event $e\in \Event$ on a configuration $c\in \pwg$, can be seen as a $\stmtrule$ application to  $\left\langle c.S, c.L, B \right\rangle $, where $e$ is ``eventName: pre: C eff: B''.
+\marginpar{\scriptsize\sayan{fix fonts}}
 
-\subsection{Reachable Configurations}
+\subsection{Reachable configurations}
 
- Given a set of system configurations $C$, we define the following:
+ Given a set of system configurations $C$, we define the \sayan{functions using the semantic rules of Section~\ref{}}:
  \begin{inparaenum}[(i)]
-     \item $\Post(C,i,e)$ is the set of configurations which can be reached by robot $i$ executing event $e \in \Event$ from a configuration in $C$.
-     \item$\Post(C,i)$ is the set of configurations which can be reached by robot $i$ executing an event from a configuration in $C$.
-     \item$\Post(C,p)$ is the set of configurations reached during a program transition, when robots execute their events in the order $p$, where $p$ is a sequence of robot $\mathit{pids}$.
+     \item $\Post(C,i,e)$ returns the set of configurations that can be obtained by robot $i$ executing event $e \in \Event$ from a configuration in $C$.
+  \marginpar{\scriptsize\sayan{are events deterministic? Did we discuss somewhere?}}
+     \item$\Post(C,i)$ returns the set of configurations obtained by robot $i$ executing \sayan{any} event from a configuration in $C$.
+     \item$\Post(C,p)$ returns all configurations visited, when robots execute their events in the order $p$, where $p$ is a sequence of robot $\mathit{pids}$.
      \item $\Post(C)$ is the union of $\Post(C,p)$ over all orders $p$.
      \item$\Final(C)$ is the set of configurations reached from $C$ \emph{after} a program transition.
  \end{inparaenum}
@@ -20,25 +22,31 @@ The semantics of $\lgname$ has been constructed to enable decoupled analyses of 
 \footnotesize
 \begin{align*}
     \Post (C,i,e) &= \{ c^\prime\mid \ \ \exists c \in C, \left\langle c.S, c.L, B \right\rangle \stmtrule \left\langle c^\prime.S, c^\prime.L, \cdot \right\rangle \},\\ &\mbox{ where B is the effect of }e.\\
-\Post(C,i) :=& \bigcup_e \Post(C,i,e),\\
+\Post(C,i) :=& \bigcup_{e\sayan{\in??}} \Post(C,i,e),\\
 \Post(C,p) := & \ \Post(\Post(C,\pinit), \prest)\\ & \cup \Post(C,\pinit)\\
 \Post(C) :=& \bigcup_{p\in \mathit{perms}(\UINS)} \Post(C,p), \\
 \Final(C) :=& \left\{ c\in \Post(C)\mid \forall i \in \UINS, c.L_i.\turn = \env \right\}.
 \end{align*}
 \end{mdframed}
-
+\sayan{Write the 3rd function as Post(C,p) = Post(C,p[0]) if |p| =1 else = Post(Post(C,p[0]),p[1:]). As a 2 part recursive function definition. I am not sure about the notations, but you get the idea I hope. Does it make sense to introduce the types of C, p, i in the function definitions? Else, add it as a sentence belwo ``where $C\in C$ is a global confiduction, i $\in$ is a ...  }
 Given a sequence (permutation) $p$, $\pinit$ refers to the first element (robot $\myuin$) of the permutation and $\prest$ refers to the rest of sequence. Also, $\mathit{perms}(\UINS)$ refers to the set of permutations of $\UINS$.
-\fTBD{\rg{$\pinit, \prest$ are macros.}}
+
+\sayan{Start new para. Say why we need to also model environment transition, and states reached at intermediate time points (1-2 sentencnes). Relate function traj to f.  }
 We define a function $\traj: \pwg \times \left[0,\delta\right]$, which represents the \emph{trajectory} of the system, or the intermediate values of the sensor ports during a $\delta$-transition. Given $c\in \pwg, t\in \left[0,\delta\right]$, $\traj(c,t)$ represents the configuration at time $t$. $\pt{t_1}{t_2}(C)$ is the set of configurations reached by the system over the interval $[t_1,t_2]$.
 $$\pt{t_1}{t_2}(C) := \left\{c^\prime \mid \exists c\in C, t_1 \leq t\leq t_2 , c^\prime = \traj(c,t)\right\}$$
 
-The set of points reached by an $\delta$-transition at $\delta$ time from $C$ is represented as $\ft{\delta}(C) := \pt{\delta}{\delta}(C)$. A \emph{frontier} set of configurations represents the set of configurations that can be reached from an initial configuration $C$ after \emph{completing} rounds of execution. We define $\frontier(C,0) := C$ and,
+The set of points reached by a $\delta$-transition at $\delta$ time from $C$ is denoted by  $\ft{\delta}(C) := \pt{\delta}{\delta}(C)$. A \emph{frontier} set of configurations represents the set of configurations that can be reached from an initial configuration $C$ after \emph{completing} rounds of execution. 
+\sayan{rounds or one round?}
+We define $\frontier(C,0) := C$ and,
 $$\frontier(C,n) := \ft{\delta}(\Final(\frontier(C,n-1))).$$
+\sayan{Again, use the 2 step if-then definition of this recursive function Fr and Reach.}
+
 
 Finally, given a set of configurations $C_0\subset\pwg$, the set of states reachable in $n$ rounds can be defined inductively as $\Reach(C_0,0) := C_0$ and,
 \begin{align*}
 \Reach(C_0,n) := \Reach(C_0 &,n-1) \cup \Post(\frontier(C_0,n-1) \\ &\cup \pt{0}{\delta}(\Post(\frontier(C_0,n-1)))
 \end{align*}
+\sayan{Needs a sentence explaining the definition.}
 
 
 
