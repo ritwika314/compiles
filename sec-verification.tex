@@ -118,9 +118,8 @@ Table \ref{tab:lineform} summarizes the verification of this constraints on syst
  15  & 1 &12.23  & 53.89   &\Checkmark
 
 \end{tabular}
-    \caption{ \small Summary of semantics based verification for \emph{Lineform}.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the verification time in Z3. Robots moving along a line are represented by \tb{dim} = 1, along a plane by \tb{dim} = 2, and in a 3D space by \tb{dim} = 3.}
+    \caption{ \small Summary of semantics based verification for \emph{Lineform}.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for construction of constraints and verification in Z3. Robots moving along a line are represented by \tb{dim} = 1, along a plane by \tb{dim} = 2, and in a 3D space by \tb{dim} = 3.}
 \end{table}
-
 
 
 
@@ -149,7 +148,7 @@ Table \ref{tab:lineform} summarizes the verification of this constraints on syst
 \newcommand{\Task}{\textsf{Task}\xspace}
 
 \subsubsection{Case Study: \Task}
-The problem statement for the \Task application is as follows: {\small \em \Task: Given a set of (possibly heterogeneous) robots, a safety distance $d_s>0$, and a sequence of points (tasks) $\mathit{list} = x_1, x_2, \ldots \in \reals^3$, it is required that: (a) every unvisited $x_i$ in the sequence is {\em visited\/} exactly by one robot; and (b) no two robots ever get closer than $d_s$.\/}
+The problem statement for the \Task application is as follows: {\small \em \Task: Given a set of (possibly heterogeneous) robots, a safety distance $d_s>0$, and a fixed sequence of points (tasks) $\mathit{list} = x_1, x_2, \ldots \in \reals^3$, it is required that: (a) every unvisited $x_i$ in the sequence is {\em visited\/} exactly by one robot; and (b) no two robots ever get closer than $d_s$.\/}
 
 The $\lgname$ program used to solve this problem in this paper implements a fairly straightforward solution shown in \reffig{fig:taskapp}. Robot $i$ looks for an unassigned task $x$ from $\mathit{list}$; if there is a clear path to $x$ then $i$ assigns itself the task $x$. It shares its path with all other robots, and  visits $x$ following the path; once done it repeats the process.  We aim to prove the \emph{safety} of this application with respect to collisions among agents, i.e. \emph{no two robots ever get closer than $d_s$}.
 
@@ -169,21 +168,21 @@ The $\lgname$ program used to solve this problem in this paper implements a fair
 This application has two events \begin{inparaenum} \item {Assign}, in which each agent tries to assign itself to an unassigned task with a clear path  and \item \emph{Complete}, which checks whether an agent has visited its assigned task. \end{inparaenum} The robots use a shared allread variable $\pathvar$ to communicate the current path they are following to get to a task location, or their current position if they are stationary. A path here is a list of points that the robot visits in sequence. The \Motion module drives the robot along a path, as directed by the position value set at its actuator port $\mathit{Motion.path}$. The sensor port $\mathit{Motion.planner}$ returns a path to the target of an unassigned task, and a (user-defined) function called $\mathit{pathIsClear}$ is used to determine whether the currently planned path is within $d_s$ distance of any of paths (or positions) in $\pathvar$.
 
 \newcommand{\dist}{\mathit{dist}}
-Suppose there is a function $\dist : [Point] \times [Point] \mapsto \mathbb{R}$, where $x$ and $y$ are either paths or positions of the robots, that returns the minimum distance between $x$ and $y$. Given an $\epsilon > 0$, which we specify later, The invariant we want to prove is the following:
+Suppose there is a function $\dist : [Point] \times [Point] \mapsto \mathbb{R}$, where $x$ and $y$ are either paths or positions of the robots, that returns the minimum distance between $x$ and $y$.
 \begin{invariant}
 \label{inv:task}
 \[\begin{split}
-    \forall i,j, \in \UINS, \dist(M.pos_i, M.pos_j) \geq d_s \\ \land \dist(\pathvar[i], \pathvar[j]) \geq d_s + \epsilon
+    \forall i,j, \in \UINS, \dist(M.pos_i, M.pos_j) \geq d_s \\ \land \dist(\pathvar[i], \pathvar[j]) \geq d_s
 \end{split}
 \]
 \end{invariant}
 \noindent
 
-Computing the $\mathit{pathIsClear}$ function,involves two nested loops over the length of each path, computing the minimum distance between each path segment. Proving invariants over these loops is by itself a difficult (and well studied) problem, so our symbolic execution treats any user-defined functions as uninterpreted functions. We require assumptions on the output of these functions. For any agent $i$ trying to assign itself to a task, we  assume that $\mathit{pathIsClear}(\mathit{sp}, \mathit{cp} ,i, \mathit{ds})$ returns true only if the shared paths the proposed path $\mathit{cp}$ never comes within $d_s$ distance of any of the shared paths (or positions):
+Computing the $\mathit{pathIsClear}$ function,involves two nested loops over the length of each path, computing the minimum distance between each path segment. Proving invariants over these loops is by itself a difficult (and well studied) problem, so our symbolic execution treats any user-defined functions as uninterpreted functions. We require assumptions on the output of these functions. For any agent $i$ trying to assign itself to a task, we  assume that $\mathit{pathIsClear}(\mathit{sp}, \mathit{cp} ,i, \mathit{ds})$ returns true only if the shared paths the proposed path $\mathit{cp}$ never comes within $d_s$ distance of any of the shared paths (or positions).
 
 \begin{assumption}
-    \label{pathclear}
-     $\mathit{sp}$. $$\forall j \in \UINS, pathIsClear(sp, cp,  i, d_s) \wedge j \neq i \Rightarrow  \dist(sp[j], cp) \geq d_s$$
+    \label{pathclear} There is an $\epsilon > 0$:
+    $$\forall j \in \UINS, pathIsClear(sp, cp,  i, d_s) \wedge j \neq i \Rightarrow  \dist(sp[j], cp) \geq d_s + \epsilon$$
 \end{assumption}
 
  The index $i$ in the $\mathit{pathIsClear}$ function indicates that the previously shared path or position of the agent $i$ shouldn't be considered in the computation.
@@ -191,8 +190,13 @@ Computing the $\mathit{pathIsClear}$ function,involves two nested loops over the
 The second assumption we make is that an agent moves closely along its $\mathit{Motion.path}$ actuator whose value is denoted by $\mathit{M.path}$ until it finishes traversing the path. We also denote $\mathit{Motion.reached}$ by $\mathit{M.reached}$.
 \begin{assumption}
         \label{stlinemotion}
-    $$\mathit{on\_task}_i\wedge \neg \mathit{M.reached}_i \Rightarrow \dist(M.pos_i, sp[i]) \leq \epsilon/2 $$
+    $$\mathit{on\_task}_i\wedge \neg \mathit{M.reached}_i \Rightarrow \dist(M.pos_i, sp[i]) \leq \epsilon $$
 \end{assumption}
+
+We verified this protocol for four tasks signified by $\incurly{t_1,t_2,t_3,t_4}$ and, we unrolled the for loop iterating through the task list into a sequence of (nested) \emph{if-else} statements. The updates to the symbolic post event configuration of the \emph{Assign} event for agent $i$ on picking $t_1$ are captured by the \K executable semantics as follows: \begin{align*}E_{t_1} &:= \mathit{on\_task}_i' \wedge \mathit{curr\_path}_i' = \mathit{M.planner(t_1.target)} \\ &\wedge \pathvar[i]' = \mathit{curr\_path_i}' \wedge \mathit{M.path}_i' = \pathvar[i]' \\
+  &\wedge (\bigwedge_j j\neq i \Rightarrow \pathvar[j]'= \pathvar[j] )
+ \end{align*}
+Similarly, we get $E_{t_2}$, $E_{t_3}$ and $E_{t_4}$ for the other tasks. For $t_1$, an additional constraint capturing \asum{pathclear} on the function $\mathit{PathIsClear}$ is generated as follows :  $A_{t_1} := \forall j \in \UINS, j \neq id, \mathit{dist}(\pathvar[j], \mathit{curr\_path}_i') \geq d_s + \epsilon$ where $\epsilon$ is a positive constant. Similarly we have constraints $A_{t_2}, A_{t_3}$  and $A_{t_4}$ for the other tasks. When none of the tasks is picked, the post event configuration generated is $$ E_{none} :=\mbox{!}\mathit{on\_task}_i' \wedge \pathvar[i]' = M.pos_i $$. Since the execution of the event doesn't affect the positions of the robots themselves, \inv{inv:task}
 
 Table \ref{tab:task} summarizes the verification of this constraints on systems of different sizes.
 \begin{table}
@@ -207,7 +211,7 @@ Table \ref{tab:task} summarizes the verification of this constraints on systems 
  Task       & 5      &9.91  &14.92  & \Checkmark   \\
 Task        & 10     &12.92   &18.34   & \Checkmark  \\
 \end{tabular}
-    \caption{ \small Summary of semantics based verification for \Task.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the verification time in Z3 and \emph{robots}(N) is the number of robots in the system.}
+    \caption{ \small Summary of semantics based verification for \Task.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for generation of constraints and verification in Z3 and \emph{robots}(N) is the number of robots in the system.}
 \end{table}
 
 \subsubsection{Case Study: Mapping}
