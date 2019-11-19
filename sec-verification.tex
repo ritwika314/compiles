@@ -1,35 +1,49 @@
 \section{Formal analysis of $\lgname$ programs}
 \label{sec:verification}
+
+\newcommand{\Ev}{\ensuremath{e}\xspace}
+\newcommand{\EvBody}{\ensuremath{B}\xspace}
+
 %\rg{round, program transition, event execution, $\delta$-transition are all defined at this point: program transition : events executed in some order, $\delta$-transition: simulataneous advancement of time, round = program + $\delta$-transition. }
 % connect to definition of e.
 %make the post definition on a set.
-We have built the semantics of $\lgname$  in the \K framework to enable decoupled analyses of discrete and dynamic parts of distributed multi-robot systems. As discussed in the previous sections, the \emph{events} in an $\lgname$ program comprise the discrete computations in the system. The effect of an agent $i$ executing event $e\in \Event$ on a configuration $c\in \pwg$, can be seen as a $\stmtrule$ application to  $\left\langle c.S, c.L, B \right\rangle $, where $e$ is ``eventName: pre: C eff: B''.
-\marginpar{\scriptsize\sayan{fix fonts}}
+
+We have built the semantics of $\lgname$ in the \K framework to enable decoupled analyses of discrete and dynamic parts of distributed multi-robot systems.
+As discussed in the previous sections, the \emph{events} in an $\lgname$ program comprise the discrete computations in the system.
+The effect of an agent $i$ executing event $\Ev \in \Event$ on a configuration $\gconfig \in \pwg$,
+can be seen as a $\stmtrule$ application to  $\left\langle \gconfig.S, \gconfig.\lconfig{i}, \EvBody \right\rangle $, where $\Ev$ is \emph{``eventName: {\normalfont\bf pre:} C {\normalfont\bf eff:} \EvBody''}.
 
 \subsection{Reachable configurations}
 
- Given a set of system configurations $C$, we define the \sayan{functions using the semantic rules of Section~\ref{}}:
- \begin{inparaenum}[(i)]
-     \item $\Post(C,i,e)$ returns the set of configurations that can be obtained by robot $i$ executing event $e \in \Event$ from a configuration in $C$.
-  \marginpar{\scriptsize\sayan{are events deterministic? Did we discuss somewhere?}}
-     \item$\Post(C,i)$ returns the set of configurations obtained by robot $i$ executing \sayan{any} event from a configuration in $C$.
-     \item$\Post(C,p)$ returns all configurations visited, when robots execute their events in the order $p$, where $p$ is a sequence of robot $\mathit{pids}$.
-     \item $\Post(C)$ is the union of $\Post(C,p)$ over all orders $p$.
-     \item$\Final(C)$ is the set of configurations reached from $C$ \emph{after} a program transition.
- \end{inparaenum}
+Given a set of system configurations $\gset$, we define the functions using the semantic rules of \refsect{semantics}:
+\begin{inparaenum}[(i)]
+    \item $\Post_\Ev(\gconfig,i)$ returns the set of configurations obtained by robot $i$ executing event $\Ev \in \Event$ from a configuration $\gconfig$.
+    \marginpar{\scriptsize\sayan{are events deterministic? Did we discuss somewhere?}}
+    \item $\Post(\gset,i)$ returns the set of configurations obtained by robot $i$ executing any event from a configuration in $\gset$.
+    \item $\Post(\gset,\pvec)$ returns all configurations visited, when robots execute their events in the order $\pvec$,
+          where $\pvec$ is a sequence of $p_i \in \UINS$.
+    \item $\Post(\gset)$ is the union of $\Post(\gset,\pvec)$ over all orders $\pvec$.
+    \item $\Final(\gset)$ is the set of configurations reached from $\gset$ \emph{after} a program transition.
+\end{inparaenum}
+
 \vspace{1mm}
 \begin{mdframed}
 \footnotesize
 \begin{align*}
-    \Post (C,i,e) &= \{ c^\prime\mid \ \ \exists c \in C, \left\langle c.S, c.L, B \right\rangle \stmtrule \left\langle c^\prime.S, c^\prime.L, \cdot \right\rangle \},\\ &\mbox{ where B is the effect of }e.\\
-\Post(C,i) :=& \bigcup_{e\sayan{\in??}} \Post(C,i,e),\\
-\Post(C,p) := & \ \Post(\Post(C,\pinit), \prest)\\ & \cup \Post(C,\pinit)\\
-\Post(C) :=& \bigcup_{p\in \mathit{perms}(\UINS)} \Post(C,p), \\
-\Final(C) :=& \left\{ c\in \Post(C)\mid \forall i \in \UINS, c.L_i.\turn = \env \right\}.
+    \Post_\Ev(\gconfig,i) := &\ \{ \gconfig' \mid \left\langle \gconfig.S, \gconfig.\lconfig{i}, \EvBody \right\rangle \stmtrule \left\langle \gconfig'.S, \gconfig'.\lconfig{i}, \EndEvent \right\rangle \\
+                             & \land \gconfig'.\lconfig{i}.\turn = \env\}, \text{ where } \EvBody \text{ is the effect of } \Ev.\\
+    \Post(\gset,i) := & \bigcup_{\Ev \in \Event} \bigcup_{\gconfig\in\gset} \Post_\Ev(\gconfig, i),\\
+    \Post(\gset,\pvec) := &
+        \begin{cases}
+            \emptyset, \text{ if } \pvec=()\\
+            \Post(\gset,\pinit) \cup \Post(\Post(\gset,\pinit),\pvec'), \text{ if } \pvec=(\pinit, \pvec')\\
+        \end{cases}\\
+    \Post(\gset) := & \bigcup_{\pvec\in \mathit{perms}(\UINS)} \Post(\gset,\pvec), \\
+    \Final(\gset) := & \left\{ \gconfig\in \Post(\gset)\mid \forall i \in \UINS, \gconfig.L_i.\turn = \env \right\}.
 \end{align*}
 \end{mdframed}
-\sayan{Write the 3rd function as Post(C,p) = Post(C,p[0]) if |p| =1 else = Post(Post(C,p[0]),p[1:]). As a 2 part recursive function definition. I am not sure about the notations, but you get the idea I hope. Does it make sense to introduce the types of C, p, i in the function definitions? Else, add it as a sentence belwo ``where $C\in C$ is a global confiduction, i $\in$ is a ...  }
-Given a sequence (permutation) $p$, $\pinit$ refers to the first element (robot $\myuin$) of the permutation and $\prest$ refers to the rest of sequence. Also, $\mathit{perms}(\UINS)$ refers to the set of permutations of $\UINS$.
+where in a sequence $\pvec=(\pinit, \pvec')$, $\pinit$ refers to the first element of the sequence and $\pvec'$ refers to the rest of the sequence.
+Also, $\mathit{perms}(\UINS)$ refers to the set of permutations of $\UINS$.
 
 \sayan{Start new para. Say why we need to also model environment transition, and states reached at intermediate time points (1-2 sentencnes). Relate function traj to f.  }
 We define a function $\traj: \pwg \times \left[0,\delta\right]$, which represents the \emph{trajectory} of the system, or the intermediate values of the sensor ports during a $\delta$-transition. Given $c\in \pwg, t\in \left[0,\delta\right]$, $\traj(c,t)$ represents the configuration at time $t$. $\pt{t_1}{t_2}(C)$ is the set of configurations reached by the system over the interval $[t_1,t_2]$.
