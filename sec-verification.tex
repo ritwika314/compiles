@@ -91,31 +91,45 @@ The remainder of this section demonstrates the verification of proposed invarian
 
  %\rg{Detailed analysis of conditional statements within events?}.
 
-\subsubsection*{Case Study: Lineform}
- We use the executable $\lgname$ semantics to prove \inv{lineform} inductively, as discussed in \refsect{overview}. For the \emph{Lineform} application, it has only one event \emph{TargetUpdate}. Let the precondition of this event be denoted by $\mathit{Pr}:= \neg (\myuin = \NMAX - 1 \vee \myuin = 0)$ holds. The premise of the induction hypothesis is unsatisfiable with the the precondition of this effect for the robots $0$ and $\NMAX-1$, meaning this invariant is vacuously validated for these robots.
+\subsection{Case Study: Lineform}
+ We use the executable $\lgname$ semantics to prove \inv{lineform} inductively, as discussed in \refsect{overview}. For the \emph{Lineform} application, it has only one event \emph{TargetUpdate}.
 
-Symbolically executing the effect of the event (for robot $i$) using \K semantics gives us the constraint $$E := \mathit{M.pos_i}' = (x[i-1] + x[i+1])/2  \wedge x[i]' = \mathit{M.pos}_i,$$ where the primed copies of the variables indicate their values after the event has executed. We omitted the details of the $+$ operation, as it is overloaded to extend to vectors.
+We represent the variables in the symbolic post configuration using \emph{primed copies} of the variables in the current configuration. Symbolically executing the effect of the event (for robot $i$) using \K semantics gives us the constraint $$E := \mathit{M.tgt_i}' = (x[i-1] + x[i+1])/2 \wedge x[i]' = \mathit{M.pos}_i,$$. We omitted the details of the $+$ operation, as it is overloaded to extend to vectors.
 
-The assumption we make to prove the inductive invariant, following directly from \asum{lineform-assume} in \refsect{overview} is $$A := \mathit{M.pos}_i' \in \mathit{rect}[\mathit{M.pos}_i,\mathit{M.tgt}_i] .$$
-Again, the operators $\leq$ and $\geq$ indicate a component-wise re, The invariant for the current configuration is $$I: \mathit{M.pos}_i \in \mathit{rect}[x_{min}, x_{max}] \wedge x[i] \in \mathit{rect}[x_{min}, x_{max}]$$ and  the invariant in the post event configuration is $$I' := \mathit{M.pos}_i' \in \mathit{rect}[x_{min}, x_{max}] \wedge x'[i] \in \mathit{rect}[x_{min}, x_{max}].$$
-The overall induction hypothesis then becomes $$ \bigwedge_{i\in \UINS}\mathit{Pr} \wedge E \wedge A \wedge  I \Rightarrow I'$$.
+The assumption we make to prove the inductive invariant, following directly from \asum{lineform-assume} in \refsect{overview} is $$A := \mathit{M.pos}_i' \in \mathit{rect}[\mathit{M.pos}_i,\mathit{M.tgt}_i'] .$$
+For agent $i$, Let the precondition of this event be denoted by $\mathit{Pr}:= \neg (i = \NMAX - 1 \vee i = 0)$.
+
+%The premise of the induction hypothesis is unsatisfiable with the the precondition of this effect for the robots $0$ and $\NMAX-1$, meaning this invariant is vacuously validated for these robots.
+
+The invariant for the current configuration is $$I: \mathit{M.pos}_i \in \mathit{rect}[x_{min}, x_{max}] \wedge x[i] \in \mathit{rect}[x_{min}, x_{max}]$$ and the invariant in the post event configuration is $$I' := \mathit{M.pos}_i' \in \mathit{rect}[x_{min}, x_{max}] \wedge x'[i] \in \mathit{rect}[x_{min}, x_{max}].$$
+The overall induction hypothesis then becomes $$ \bigwedge_{i\in \UINS}\mathit{Pr} \wedge E \wedge A \wedge  I \Rightarrow I'.$$
 Table \ref{tab:lineform} summarizes the verification of this constraints on systems of different sizes.
+
 \begin{table}
     \label{tab:lineform}
     \scriptsize
  \centering
-   \begin{tabular}{ l|  c c c c  }
+   \begin{tabular}{ l|   c c c c  }
  \hline
- \tb{Benchmark}       & \tb{robots}(N) & $T_K$ (s) & $T_V$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
- Lineform       & 3     &4.90  &9.09   & \Checkmark  \\
-Lineform       & 4      &4.79  &12.21  & \Checkmark   \\
- Lineform       & 5      &4.91  &18.46  & \Checkmark   \\
-Lineform        & 10     &10.92   &32.34   & \Checkmark  \\
-Lineform         & 15    &12.23  & 53.89   &\Checkmark
+       (\NMAX) &\tb{dim} & $T_K$ (s) & $T_V$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
+   3   & 1 &4.90  &9.09   & \Checkmark  \\
+ 3   & 2 &4.19  &9.09   & \Checkmark  \\
+ 4    & 1 &4.79  &12.21  & \Checkmark   \\
+4    & 2 &5.28  &12.49  & \Checkmark   \\
+ 4    & 3 &5.06  &12.77  & \Checkmark   \\
+ 5   & 1  &4.91  &18.46  & \Checkmark   \\
+ 5   & 2  &5.60  &18.91  & \Checkmark   \\
+5   & 3  &5.42  &20.30  & \Checkmark   \\
+10  & 1  &10.92   &32.34   & \Checkmark  \\
+10  & 2  &10.96   &32.42   & \Checkmark  \\
+10  & 3  &11.34   &33.61   & \Checkmark  \\
+ 15  & 1 &12.23  & 53.89   &\Checkmark
 
 \end{tabular}
-    \caption{ \small Summary of semantics based verification for \emph{Lineform}.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the verification time in Z3 and \emph{robots}(N) is the number of robots in the system.}
+    \caption{ \small Summary of semantics based verification for \emph{Lineform}.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the verification time in Z3. Robots moving along a line are represented by \tb{dim} = 1, along a plane by \tb{dim} = 2, and in a 3D space by \tb{dim} = 3.}
 \end{table}
+
+
 
 
 % \begin{table}[!t]
@@ -142,50 +156,51 @@ Lineform         & 15    &12.23  & 53.89   &\Checkmark
 
 \newcommand{\Task}{\textsf{Task}\xspace}
 
-\subsubsection*{Case Study: \Task}
+\subsubsection{Case Study: \Task}
 The problem statement for the \Task application is as follows: {\small \em \Task: Given a set of (possibly heterogeneous) robots, a safety distance $d_s>0$, and a sequence of points (tasks) $\mathit{list} = x_1, x_2, \ldots \in \reals^3$, it is required that: (a) every unvisited $x_i$ in the sequence is {\em visited\/} exactly by one robot; and (b) no two robots ever get closer than $d_s$.\/}
 
-The $\lgname$ program used to solve this problem in this paper implements a fairly straightforward solution\footnote{\rg{Presented in full in appendix/supplementary material or include here?}}. Robot $i$ looks for an unassigned task $x$ from $\mathit{list}$; if there is a clear path to $x$ then $i$ assigns itself the task $x$. It shares its path with all other robots, and  visits $x$ following the path; once done it repeats the process.  We aim to prove the \emph{safety} of this application with respect to collisions among agents, i.e. \emph{no two robots ever get closer than $d_s$}.
+The $\lgname$ program used to solve this problem in this paper implements a fairly straightforward solution shown in \reffig{fig:taskapp}. Robot $i$ looks for an unassigned task $x$ from $\mathit{list}$; if there is a clear path to $x$ then $i$ assigns itself the task $x$. It shares its path with all other robots, and  visits $x$ following the path; once done it repeats the process.  We aim to prove the \emph{safety} of this application with respect to collisions among agents, i.e. \emph{no two robots ever get closer than $d_s$}.
 
+\begin{figure}[t]
+    \two{0.4}{0.6}
+    {
+    \lstinputlisting[language=NumKoord, lastline=20]{code/taskalloc.tex}
+    }
+    {
+    \lstinputlisting[language=NumKoord, firstline=21, firstnumber=18]{code/taskalloc.tex}
+    }
+    \caption{ $\lgname$ code for robot $i$ for the Distributed Task Allocation}
+    \label{fig:taskapp }
+\end{figure}
 
 
 This application has two events \begin{inparaenum} \item {Assign}, in which each agent tries to assign itself to an unassigned task with a clear path  and \item \emph{Complete}, which checks whether an agent has visited its assigned task. \end{inparaenum} The robots use a shared allread variable $\pathvar$ to communicate the current path they are following to get to a task location, or their current position if they are stationary. A path here is a list of points that the robot visits in sequence. The \Motion module drives the robot along a path, as directed by the position value set at its actuator port $\mathit{Motion.path}$. The sensor port $\mathit{Motion.planner}$ returns a path to the target of an unassigned task, and a (user-defined) function called $\mathit{pathIsClear}$ is used to determine whether the currently planned path is within $d_s$ distance of any of paths (or positions) in $\pathvar$.
 
-Suppose there is a function $f : [Point] \times [Point] \mapsto \mathbb{B}$ such that $f(x, y)$ is \emph{True} if $x$ and $y$ are at least $d_s$ distance apart, where $x$ and $y$ are either paths or positions. The invariant we want to prove is the following:
-
+\newcommand{\dist}{\mathit{dist}}
+Suppose there is a function $\dist : [Point] \times [Point] \mapsto \mathbb{R}$, where $x$ and $y$ are either paths or positions of the robots, that returns the minimum distance between $x$ and $y$. Given an $\epsilon > 0$, which we specify later, The invariant we want to prove is the following:
 \begin{invariant}
 \label{inv:task}
-\[
-    \forall i,j, \in \UINS, f(M.pos_i, M.pos_j)
+\[\begin{split}
+    \forall i,j, \in \UINS, \dist(M.pos_i, M.pos_j) \geq d_s \\ \land \dist(\pathvar[i], \pathvar[j]) \geq d_s + \epsilon
+\end{split}
 \]
 \end{invariant}
 \noindent
 
-
-Computing the $\mathit{pathIsClear}$ function,involves two nested loops over the length of each path, computing the minimum distance between each path segment. Proving invariants over these loops is by itself a difficult problem, so our symbolic execution treats any user-defined functions as uninterpreted functions. We require assumptions on the output of these functions. For any agent $i$ trying to assign itself to a task, we  assume the following :
+Computing the $\mathit{pathIsClear}$ function,involves two nested loops over the length of each path, computing the minimum distance between each path segment. Proving invariants over these loops is by itself a difficult (and well studied) problem, so our symbolic execution treats any user-defined functions as uninterpreted functions. We require assumptions on the output of these functions. For any agent $i$ trying to assign itself to a task, we  assume that $\mathit{pathIsClear}(\mathit{sp}, \mathit{cp} ,i, \mathit{ds})$ returns true only if the shared paths the proposed path $\mathit{cp}$ never comes within $d_s$ distance of any of the shared paths (or positions):
 
 \begin{assumption}
     \label{pathclear}
-    $\mathit{pathIsClear}(\mathit{sp}, \mathit{cp} ,i, \mathit{ds})$ returns true only if the shared paths the proposed path $\mathit{cp}$ never comes within $d_s$ distance of any of the shared paths (or positions) $\mathit{sp}$. $$\forall j \in \UINS, pathIsClear(sp, cp,  i, d_s) \wedge j \neq i \Rightarrow  f(sp[j], cp)$$
+     $\mathit{sp}$. $$\forall j \in \UINS, pathIsClear(sp, cp,  i, d_s) \wedge j \neq i \Rightarrow  \dist(sp[j], cp) \geq d_s$$
 \end{assumption}
+
  The index $i$ in the $\mathit{pathIsClear}$ function indicates that the previously shared path or position of the agent $i$ shouldn't be considered in the computation.
 
-The second assumption we make is that an agent moves closely along its $\mathit{Motion.path}$ actuator whose value is denoted by $\mathit{M.path}$ until it finishes traversing the path.  We also denote $\mathit{Motion.reached}$ by $\mathit{M.reached}$.
+The second assumption we make is that an agent moves closely along its $\mathit{Motion.path}$ actuator whose value is denoted by $\mathit{M.path}$ until it finishes traversing the path. We also denote $\mathit{Motion.reached}$ by $\mathit{M.reached}$.
 \begin{assumption}
         \label{stlinemotion}
- There is an $\epsilon << d_s$, such that given a function $f' : [Point] \times [Point] \mapsto \mathbb{B}$  where $f'(x, y)$ is \emph{True} if $x$ and $y$ are at \emph{most} $\epsilon$ distance apart, where $x$ and $y$ are either paths or positions,
-    $$\neg M.reached_i \Rightarrow f'(M.pos_i, sp[i])$$
+    $$\mathit{on\_task}_i\wedge \neg \mathit{M.reached}_i \Rightarrow \dist(M.pos_i, sp[i]) \leq \epsilon/2 $$
 \end{assumption}
-
- From \asum{pathclear} and \asum{stlinemotion}, to prove \inv{inv:lineform}, we only need to prove the following invariant.
-
-\begin{invariant}
-\label{inv:paths}
-\[
-    \forall i,j, \in \UINS,\  f(\pathvar[i], \pathvar[j])
-\]
-\end{invariant}
-\noindent
 
 Table \ref{tab:task} summarizes the verification of this constraints on systems of different sizes.
 \begin{table}
@@ -196,17 +211,14 @@ Table \ref{tab:task} summarizes the verification of this constraints on systems 
  \hline
  \tb{Benchmark}       & \tb{robots}(N) & $T_K$ (s) & $T_V$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
  Task       & 3     &9.90  &10.6   & \Checkmark  \\
-Task       & 4      &9.79  &11.78  & \Checkmark   \\
+ Task       & 4      &9.79  &11.78  & \Checkmark   \\
  Task       & 5      &9.91  &14.92  & \Checkmark   \\
 Task        & 10     &12.92   &18.34   & \Checkmark  \\
 \end{tabular}
     \caption{ \small Summary of semantics based verification for \Task.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the verification time in Z3 and \emph{robots}(N) is the number of robots in the system.}
 \end{table}
 
-
-
-
-\subsubsection*{Case Study: Mapping}
+\subsubsection{Case Study: Mapping}
 
  The problem requires a set of robots to collaboratively mark the position of static \emph{obstacles} within a given area $D$ quantized by a \emph{grid}, which any robot should avoid while moving in $D$.The key difference between distributed SLAM and this application is that we assume that the robots know their \emph{global coordinates} within the area of deployment. They are only attempting to map the static obstacles within this area. We assume that the only sensors available for sensing obstacles are LIDAR based, and the robots are constrained to move in a 2-D space.
 

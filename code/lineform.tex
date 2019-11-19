@@ -7,8 +7,7 @@ init:
   x[$\myuin$] = Motion.position
 
 TargetUpdate:
-  pre: True
+  pre: !($\myuin$ == $\NMAX$ - 1 or $\myuin$ == 0)
   eff:
-    if !($\myuin$ == $\NMAX$ - 1 or $\myuin$ == 0):
-      Motion.target = (x[$\myuin$+1] + x[$\myuin$-1]) / 2
-      x[$\myuin$] = Motion.position
+       Motion.target = (x[$\myuin$+1] + x[$\myuin$-1]) / 2
+       x[$\myuin$] = Motion.position

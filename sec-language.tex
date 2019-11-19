@@ -127,6 +127,9 @@ Bookkeeping variables are invisible in the language syntax, and only used in the
 \paragraph{Robot configurations.}
 
 A \emph{robot configurations} is used to specify the semantics of each robot.
+As a \lgname program is run on a system of robots,
+each participating robot would have its own set of module ports and local variables,
+along with a local copy of each shared variable.
 Given a \lgname program $P$, we can define $\Var$ be the set of variables,
 $\Val$ be the set of values that an expression in \lgname can evaluate to,
 $\Cfield$ be the set of sensor and actuator ports of the controller being used,
@@ -150,7 +153,8 @@ To define the  executable \K semantics of  \lgname applications, we have to prov
 $f: [\Cfield \mapsto \Val] \times \nnreals \mapsto [\Cfield \mapsto \Val]$.
 That is, given old sensor and actuator values and a time point, $f$ should return the new values for all sensor and actual ports.
 %
-Depending on whether  we have an explicit or a black-box model for $f$, the executable semantics will enable different types of analysis as we shall see in Section~\ref{}.
+Depending on whether  we have an explicit or a black-box model for $f$,
+the executable semantics will enable different types of analysis as we shall see in \refsect{verification}.
 
 
 \subsection{Semantics}\label{sec:semantics}
@@ -319,28 +323,28 @@ ensure that the global time $\tau$ advances to $\tau + \delta$.
 \label{sec:sync}
 
 Following our semantic rules in \refsect{semantics},
-careful readers would notice all event transitions of \lgname program takes \emph{zero} time,
-whereas the environment transitions take $\delta$ time for the evolution of the sensor and the actuator ports
+careful readers would notice that all event transitions of \lgname program takes \emph{zero} time.
+The environment transitions however take $\delta$ time for the evolution of the sensor and actuator ports
 together with the update of the local context from the global context.
-In other words, we assume the 
-In this section, we discuss the design rationale of this abstraction
+In this section, we discuss how this semantic abstracts the behavior of a distributed cyberphysical system,
+and how our tool chain in~\cite{ghosh2019cyphyhouse} provides a faithful implementation of such abstraction.
 
-%\subsubsection{Shared memory updates}
-%
-% The set of all copies of the local copies shared variables can be seen as the \emph{distributed shared memory}. The correctness of a program relies on consistent values of the robots' local values of shared variables. When an robot writes to a variable, it updates its local copy and our implementation of the $\lgname$ framework uses message passing to inform the other robots of the change.
-%%
+To reiterate, the following are the timing requirements for rule~\EventTransRule and \EnvTransRule:
+\begin{inparaenum}[(a)]
+\item an event transition takes \emph{zero} time,
+\item new values of controller ports are sampled at the end of each round
+\item shared variables should reach consistent values within $\delta$ time, and
+\item a global clock is used to synchronize each $\delta$-time round.
+\end{inparaenum}
+The first two requirements are achievable if the time taken to complete a program transition is negligible compared to $\delta$,
+and $\delta$ can be a common multiple of the sampling intervals of all controller ports in use.
+These constraints are reasonable for cyberphysical systems where the computation and communication is comparatively much faster.
+For \Motion module as an example, our position sensor on each device publishes every 0.01 sec~(100Hz) while the CPU on each drone is 1.4 GHz.
+If we set $\delta$ to be 0.01 sec, an event transition taking 10K CPU cycles is still less than 0.1\% of $\delta$.
 
-\rg{robot local states and propagation over messages.}
-
-The following are the timing assumptions on \lgname programs.
-\begin{assumption}
-    A program transition has zero logical execution time, and an environment transition has $\delta$ execution time.
-\end{assumption}
-This assumption is reasonable if the time taken to complete a program transition step is negligible compared to $\delta$.  The $\lgname$ middleware ensures that the participating robots begin executing their events synchronously.
-
-\begin{assumption}
-    \label{shared}
-    Shared memory updates are propagated to all robots within one round. That is, given a state $\vs\in C$, for every  $i,j \in \UINS$, for a shared variable $v$, $\vs.v_i = \vs.v_j$.
-\end{assumption}
-The \lgname middleware uses message passing to implement shared memory, and compared to $\delta$, the time taken to observe a shared memory update as a received message from the time that it is sent is much smaller. We therefore can assume that in this setting, the shared memory semantics of \lgname wherein an update is visible in the next round of program transitions, is a reasonable implementation deliverable.
-
+The remaining requirements are common research questions in distributed computing with an extensive literature.
+A global clock can be achieved with existing techniques that synchronize all local clocks on robots.
+In~\cite{ghosh2019cyphyhouse}, we use message passing to implement distributed shared memory for shared variables.
+We ensure that the time taken to propagate values thru message passing and reach consistency is smaller than $\delta$,
+and the update is then  visible in the next round of program transitions for all robots.
+We therefore conclude our round based semantic with shared memory is a reasonable abstraction.
