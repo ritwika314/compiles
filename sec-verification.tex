@@ -3,7 +3,8 @@
 \label{sec:verification}
 
 \newcommand{\Ev}{\ensuremath{e}\xspace}
-\newcommand{\EvBody}{\ensuremath{B}\xspace}
+\newcommand{\EvCond}{\ensuremath{\mathit{Cond}}\xspace}
+\newcommand{\EvBody}{\ensuremath{\mathit{Body}}\xspace}
 
 %\rg{round, program transition, event execution, $\delta$-transition are all defined at this point: program transition : events executed in some order, $\delta$-transition: simulataneous advancement of time, round = program + $\delta$-transition. }
 % connect to definition of e.
@@ -11,8 +12,10 @@
 
 We have built the semantics of $\lgname$ in the \K framework to enable decoupled analyses of discrete and dynamic parts of distributed multi-robot systems.
 As discussed in the previous sections, the \emph{events} in an $\lgname$ program comprise the discrete computations in the system.
-The effect of an robot $i$ executing event $\Ev \in \Event$ on a configuration $\gconfig \in \pwg$,
-can be seen as a $\stmtrule$ application to  $\left\langle \gconfig.S, \gconfig.\lconfig{i}, \EvBody \right\rangle $, where $\Ev$ is \emph{``eventName: {\normalfont\bf pre:} C {\normalfont\bf eff:} \EvBody''}.
+The effect of a robot $i$ executing event $\Ev \in \Event$ on a configuration $\gconfig \in \pwg$,
+can be seen as a $\stmtrule$ application to  $\left\langle \gconfig.S, \gconfig.\lconfig{i}, \EvBody \right\rangle $,
+where $\Ev$ is \emph{``eventName: {\normalfont\bf pre:} \EvCond\ {\normalfont\bf eff:} \EvBody''}.
+
 
 \subsection{Reachable configurations}
 
@@ -28,41 +31,70 @@ Given a set of system configurations $\gset$, we define the functions using the 
 \end{inparaenum}
 
 \vspace{1mm}
-\begin{mdframed}
+\begin{mdframed}[
+    innertopmargin=0pt,
+    innerleftmargin=0pt, innerrightmargin=0pt
+]
 \footnotesize
+\newcommand{\Skip}{\mathit{Skip}\xspace}
 \begin{align*}
-    \Post_\Ev(\gconfig,i) := &\ \{ \gconfig' \mid \left\langle \gconfig.S, \gconfig.\lconfig{i}, \EvBody \right\rangle \stmtrule \left\langle \gconfig'.S, \gconfig'.\lconfig{i}, \EndEvent \right\rangle \\
-                             & \land \gconfig'.\lconfig{i}.\turn = \env\}, \text{ where } \EvBody \text{ is the effect of } \Ev.\\
-    \Post(\gset,i) := & \bigcup_{\Ev \in \Event} \bigcup_{\gconfig\in\gset} \Post_\Ev(\gconfig, i),\\
+    \Post_\Ev(\gconfig,i) := \{& \gconfig' \mid \eec{\EvCond}{\gconfig.S, \gconfig.\lconfig{i}} \\
+      & \land \left\langle \gconfig.S, \gconfig.\lconfig{i}, \EvBody \right\rangle \stmtrule \left\langle \gconfig'.S, \gconfig'.\lconfig{i}, \EndEvent \right\rangle\}, \\
+    \Skip(\gconfig,i) := \{& \gconfig' \mid \left\langle \gconfig.S, \gconfig.\lconfig{i}, \EndEvent \right\rangle \stmtrule \left\langle \gconfig'.S, \gconfig'.\lconfig{i}, \EndEvent \right\rangle \} \\
+    \Post(\gset,i) := & \bigcup_{\gconfig\in\gset} \left(\Skip(\gconfig, i) \cup \bigcup_{\Ev \in \Event} \Post_\Ev(\gconfig, i) \right),\\
     \Post(\gset,\pvec) := &
         \begin{cases}
             \emptyset, \text{ if } \pvec=()\\
-            \Post(\gset,\pinit) \cup \Post(\Post(\gset,\pinit),\pvec'), \text{ if } \pvec=(\pinit, \pvec')\\
+            \Post(\Post(\gset,\pinit),\pvec'), \text{ if } \pvec=(\pinit, \pvec')\\
         \end{cases}\\
     \Post(\gset) := & \bigcup_{\pvec\in \mathit{perms}(\UINS)} \Post(\gset,\pvec), \\
-    \Final(\gset) := & \left\{ \gconfig\in \Post(\gset)\mid \forall i \in \UINS, \gconfig.L_i.\turn = \env \right\}.
+    \Final(\gset) := & \left\{ \gconfig\in \Post(\gset)\mid \forall i \in \UINS, \gconfig.\lconfig{i}.\turn = \env \right\}.
 \end{align*}
 \end{mdframed}
 where in a sequence $\pvec=(\pinit, \pvec')$, $\pinit$ refers to the first element of the sequence and $\pvec'$ refers to the rest of the sequence.
 Also, $\mathit{perms}(\UINS)$ refers to the set of permutations of $\UINS$.
 
-\sayan{Start new para. Say why we need to also model environment transition, and states reached at intermediate time points (1-2 sentencnes). Relate function traj to f.  }
-We define a function $\traj: \pwg \times \left[0,\delta\right]$, which represents the \emph{trajectory} of the system, or the intermediate values of the sensor ports during a $\delta$-transition. Given $c\in \pwg, t\in \left[0,\delta\right]$, $\traj(c,t)$ represents the configuration at time $t$. $\pt{t_1}{t_2}(C)$ is the set of configurations reached by the system over the interval $[t_1,t_2]$.
-$$\pt{t_1}{t_2}(C) := \left\{c^\prime \mid \exists c\in C, t_1 \leq t\leq t_2 , c^\prime = \traj(c,t)\right\}$$
+$\Final(\gset)$ returns the set of system configurations after a program transition.
+Now we further define how to compute reachable system configurations after an environment transition.
+Given the black-box function $f_i$ for each robot $i$,
+we can define the function $\traj: \pwg \times \left[0,\delta\right] \mapsto \pwg$ to represent the \emph{trajectory} of the system during an environment transition.
+$\traj$ is constructed by simply update all controller ports $\cp$ of all robots with their $f_i$.
+In short,
+\[
+\gconfig' = \traj(\gconfig, t) \implies \forall i, \gconfig'.\lconfig{i}.cp = f_i(\gconfig.\lconfig{i}.cp, t)
+\]
+We then define the set of system configurations $\pt{t_1}{t_2}(\gset)$ reached in an interval $[t_1,t_2]$:
+\[
+\pt{t_1}{t_2}(\gset) := \left\{\gconfig' \mid \exists \gconfig\in \gset, t_1 \leq t\leq t_2 , \gconfig' = \traj(\gconfig,t)\right\}
+\]
+The set of points reached at the end of an environment transition from $\gset$ is denoted by  $\ft(\gset) := \pt{\delta}{\delta}(\gset)$.
 
-The set of points reached by a $\delta$-transition at $\delta$ time from $C$ is denoted by  $\ft{\delta}(C) := \pt{\delta}{\delta}(C)$. A \emph{frontier} set of configurations represents the set of configurations that can be reached from an initial configuration $C$ after \emph{completing} rounds of execution. 
-\sayan{rounds or one round?}
-We define $\frontier(C,0) := C$ and,
-$$\frontier(C,n) := \ft{\delta}(\Final(\frontier(C,n-1))).$$
-\sayan{Again, use the 2 step if-then definition of this recursive function Fr and Reach.}
+Now to conform to our semantics, we carefully define the exact set of configurations
+reached right at the end of each \emph{round} without transient configurations.
+A \emph{frontier} set of configurations $\frontier(\gset, n)$ represents those configurations
+that are reached from $\gset$ \emph{exactly when} $n$ rounds are completed.
+Formally,
+\[
+\frontier(\gset,n) :=
+    \begin{cases}
+        \gset, \text{ if } n = 0\\
+        \ft(\Final(\frontier(C,n-1))).
+    \end{cases}
+\]
 
 
-Finally, given a set of configurations $C_0\subset\pwg$, the set of states reachable in $n$ rounds can be defined inductively as $\Reach(C_0,0) := C_0$ and,
-\begin{align*}
-\Reach(C_0,n) := \Reach(C_0 &,n-1) \cup \Post(\frontier(C_0,n-1) \\ &\cup \pt{0}{\delta}(\Post(\frontier(C_0,n-1)))
-\end{align*}
-\sayan{Needs a sentence explaining the definition.}
-
+Finally, given a set of configurations $\gset_0\subseteq\pwg$,
+the set of all reachable states in $n$ rounds is defined inductively as follows:
+\[
+\Reach(\gset_0, n) :=
+    \begin{cases}
+        \gset_0, \text{ if } n = 0 \\[5pt]
+        \Reach(\gset_0,n-1) \text{\hspace{2cm}otherwise} \\
+        \quad \cup\ \Post(\frontier(\gset_0,n-1) \\ 
+        \quad \cup\ \pt{0}{\delta}(\Post(\frontier(\gset_0,n-1))),\\
+    \end{cases}
+\]
+Notice that all transient configurations during both program~(computed by $\Post$) and environment~(computed by $\pt{0}{\delta}$) transitions are included in $\Reach$.
 
 
 \subsection{Invariant requirements}
@@ -130,7 +162,7 @@ Table \ref{tab:lineform} summarizes the verification of these constraints on sys
     \label{tab:lineform}
     \scriptsize
  \centering
-   \begin{tabular}{ l|   c c c c  }git
+   \begin{tabular}{ l|   c c c c  }
  \hline
        (\NMAX) &\tb{dim} & $T_K$ (s) & $T_V$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
    3   & 1 &4.90  &9.09   & \Checkmark  \\

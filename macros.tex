@@ -48,14 +48,15 @@
 \newcommand{\End}{\mathit{End}\xspace}
 
 \newcommand{\Post}{\mathit{Post}\xspace}
-\newcommand{\Final}{\mathit{Final}\xspace}
+
 \newcommand{\traj}{\mathit{traj}\xspace}
 \newcommand{\pt}[2]{\mathit{Pt}_{[#1,#2]}}
-\newcommand{\ft}[1]{\mathit{Pt}_{#1}}
+\newcommand{\Final}{\mathit{End}_\prog\xspace}
+\newcommand{\ft}{\mathit{End}_\env\xspace}
+\newcommand{\frontier}{\mathit{End}_\mathit{rnd}\xspace}
 %evaluation property semantics
 \newcommand{\eval}{\mathit{eval}}
 \newcommand{\sat}{\rightarrow_\mathit{sat}}
-\newcommand{\frontier}{\mathit{Fr}}
 \newcommand{\Reach}{\mathit{Reach}}
 % For references
 \newcommand{\fig}[1]{Figure~\ref{#1}}
@@ -322,8 +323,8 @@
 \newcommand{\agnt}{L}
 \newcommand{\lconfig}[1]{\agnt_{#1}} %configuration of agent i
 \newcommand{\lset}{\{\lconfig{i}\}} %set of agent configurations
-\newcommand{\EvalExpr}[1]{\llbracket#1\rrbracket_{S, \agnt}}
 \newcommand{\eec}[2]{\llbracket#1\rrbracket_{#2}}
+\newcommand{\EvalExpr}[1]{\eec{#1}{S, \agnt}}
 
 \newcommand{\pwg}{\mathbb{C}} %all possible global configs, (power set of)
 \newcommand{\pwl}{\mathbb{L}} %all possible local configs
