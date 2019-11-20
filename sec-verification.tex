@@ -189,7 +189,7 @@ Table \ref{tab:lineform} summarizes the verification of these constraints on sys
  \hline
        (\NMAX) &\tb{dim} & $T_K$ (s) & $T_V$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
    3   & 1 &4.90  &9.09   & \Checkmark  \\
- 3   & 2 &4.19  &9.09   & \Checkmark  \\
+ 3   & 2 &4.19  &10.13   & \Checkmark  \\
  4    & 1 &4.79  &12.21  & \Checkmark   \\
 4    & 2 &5.28  &12.49  & \Checkmark   \\
  4    & 3 &5.06  &12.77  & \Checkmark   \\
@@ -276,7 +276,7 @@ Since we do not want to deal with loop invariants, we verified this protocol for
   &\wedge (\bigwedge_j j\neq i \Rightarrow \pathvar[j]'= \pathvar[j]).
  \end{align*}
 
-Similarly, we get $E_{t_2}$, $E_{t_3}$ and $E_{t_4}$ for the other tasks. For each task, an additional constraint capturing the proof obligation ~\ref{pathclear} on the function $\mathit{PathIsClear}$ is generated as follows:  $A_{t_1} := \forall j \in \UINS, j \neq id, \mathit{dist}(\pathvar[j], \mathit{curr\_path}_i') \geq d_s + \epsilon$ where $\epsilon$ is a positive constant. Similarly we have constraints $A_{t_2}, A_{t_3}$  and $A_{t_4}$ for the other tasks. When none of the tasks is picked, the post event configuration generated is $$ E_{none} :=\mbox{!}\mathit{on\_task}_i' \wedge \pathvar[i]' = M.pos_i $$. Since the positions of the robots don't change after the event, \inv{inv:task} for the current configuration for robot $i$ reduces to $$I: \forall j \in \UINS, j \neq i \Rightarrow \mathit{dist}(\pathvar[j], \pathvar[i]) \geq d_s  $$ and the invariant in the post event configuration is $$I' := \forall j \in \UINS, j \neq i \Rightarrow \mathit{dist}(\pathvar[j]', \pathvar[i]') \geq d_s  .$$
+Similarly, we get $E_{t_2}$, $E_{t_3}$ and $E_{t_4}$ for the other tasks. For each task, an additional constraint capturing the proof obligation ~\ref{pathclear} on the function $\mathit{PathIsClear}$ is generated as follows:  $A_{t_1} := \forall j \in \UINS, j \neq id, \mathit{dist}(\pathvar[j], \mathit{curr\_path}_i') \geq d_s + \epsilon$ where $\epsilon$ is a positive constant. Similarly we have constraints $A_{t_2}, A_{t_3}$  and $A_{t_4}$ for the other tasks. When none of the tasks is picked, the post event configuration generated is $$ E_{none} :=\neg\mathit{on\_task}_i' \wedge \pathvar[i]' = M.pos_i $$. Since the positions of the robots don't change after the event, \inv{inv:task} for the current configuration for robot $i$ reduces to $$I: \forall j \in \UINS, j \neq i \Rightarrow \mathit{dist}(\pathvar[j], \pathvar[i]) \geq d_s  $$ and the invariant in the post event configuration is $$I' := \forall j \in \UINS, j \neq i \Rightarrow \mathit{dist}(\pathvar[j]', \pathvar[i]') \geq d_s  .$$
 
 The induction hypothesis for event \emph{Assign} then becomes $$ \bigwedge_{i\in \UINS}\mathit{on\_task_i} \wedge \bigvee_{t_j}(E_{t_j} \wedge A_{t_j} \wedge  I) \Rightarrow I'.$$ The induction hypothesis for event \emph{Complete} is generated similarly (omitted here), and the overall induction hypothesis is a conjunction of the two.
 
@@ -339,7 +339,7 @@ Suppose we have a function $\mathit{snd}: GridMap \mapsto \mathbb{B}$, such that
 \end{invariant}
 
 For the \emph{NewPoint} event, the post event configuration for robot $i$ is $E:= \lmap_i' = \gmap \wedge \gmap' = \gmap$.
-The induction hypothesis is $I:= \bigwedge_{i\in \UINS} \mathit{snd}(\lmap_i) \wedge \mathit{snd}(\gmap)$, and $I':= \bigwedge_{i\in \UINS} \mathit{snd}(\lmap_i') \wedge \mathit{snd}(\gmap')$ The overall constraint for this event along with its precondition is $$\bigwedge_{i\in \UINS}\mbox{!}\mathit{on\_path}\wedge E\wedge I\Rightarrow I'.$$
+The induction hypothesis is $I:= \bigwedge_{i\in \UINS} \mathit{snd}(\lmap_i) \wedge \mathit{snd}(\gmap)$, and $I':= \bigwedge_{i\in \UINS} \mathit{snd}(\lmap_i') \wedge \mathit{snd}(\gmap')$ The overall constraint for this event along with its precondition is $$\bigwedge_{i\in \UINS}\neg\mathit{on\_path}\wedge E\wedge I\Rightarrow I'.$$
 
 We also assume that the $\mathit{merge}$ function is such that given two maps satisfying $\mathit{snd}$, it returns a map satisfying $\mathit{snd}$. The specific proof obligation we have then is as follows:
 \begin{proofob}
