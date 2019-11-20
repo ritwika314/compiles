@@ -113,6 +113,25 @@ given a set of initial configurations of the system $\gset_0$
 where $\eec{\Inv}{\gconfig}$ represents evaluating $\Inv$ over $\gconfig$.
 \end{definition}
 \chiao{Syntax for defining $\Inv$ as logic formulas?}
+\newcommand{\vbar}{{\normalfont\ |\ }}
+
+\begin{figure}
+\itshape
+\begin{tabular}{lrl}
+   Term & ::= &  $\Var \vbar \Val \vbar \Cfield$ \vbar \\
+        &     &  Term $+$ Term \vbar Term $\times$ Term \vbar \\
+        &     &  Term $-$ Term \vbar Term \slash Term\\
+   BExpr & ::= & Term $\geq$ Term \vbar Term $\leq$ Term \vbar \\
+         &     & Term $=$ Term \vbar Term $>$ Term \vbar Term $<$ Term \vbar \\
+         &      & BExpr $\wedge$ BExpr \vbar BExpr $\vee$ BExpr \vbar\\
+         &      & $\neg$ BExpr \vbar BExpr $\Rightarrow$ BExpr \\
+   $\Inv$ & ::= & BExpr \vbar $\forall i \in \UINS, \Inv$ \vbar $\exists i \in \UINS, \Inv$
+\end{tabular}
+
+\caption{$\Inv$ specification syntax}\label{fig:inv-syntax}
+\end{figure}
+
+
 
 \begin{definition}
 \label{def:ii}
