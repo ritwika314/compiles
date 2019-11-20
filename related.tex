@@ -5,8 +5,6 @@
 \chiao{Some other works mentioned by the reviewers.
 BIP (Verimag),
 ptolemy (UC-Berkeley),
-Zelus programming language,
-Newcomb et al., a Calculus for Internet of Things Automation, SPLASH Onward!'17
 }
 
 \begin{table*}[!ht]
@@ -38,6 +36,8 @@ Buzz~\cite{Buzzlanguage} and React~\cite{reactlang} fall in this category as doe
 The Live Robot Programming language~\cite{campusanofabry:lrp2016} not only provides a higher-level programming abstraction in terms of nested state machines, but also allows the program to be changed while running, hence reducing the feedback loop across writing, compiling, and testing of robot programs.
 %The goals of React language for robotics aligns with our goals~\cite{react-lang}
 Buzz currently does not  connect with  verification tools, and the verification approach implemented with React uses precise models of the environment and performs model checking using dReal~\cite{Gao2013}.
+
+ DRONA is a framework for building reliable distributed mobile robotics applications, which focuses specifically on the task and the motion planning aspects of these applications, as opposed to a general model for various types of sensors and actuators, possibly related to perception, and computer vision available to a robotics system.
 %Our approach is also similar in spirit to the Reactive Model-based Programming Language (RMPL)
 %~\cite{williams2003model}.
 %
@@ -67,6 +67,11 @@ Specifically, P~\cite{Planguage}  and PSync~\cite{PSyncLanguage} are DSLs for  a
 
 % The framework of~\cite{Hotline_CPS_srivastava} supports shared memory over multi-hop wireless networks, with a consistency model analogous to {\em release} consistency.
 %
+The Zelus~\cite{zelus1} is a modeling language for hybrid systems using a synchronous language compiler to handle the discrete logical time transitions and an ODE solver to handle its continous time evolution transitions.
+
+IOTA,~\cite{iota} is a calculus modeling an Event-Condition-Action language which provide non-experts the means to program IOT systems. A precise semantics enables formal analysis of conflicting rules through model checking, and provides algorithms for provenance through execution trace analysis.
+
+
 
 %
 %\paragraph*{Uncertainty and Robotics Abstractions}
