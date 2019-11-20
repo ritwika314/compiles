@@ -149,7 +149,10 @@ We represent the variables in the symbolic post configuration using \emph{primed
 \begin{align*}E := \mathit{M.pos_i}' = M.pos_i &\wedge \mathit{M.tgt_i}' = (x[i-1] + x[i+1])/2 \\ &\wedge x[i]' = \mathit{M.pos}_i\end{align*}.
 We omit the details of the $+$ operation, as it is overloaded to extend to vectors.
 
-The assumption we make to prove the inductive invariant, following directly from \asum{lineform-assume} in \refsect{overview} is $$A := \mathit{M.pos}_i' \in \mathit{rect}[\mathit{M.pos}_i,\mathit{M.tgt}_i'].$$
+\asum{lineform-assume} in \refsect{overview} is $$A := \mathit{M.pos}_i' \in \mathit{rect}[\mathit{M.pos}_i,\mathit{M.tgt}_i'].$$
+
+
+
 For robot $i$, Let the precondition of this event be denoted by $\mathit{Pr}:= \neg (i = \NMAX - 1 \vee i = 0)$.
 
 %The premise of the induction hypothesis is unsatisfiable with the the precondition of this effect for the robots $0$ and $\NMAX-1$, meaning this invariant is vacuously validated for these robots.
@@ -183,7 +186,24 @@ Table \ref{tab:lineform} summarizes the verification of these constraints on sys
 \end{table}
 
 
-We relaxed
+We can define a weaker invariant : $J := \mathit{M.pos}_i \in \mathit{rect}[x_{min}, x_{max}] $, which simply constrains the position of each robot, and doesn't constrain the shared $x[i]$, with $J':= \mathit{M.pos}_i' \in \mathit{rect}[x_{min}, x_{max}]$. The following table shows the results we obtained with weakened assumptions, and this weaker invariant on a system of robots moving in 2D.
+
+\begin{table}
+    \label{tab:lineform1}
+    \scriptsize
+ \centering
+   \begin{tabular}{ l|   c c c c  }
+ \hline
+       (\NMAX) &\tb{constraint} & $T_K$ (s) & $T_V$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
+   3   & $\Pr \wedge E\wedge I \Rightarrow I'$ &  &  & \emph{Unknown}  \\
+ 3   & $\Pr \wedge E \wedge J \Rightarrow J'$ &  &   & \emph{Unknown}  \\
+ 4    & $\Pr\wedge E \wedge I \Rightarrow I' $ &   &  &  \emph{Unknown} \\
+4    & $\Pr \wedge E \wedge J\Rightarrow J'$ &  &  & \emph{Unknown}   \\
+ 4    & $\Pr \wedge E \wedge A \wedge I \Rightarrow I'$ &  &  & \emph{Unknown}   \\
+\end{tabular}
+    \caption{ \small Verification summary for weaker assumptions/invariants on \LineForm. The \tb{constraint} column displays the induction hypothesis used in the verification. The verification procedure only tells us that the invariant is not inductive, it doesn't tell us whether the invariant doesn't hold, which is why we don't know whether the system is safe w.r.t the proposed invariant. }
+\end{table}
+
 % \begin{table}[!t]
 %\scriptsize
 % \centering
