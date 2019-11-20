@@ -34,13 +34,11 @@ ptolemy (UC-Berkeley),
 Modern programming languages like C\# and Swift, and   compiler infrastructures like LLVM~\cite{llvm} have revolutionized the application development ecosystem in mobile computing.
 %\paragraph*{D.}
 Inspired by these successes, there is a surge of interest in open and portable languages that raise the level of abstraction~\cite{Buzzlanguage,Bohrer:2018:VVC:3192366.3192406,reactlang,williams2003model} (For an earlier survey of Domain Specific Programming Languages (DSLs) for robotic systems see~\cite{Nordmann2014}. Most of these older languages are proprietary or generate executable files that are tied to specific platforms).
-%
-Buzz~\cite{Buzzlanguage} and React~\cite{reactlang} fall in this category as does our language \lgname.
-The Live Robot Programming language~\cite{campusanofabry:lrp2016} not only provides a higher-level programming abstraction in terms of nested state machines, but also allows the program to be changed while running, hence reducing the feedback loop across writing, compiling, and testing of robot programs.
+%The Live Robot Programming language~\cite{campusanofabry:lrp2016} not only provides a higher-level programming abstraction in terms of nested state machines, but also allows the program to be changed while running, hence reducing the feedback loop across writing, compiling, and testing of robot programs.
 %The goals of React language for robotics aligns with our goals~\cite{react-lang}
-Buzz currently does not  connect with  verification tools, and the verification approach implemented with React uses precise models of the environment and performs model checking using dReal~\cite{Gao2013}.
+%Buzz currently does not  connect with  verification tools, and the verification approach implemented with React uses precise models of the environment and performs model checking using dReal~\cite{Gao2013}.
 
- DRONA is a framework for building reliable distributed mobile robotics applications, which focuses specifically on the task and the motion planning aspects of these applications, as opposed to a general model for various types of sensors and actuators, possibly related to perception, and computer vision available to a robotics system.
+
 %Our approach is also similar in spirit to the Reactive Model-based Programming Language (RMPL)
 %~\cite{williams2003model}.
 %
@@ -52,9 +50,9 @@ Buzz currently does not  connect with  verification tools, and the verification 
 %
 %%React reactive robot programming language~\cite{DogmusEP15}.
 %%
-``Correct-by-construction'' synthesis from high-level temporal logic specifications has been applied to mobile robotic systems (see, for example~\cite{kress2009temporal,kloetzer2008fully,wongpiromsarn2010receding,wongpiromsarn2011tulip,ulusoy2013optimality}).
-% Many of these approaches have been applied to mobile robotic systems.
-Our point of view on automating robot programming is different in that we expect that the programmer's creativity and efforts will be necessary well beyond writing high-level specs in solving distributed robotics problems; consequently only the tedious and standard steps in coordination and control are automated using the $\lgname$ compiler.
+%``Correct-by-construction'' synthesis from high-level temporal logic specifications has been applied to mobile robotic systems (see, for example~\cite{kress2009temporal,kloetzer2008fully,wongpiromsarn2010receding,wongpiromsarn2011tulip,ulusoy2013optimality}).
+%% Many of these approaches have been applied to mobile robotic systems.
+%Our point of view on automating robot programming is different in that we expect that the programmer's creativity and efforts will be necessary well beyond writing high-level specs in solving distributed robotics problems; consequently only the tedious and standard steps in coordination and control are automated using the $\lgname$ compiler.
 
 %. A
 %correct-by-construction synthesis algorithm takes as input a high-level requirement (for example, ``from room A to B and see if you find a chair'') to generate robot programs for accomplishing
@@ -62,17 +60,14 @@ Our point of view on automating robot programming is different in that we expect
 
 %\paragraph*{Languages for distributed shared memory systems}
 %
-Programming systems using the  shared memory paradigm have been developed for several distributed computing systems~\cite{dsm1991,Adve96sharedmemory,Azure,Cassandra,Dynamo}.
-Specifically, P~\cite{Planguage}  and PSync~\cite{PSyncLanguage} are DSLs for  asynchronous partially  distributed systems, but cyberphysical interactions are not supported.
+Programming systems using the  shared memory paradigm have been developed for several distributed computing systems~\cite{dsm1991,Adve96sharedmemory,Azure,Cassandra,Dynamo}.  Zelus~\cite{zelus1} is a modeling language for hybrid systems using a synchronous language compiler to handle the discrete logical time transitions and an ODE solver to handle its continuous time evolution transitions. P~\cite{Planguage}  and PSync~\cite{PSyncLanguage} are DSLs for asynchronous partially distributed systems, but cyberphysical interactions are not supported. P has been integrated into DRONA, a framework for building reliable distributed mobile robotics applications, which focuses specifically on the task and the motion planning aspects of these applications, as opposed to $\lgname$'s model for various types of sensors and actuators, possibly related to perception, and computer vision available to a robotics system.
 %DSM has also been proposed as a programming model in the context of wireless networks~\cite{hcs,rs}.
 %These  programming models are defined mathematically in terms of state machines or in terms of APIs, and are  typically not embodied in a programming language with carefully designed syntax and semantics to enforce the models.
 
 
 % The framework of~\cite{Hotline_CPS_srivastava} supports shared memory over multi-hop wireless networks, with a consistency model analogous to {\em release} consistency.
 %
-The Zelus~\cite{zelus1} is a modeling language for hybrid systems using a synchronous language compiler to handle the discrete logical time transitions and an ODE solver to handle its continous time evolution transitions.
-
-IOTA,~\cite{iota} is a calculus modeling an Event-Condition-Action language which provide non-experts the means to program IOT systems. A precise semantics enables formal analysis of conflicting rules through model checking, and provides algorithms for provenance through execution trace analysis.
+ IOTA,~\cite{iota} is a calculus modeling an Event-Condition-Action language which provide non-experts the means to program IOT systems. A precise semantics enables formal analysis of conflicting rules through model checking, and provides algorithms for provenance through execution trace analysis.
 
 
 
