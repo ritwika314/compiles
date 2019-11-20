@@ -225,17 +225,6 @@ the executable semantics will enable different types of analysis as we shall see
     {(\lset, S, \tau, \prog)\rightarrow_G (\lset, S, \tau, \env)}
     \\
 
-    \inferrule*[leftskip=1cm, Right=\RobotEnvRule]
-    {
-        \forall x \in \mathit{Keys}({S}),M' = {M}[x \mapsto S[x]] \land \cp' = \mathit{f}(\cp,\delta)
-    }
-    {  \langle S, (M, cp, \env) \rangle \envtrans \langle S, (M', cp', \prog) \rangle}
-
-    \inferrule*[Right=\EnvTransRule]{
-        \forall i \in \UINS, \langle S, \lconfig{i} \rangle \envtrans \langle S, \lconfig{i}^\prime \rangle \\\\
-        \land \lconfig{i}.\turn = \env \land \lconfig{i}^\prime.\turn = \prog
-    }
-    { (\lset, {S}, \tau,\env)\rightarrow_G (\lsetp, {S}, \tau + \delta,\prog)}
 
 %    \inferrule*[Right=\RobotEnvToProgRule]
 %    {  \forall i \in \UINS, \lconfig{i}.\turn = \env \land \lconfig{i}^\prime.\turn = \prog }
@@ -245,8 +234,9 @@ the executable semantics will enable different types of analysis as we shall see
 %    {  \forall i \in \UINS, \lconfig{i}.\turn = \prog }
 %    {  (\lset, S,\tau, \env)\rightarrow_G (\lset, S, \tau, \prog)}
 \end{mathpar}
-\caption{Partial semantic rules for \lgname.}\label{fig:partial-semantics}
+\caption{Partial robot level semantic rules for \lgname.}\label{fig:partial-semantics}
 \end{figure}
+
 
 %
 We will describe only the interesting semantic rules of \lgname  above the event level.
@@ -313,6 +303,28 @@ whether any statement executed resulted in writes to shared variables.
 The system can display nondeterministic behaviors arising from different robots executing their events in different orders.
 After all robots enter the $\env$ turn, rule~\EndProgTransRule sets the global $\turn$ from $\prog$ to $\env$
 indicating the end of program transition, and an environment transition will occur afterwards.
+
+\begin{figure}
+\scriptsize
+\begin{mathpar}
+    \mprset{flushleft}
+
+ \inferrule*[leftskip=1cm, Right=\RobotEnvRule]
+    {
+        \forall x \in \mathit{Keys}({S}),M' = {M}[x \mapsto S[x]] \land \cp' = \mathit{f}(\cp,\delta)
+    }
+    {  \langle S, (M, cp, \env) \rangle \envtrans \langle S, (M', cp', \prog) \rangle}
+
+    \inferrule*[Right=\EnvTransRule]{
+        \forall i \in \UINS, \langle S, \lconfig{i} \rangle \envtrans \langle S, \lconfig{i}^\prime \rangle \\\\
+        \land \lconfig{i}.\turn = \env \land \lconfig{i}^\prime.\turn = \prog
+    }
+    { (\lset, {S}, \tau,\env)\rightarrow_G (\lsetp, {S}, \tau + \delta,\prog)}
+\end{mathpar}
+\caption{Partial system level semantic rules for \lgname.}\label{fig:partial-semantics}
+\end{figure}
+
+
 
 Rule~\EnvTransRule shows the semantics of the system configuration after rule~\EndProgTransRule.
 This rule synchronizes the environment transitions of each robot and
