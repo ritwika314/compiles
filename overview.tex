@@ -83,12 +83,15 @@ if all robots are initialized within the rectangle, then all robots should alway
 This requirement can be stated as:
 \begin{invariant}
 \label{inv:lineform}
-\[
-\begin{split}
-    \forall \myuin \in \UINS,\ M.pos_{\myuin} \in rect(x_{min}, x_{max}) \\
-    \land\ x[\myuin] \in rect(x_{min}, x_{max})
-\end{split}
-\]
+\(
+\bigwedge_{i \in \UINS}
+    \left(
+    \begin{array}{l}
+        M.pos_{i} \in rect(x_{min}, x_{max}) \\
+        \land\ x[i] \in rect(x_{min}, x_{max})
+    \end{array}
+    \right)
+\)
 \end{invariant}
 \noindent
 where $M.pos$ is the shorthand for $Motion.position$.
