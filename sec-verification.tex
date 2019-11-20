@@ -90,7 +90,6 @@ the set of all reachable states in $n$ rounds is defined inductively as follows:
     \begin{cases}
         \gset_0, \text{ if } n = 0 \\[5pt]
         \Reach(\gset_0,n-1) \text{\hspace{2cm}otherwise} \\
-        \quad \cup\ \Post(\frontier(\gset_0,n-1) \\ 
         \quad \cup\ \pt{0}{\delta}(\Post(\frontier(\gset_0,n-1))),\\
     \end{cases}
 \]
@@ -98,35 +97,57 @@ Notice that all transient configurations during both program~(computed by $\Post
 
 
 \subsection{Invariant requirements}
-An invariant of a system is a property that holds in all reachable configurations. Invariants can be used to specify, for instance, a safety property of a system such as no two robots are ever within a specified radius of each other. 
-%\rg{The types of invariants allowed by our prover module are shown in appendix...}.
-%define invariants, pointer to syntax
-Given a configuration $c \in \pwg$, let $\eec{\mathit{inv}}{c}$ represent an \emph{evaluation} i.e. the substitution of variables in $\mathit{inv}$ with their values from $c$.
-\sayan{what is inv? an expression a predicate? on what? Lets pull out some of these general notations about evaluation, permutations, etc. to be at the beginning of 5.}
-%fix notation of evalution
- %Formally, we say that $\beta$ is an inductive invariant if given a set of initial configurations of a system $C_0 \in \pwg$, and an arbitrary configuration $c \in \pwg$,  $$\forall c_0 \in C_0, \eec{\mathit{inv}}{c_0} \wedge c(\beta) \Rightarrow \forall c^\prime \in \Reach(c,1), c^\prime(\beta).$$ In other words, if a property holds true in the initial states of a system, and it can be proved to hold for all configurations reachable in one round from any configuration it is known to hold in, then it is an invariant of the system.
+
+\newcommand{\Inv}{\mathit{inv}\xspace}
+
+An \emph{invariant} of a \lgname program is a safety property that holds in all reachable system configurations.
+Invariant can be used to guarantee, for instance, that no two robots are ever within a specified radius of each other~(Collision avoidance),
+or robots always stay within a designated area~(Geofencing).
+Formally,
+\begin{definition}
+An invariant $\Inv$ is a predicate~(Boolean valued function) over a configuration $\gconfig \in \pwg$ such that,
+given a set of initial configurations of the system $\gset_0$
+\[
+\forall n\in\naturals, \forall\gconfig \in \Reach(\gset_0, n), \eec{\Inv}{\gconfig},
+\]
+where $\eec{\Inv}{\gconfig}$ represents evaluating $\Inv$ over $\gconfig$.
+\end{definition}
+\chiao{Syntax for defining $\Inv$ as logic formulas?}
 
 \begin{definition}
 \label{def:ii}
-A property $\mathit{inv}$ is an \emph{inductive invariant} of a system if given a set of initial configurations of the system $C_0$, and an arbitrary configuration $c\in \pwg$, it satisfies the following :
-$\bigwedge_{c_0\in C_0} \eec{\mathit{inv}}{c_0}\mbox{\textit{ (initial condition)}}$ and
-$$\eec{\mathit{inv}}{c} \Rightarrow \forall c' \in \Reach(\left\{c\right\},1), \eec{\mathit{inv}}{c'} \mbox{\textit{ (induction hypothesis)}}.$$
+A predicate $\mathit{inv}$ is an \emph{inductive invariant} of a system if given a set of initial configurations of the system $\gset_0$,
+it satisfies the following:
+\begin{gather}
+\forall \gconfig_0\in \gset_0, \eec{\Inv}{\gconfig_0}\\
+\forall \gconfig \in \pwg, \eec{\Inv}{\gconfig} \Rightarrow \forall \gconfig' \in \Reach(\left\{\gconfig\right\},1), \eec{\Inv}{\gconfig'} \label{def:ind-hyp}
+\end{gather}
 \end{definition}
-This definition states that property that is satisfied by the initial configuration(s) of a system, and also by any configuration reached during one round of execution from any configuration satisfying the property, is an invariant of the system.
+This definition states that property $\Inv$ is satisfied by the initial configuration(s) of a system,
+and also by any configuration reached during one round from any configuration satisfying the property.
+It is straightforward to prove that an inductive invariant is always an invariant by induction.
 
+Our proposed proof strategy for the presented case studies is thus to prove
+user-specified requirements are inductive invariants.
+In addition, we \emph{decouple} the environment and program transition behaviors in $\Reach$,
+and analyze each separately.
+Formal analysis of the dynamic behavior of the system during environment transitions is a difficult problem by itself.
+We express the constraints on the configurations reached during environment transitions as assumptions.
+Criterion~\eqref{def:ind-hyp} can be expanded and simplified as:
+\begin{equation}\label{def:ind-hyp-env}
+\eec{\Inv}{\gconfig} \Rightarrow \forall \gconfig' \in \pt{0}{\delta}(\Post(\incurly{\gconfig})), \eec{\Inv}{\gconfig'}
+\end{equation}
+We state Criterion~\eqref{def:ind-hyp-env} as an assumption $A$,
+which can be verified separately by other tools, and tested using the \toolname simulator.
 
-
-\rg{In the latter part of this section we present three case studies to illustrate some of the formal analysis enabled by our prover module}.
-
-Our proposed proof strategy for the presented case studies is a \emph{decoupling} of the environment and program transition behaviors, and separate analysis. Formal analysis of the dynamic behavior of the system during environment transitions is a difficult problem by itself. We express the constraints on the configurations reached during environment transitions as assumptions. The induction hypothesis can be restated as \begin{align*}\eec{\mathit{inv}}{c} \Rightarrow &(\forall c' \in \Post(\left\{c\right\}), \eec{\mathit{inv}}{c'} \wedge \\ &\forall c'' \in \pt{0}{\delta},(\Final(\incurly{c})) \eec{\mathit{inv}}{c''})\end{align*} We state $\eec{\mathit{inv}}{c} \Rightarrow \forall c'' \in \pt{0}{\delta}(\Final(\incurly{c})) $ as an assumption $A$, which can be verified separately by other tools, and tested using the CyPhyhouse simulator.
-
- A major source of nondeterminism in the behavior of these distributed programs with shared variables can be the order of writes to shared variables in one round, however, this is not a factor in proving inductive invariants.
-
+A major source of nondeterminism in the behavior of these distributed programs with shared variables
+can be the order of writes to shared variables in one round,
+however, this is not a factor in proving inductive invariants.
 \begin{lemma}
    \label{noninter}
 Given an arbitrary (symbolic) configuration $c$ and an inductive invariant $\mathit{inv}$,
    {\small
-   $$\bigwedge_{i\in \UINS}\bigwedge_{e \in \Event}  \eec{\mathit{inv}}{\Post(\left\{c\right\}, i, e)} \Leftrightarrow \forall c'' \in \Post(\left\{c\right\}), \eec{\mathit{inv}}{c}$$ }
+   $$\bigwedge_{i\in \UINS}\bigwedge_{e \in \Event}  \eec{\mathit{inv}}{\Post(\left\{c\right\}, i, e)} \Leftrightarrow \forall c' \in \Post(\left\{c\right\}), \eec{\mathit{inv}}{c'}$$ }
 \end{lemma}
 \begin{proof}
 Suppose that given an arbitrary configuration $c$, such that $\bigwedge_{i\in \UINS}\bigwedge_{e \in \Event} \eec{\mathit{inv}}{\Post(\left\{c\right\}, i, e)}$ holds true. Consider a permutation $\incurly{i_1,i_2,\ldots,i_{\NMAX}}$ of robots executing events $\incurly{e_1, e_2, \ldots , e_{\NMAX}}$ respectively in a program transition during a round, reaching configurations $c_1, c_2, \ldots, c_{\NMAX}$ respectively. By assumption, since $\Post(\incurly{c},i,e) = c_1$, $\eec{\mathit{inv}}{c_1}$. Since our assumption was about any arbitrary (symbolic) configuration $c$, the same argument therefore can be extended to all the configurations reached by the system during this program transition, i.e. $\forall c' \in \incurly{c_1, c_2, \ldots, c_n}, \eec{\mathit{inv}}{c}$.
