@@ -167,11 +167,13 @@ We therefore seek for a stronger and easier to prove proof obligation using the 
    \label{lem:noninter}
 Given any predicate $\varphi$,
 for any configuration $c$ satisfying $\varphi$, the following always holds
+\begin{small}
 \[
-\small
 \left(\bigwedge_{i\in \UINS}\bigwedge_{\Ev \in \Event} \forall \gconfig' \in \Post_\Ev(\gconfig, i), \eec{\varphi}{\gconfig'}\right)
     \Rightarrow \forall \gconfig' \in \Post(\incurly{\gconfig}), \eec{\varphi}{\gconfig'}
 \]
+\end{small}
+
 \end{lemma}
 We skip the detail proof for \lem{lem:noninter} here.
 The idea is to simply expand the definition of $\Post$,
@@ -202,7 +204,7 @@ we introduce assumptions to abstract away the continuous dynamic behavior.
 \begin{definition}
 A \emph{\portasum} $A(\gconfig', \gconfig'')$ for $\traj$ is a predicate that
 we can prove the following proof obligation that $\forall \gconfig', \gconfig'' \in \pwg,$
-\begin{equation}\label{po:port-asm}\tag{\textit{Asm}}
+\begin{equation}\label{po:port-asm}\tag{\textit{PAsm}}
 (\forall t \in [0,\delta], \gconfig'' = \traj(\gconfig', t)) \Rightarrow A(\gconfig', \gconfig'')
 \end{equation}
 \end{definition}
@@ -241,8 +243,8 @@ Following the notation in \PO{po:ind} and \PO{po:port-asm},
 variables and \emph{primed copies} represents the variables in $\gconfig$, $\gconfig'$, and $\gconfig''$ respectively.
 
 Symbolically executing the event \evname{TargetUpdate} (for robot $i$) generates the constraint:
+\begin{small}
 \[
-\small
 E :=
 \left(
 \begin{array}{l}
@@ -252,34 +254,44 @@ E :=
 \end{array}
 \right)
 \]
+\end{small}
 Notice that it starts with the precondition and $\Mtgti$ and $x[i]$ are updated according to the effect.
 We omit the rest of the formula that ensures the values of unmodified variables are unchanged
 such as $\Mposi'=\Mposi$ and $x'[j]=x[j]$ for $j\neq i$.
 Additionally, a more accurate version of \asum{lineform-assume} in \refsect{overview} is
-\[
-A := \Mposi'' \in \rect(\Mposi', \Mtgti') \land \dots
-\]
-Similarly, the rest of the formula ensuring unchanged values is omitted.
+\begin{assumption}
+\(
+    A := \Mposi'' \in \rect(\Mposi', \Mtgti') \land \dots
+\)
+\end{assumption}
+\noindent where the rest of the formula ensuring unchanged values is omitted.
 Consequently, \PO{po:port-asm} becomes
+\begin{proofob}
 \[
 (\forall t \in [0,\delta], \Mposi'' = f(\Mposi', \Mtgti', t)) \Rightarrow A
 \]
+\end{proofob}
 \chiao{Add table showing how often \PO{po:port-asm} is violated.}
 
 The invariant for the current configuration~($\eec{\Inv}{\gconfig}$) is
+\begin{small}
 \[
-\small
-I_{old}:= \Mposi \in \rect(x_{min}, x_{max}) \wedge x[i] \in \rect(x_{min}, x_{max})
+I:= \Mposi \in \rect(x_{min}, x_{max}) \wedge x[i] \in \rect(x_{min}, x_{max})
 \]
+\end{small}
 and the invariant over primed configuration~($\eec{\Inv}{\gconfig''}$) is
+\begin{small}
 \[
-\small
-I_{new} := \Mposi'' \in \rect(x_{min}, x_{max}) \wedge x''[i] \in \rect(x_{min}, x_{max})
+I'' := \Mposi'' \in \rect(x_{min}, x_{max}) \wedge x''[i] \in \rect(x_{min}, x_{max})
 \]
+\end{small}
 Because there is only one event, \PO{po:ind} for \LineForm then becomes
-\[
-\bigwedge_{i\in \UINS} I_{old} \wedge E \wedge A \Rightarrow I_{new}
-\]
+\begin{proofob}
+\(
+\bigwedge\limits_{i\in \UINS} I \wedge E \wedge A \Rightarrow I''
+\)
+\end{proofob}
+
 Table \ref{tab:lineform} summarizes the verification of these constraints on systems with different $\NMAX$.
 
 \begin{table}
@@ -383,51 +395,112 @@ and a (user-defined) function called $\mathit{pathIsClear}$ is used to determine
 whether the currently planned path is within \ds distance of any path in $\pathvar$.
 
 \newcommand{\dist}{\mathit{clear}_\ds}
-\newcommand{\pathIsClear}{\mathit\mathit{pathIsClear}}
+\newcommand{\pathIsClear}{\mathit{pathIsClear}}
+\newcommand{\PATHISCLEAR}{\mathit{PIC}}
+
 Suppose there is a function taking two paths as input
 $\dist : \mathit{List}\langle \mathit{Point}\rangle \times \mathit{List}\langle \mathit{Point}\rangle \mapsto \mathit{bool}$,
 it returns true only if the minimum distance between the two paths is greater than \ds.
 We restate requirement (b) as:
 \begin{invariant}
 \label{inv:task}
-\begin{align*}
-    \forall i,j, \in \UINS,&\ \dist([M.pos_i], [M.pos_j]) \\
-                     \land &\ \dist(\pathvar[i], \pathvar[j])
-\end{align*}
+No two robots ever get closer than \ds.
+\[
+    \forall i,j, \in \UINS, \dist(\pathvar[i], \pathvar[j])
+\]
 \end{invariant}
 \noindent
 
-Computing the $\pathIsClear$ function involves two nested loops over the length of each path,
+Computing the $\dist$ function involves nested loops over the length of each path,
 then computing the minimum distance between each path segment.
-Proving invariants over these loops is by itself a difficult (and well studied) problem,
-so our symbolic execution treats any user-defined functions as uninterpreted functions.
-We require proof obligations on the output of these functions.
-For any robot $i$ trying to assign itself to a task,
-we assume that $\pathIsClear(\mathit{sp}, \mathit{cp}, i, \ds)$ returns true
-only if the shared paths the proposed path $\mathit{cp}$ is always more than $\ds$ distance of any of the shared paths.%
-\footnote{The index $i$ in the $\pathIsClear$ function indicates that the previously shared path of the robot $i$ shouldn't be considered in the computation.}
-
+$\pathIsClear$ further has to iterate over all shared paths and check via $\dist$.
+Proving invariant over these loops is by itself a well studied and difficult research problem.
+To mitigate this problem,
+we instruct our symbolic execution to treat $\dist$ and $\pathIsClear$ as \emph{uninterpreted functions},
+and we introduce \emph{\funcasum} for these uninterpreted functions similar to Definition~.
+\begin{definition}
+    A \emph{\funcasum} $F(x, y)$ for an uninterpreted function $f(x)$ is a predicate which
+    we can prove the following proof obligation:
+    \begin{equation}\label{po:func-sum}\tag{\textit{FSum}}
+    \forall x, F(x, f(x))
+    \end{equation}
+\end{definition}
+\noindent
+where $x$ can be extended according to the arity of $f$.
+Verification and generation of good function summaries is extensively discussed and widely used
+in software verification.
+We believe writing a good \funcasum{} requires strong domain knowledge in particular robot devices as well as the problem to be solved.
+Here we only showcase a \funcasum $\PATHISCLEAR$ for $\pathIsClear$:
+\begin{small}
+\[
+\PATHISCLEAR(sp, cp, i, y) := \forall j \in \UINS, j\neq i \land \neg\dist(sp[j], cp) \Rightarrow \neg y
+\]
+\end{small}
+The \funcasum simply says, if my current path $cp$ is not more than $\ds$ distance to any path $sp[j]$ shared by other robots,
+the output of $y = \pathIsClear(\mathit{sp}, \mathit{cp}, i)$ should be false,\footnote{%
+The index $i$ in the $\pathIsClear$ function indicates that the previously shared path of the robot $i$ shouldn't be considered in the computation.}
+and \PO{po:func-sum} becomes:
 \begin{proofob}
-    \label{pathclear}
-    $$\forall j \in \UINS, \pathIsClear(sp, cp,  i, \ds) \wedge j \neq i \Rightarrow \dist(sp[j], cp)$$
+    \label{po:pathclear}
+    $$\forall sp, cp, i, \PATHISCLEAR(sp, cp, i, \pathIsClear(sp,cp, i))$$
 \end{proofob}
 
+For constructing the symbolic set of configurations,
+we use a list with four tasks signified by $\incurly{t_1,t_2,t_3,t_4}$ so that the symbolic execution terminates.
+The for-loop iterating through the task list is unrolled into a sequence of (nested) \emph{if-else} statements.
+For simplicity,
+we show the symbolic post event configuration of the \emph{Assign} event for only one execution when robot $i$ picks $t_1$:
+\begin{align*}
+    E_{t_1} &:= \neg\mathit{on\_task}_i \land \mathit{on\_task}_i' \\
+            & \land \mathit{curr\_path}_i' = \mathit{M.planner(t_1.target)} \\
+            & \land \PATHISCLEAR(\pathvar, \mathit{curr\_path}_i', i, \mathtt{True}) \\
+            & \land \pathvar'[i] = \mathit{curr\_path_i}' \\
+            & \land \mathit{M.path}_i' = \pathvar'[i] \land \dots
+\end{align*}
+Notice how we can use $\PATHISCLEAR$ to summarize $\pathIsClear$.
+Similarly, we get $E_{t_2}$, $E_{t_3}$ and $E_{t_4}$ for other execution paths choosing corresponding tasks.
+When none of the tasks is picked, the post event configuration generated is
+\[
+E_{none} :=\neg\mathit{on\_task}_i \land \pathvar'[i] = [M.pos_i] \land \dots
+\]
 
-The second proof obligation is that an robot moves closely along its $\mathit{Motion.path}$ actuator whose value is denoted by $\mathit{M.path}$ until it finishes traversing the path. We also denote $\mathit{Motion.reached}$ by $\mathit{M.reached}$.
+For abstracting the movement of robots,
+an robot should move closely ($\neg\dist$) along its $\mathit{Motion.path}$ actuator whose value is denoted by $\mathit{M.path}$ until it finishes traversing the path.
+For simplicity, we denote $\mathit{Motion.reached}$ by $\mathit{M.reached}$.
+\begin{assumption}
+    \label{stlinemotion}
+\[
+A := (\neg \mathit{M.reached}'_i \Rightarrow \neg\dist(M.pos_i'', M.path_i'')) \land \dots
+\]
+\end{assumption}\noindent
+Similarly, we write down the \PO{po:port-asm} for discharging \asum{stlinemotion}.
 \begin{proofob}
-        \label{stlinemotion}
-    $$\mathit{on\_task}_i\wedge \neg \mathit{M.reached}_i \Rightarrow \dist(M.pos_i, sp[i]) \leq \epsilon $$
+    \small
+\[
+\begin{array}{l}
+    \forall t \in [0, \delta], \\
+\quad  (M.pos'', M.reached'') = f(M.pos', M.reached', M.path', t) \\
+\qquad \Rightarrow A
+\end{array}
+\]
 \end{proofob}
 
-Since we do not want to deal with loop invariants, we verified this protocol for four tasks signified by $\incurly{t_1,t_2,t_3,t_4}$ and we unrolled the for loop iterating through the task list into a sequence of (nested) \emph{if-else} statements. The constraints on the symbolic post event configuration of the \emph{Assign} event for robot $i$ on picking $t_1$ generated by the \K executable semantics as follows: \begin{align*}E_{t_1} &:= \mathit{on\_task}_i' \wedge \mathit{curr\_path}_i' = \mathit{M.planner(t_1.target)} \\ &\wedge \pathvar[i]' = \mathit{curr\_path_i}' \wedge \mathit{M.path}_i' = \pathvar[i]' \\
-  &\wedge (\bigwedge_j j\neq i \Rightarrow \pathvar[j]'= \pathvar[j]).
- \end{align*}
-
-Similarly, we get $E_{t_2}$, $E_{t_3}$ and $E_{t_4}$ for the other tasks. For each task, an additional constraint capturing the proof obligation ~\ref{pathclear} on the function $\mathit{PathIsClear}$ is generated as follows:  $A_{t_1} := \forall j \in \UINS, j \neq id, \dist(\pathvar[j], \mathit{curr\_path}_i')$. Similarly we have constraints $A_{t_2}, A_{t_3}$  and $A_{t_4}$ for the other tasks. When none of the tasks is picked, the post event configuration generated is $$ E_{none} :=\neg\mathit{on\_task}_i' \wedge \pathvar[i]' = M.pos_i $$. Since the positions of the robots don't change after the event, \inv{inv:task} for the current configuration for robot $i$ reduces to $$I: \forall j \in \UINS, j \neq i \Rightarrow \dist(\pathvar[j], \pathvar[i])$$ and the invariant in the post event configuration is $$I' := \forall j \in \UINS, j \neq i \Rightarrow \mathit{dist}(\pathvar[j]', \pathvar[i]') \geq \ds  .$$
-
-The induction hypothesis for event \emph{Assign} then becomes $$ \bigwedge_{i\in \UINS}\mathit{on\_task_i} \wedge \bigvee_{t_j}(E_{t_j} \wedge A_{t_j} \wedge  I) \Rightarrow I'.$$ The induction hypothesis for event \emph{Complete} is generated similarly (omitted here), and the overall induction hypothesis is a conjunction of the two.
-
-Table \ref{tab:task} summarizes the verification of these constraints on systems with different number of robots.
+Finally, \inv{inv:task} for the current configuration for robot $i$ reduces to
+\begin{small}
+\[
+    I := \forall j \in \UINS, j \neq i \Rightarrow \dist(\pathvar[j], \pathvar[i]),
+\]
+\end{small}%
+and we can easily derive $I''$ using $\pathvar''[j]$ instead.
+The proof obligation \PO{po:ind} for event \emph{Assign} then becomes
+\begin{proofob}
+\(
+\bigwedge\limits_{i\in \UINS} I \land (\bigvee\limits_{t_j}E_{t_j} \lor E_{none}) \land A \Rightarrow I''
+\)
+\end{proofob}
+The induction hypothesis for event \emph{Complete} is generated similarly (omitted here),
+and the overall proof obligation is a conjunction of the two.
+Table \ref{tab:task} summarizes the verification of these constraints with different number of robots.
 \begin{table}
     \scriptsize
  \centering
@@ -444,7 +517,8 @@ Task        & 10     &12.92   &18.34   & \Checkmark  \\
     \vspace{-8mm}
 \end{table}
 
-\subsubsection{Case Study: Mapping}
+
+\subsection{Case Study: Mapping}
 
  The problem requires a set of robots to collaboratively mark the position of static \emph{obstacles} within a given area $D$ quantized by a \emph{grid}, which any robot should avoid while moving in $D$.The key difference between distributed SLAM and this application is that we assume that the robots know their \emph{global coordinates} within the area of deployment. They are only attempting to map the static obstacles within this area. We assume that the only sensors available for sensing obstacles are LIDAR based, and the robots are constrained to move in a 2-D space.
 
@@ -478,7 +552,6 @@ In $\dmap$, the \MotionWithScan module provides a $\mathit{pscan}$ sensor used t
 \end{figure}
 
  The $\lgname$ program corresponding to this solution has three \emph{events}: \emph{NewPoint, LUpdate, GUpdate}. The shared allwrite variable $\gmap$ is used to construct a shared map of obstacles within the domain $D$, and has type $\mathit{GridMap}$, which is a 2-D array representing a grid over $D$. The local variable $\lmap$ represents each robot's \emph{local} knowledge of the domain $D$, and has the same type as $D$. A robot executing the \emph{NewPoint} event, finds an unoccupied point to move to using a user defined function $\mathit{pickFrontierPos}$ and plans a path to it using $\mathit{MotionWithScan.planner}$. It then updates its $\lmap$ from the shared variable $\gmap$. The $\mathit{LUpdate}$ event updates the $\lmap$ with scanned sensor data while the robot is in motion, and the $\mathit{GUpdate}$ event updates the shared $\gmap$ with the updated $\lmap$ information corresponding to the scanned data.
-
 
 Suppose we have a function $\mathit{snd}: GridMap \mapsto \mathbb{B}$, such that $\mathit{snd}(g)$ returns True if $g$ is consistent with the ground truth function $\world_Q$, and False otherwise. We want to prove that $\gmap$ as well as each robot $i$'s $\lmap_i$ is consistent with the ground truth function:
 \begin{invariant}
