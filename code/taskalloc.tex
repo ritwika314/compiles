@@ -15,6 +15,11 @@ allread:
 allwrite:
   List\<Task\> all_tasks
 
+Complete:
+pre: on_task and Motion.reached
+eff: on_task=False
+shared_paths[pid]=[Motion.position]
+
 Assign:
   pre: !on_task
   eff:
@@ -23,7 +28,8 @@ Assign:
      else: atomic:
         for t in all_tasks:
            curr_path=Motion.planner(t.target)
-           if pathIsClear(shared_paths, curr_path, pid):
+           if pathIsClear(shared_paths, \
+                             curr_path, pid):
               on_task=True
               cur_task=t
               break
@@ -33,8 +39,3 @@ Assign:
            Motion.path=curr_path
         else:
            shared_paths[pid]=[Motion.position]
-
-Complete:
-    pre: on_task and Motion.reached
-    eff: on_task=False
-         shared_paths[pid]=[Motion.position]
