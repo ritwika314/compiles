@@ -97,34 +97,43 @@ These choices do leave out issues related to robot failure,  dynamic joins and l
 %\sayan{SM:Top of page 2/3 should have the end-to-end figure. Algorithm-code-simulator-deployment.}
 
 \marginpar{\scriptsize\sayan{[EuroSys'17] An Empirical Study on the Correctness of Formally Verified Distributed Systems.}}
-
-
-
 \begin{noinditem}
 
 \item  {We have developed the $\lgname$ language which provides, as first-class constructs,  abstractions for robot  programs to interact with the physical platform, as well as other robot programs.}
 \item These abstractions allow $\lgname$ programs to be portable across different hardware; we  discuss our experiences in deploying several $\lgname$ applications on heterogeneous collections of ground vehicles and drones in Section~\ref{}.
 \item  We have developed the formal executable semantics of $\lgname$ using the \K framework. To our knowledge this is the first formalization of a programming language for distributed cyber-physical systems which has also been deployed on actual platforms.
-\sayan{The rest has to be re-written consolidated.}
-\item  We built analysis tools on top of semantics to facilitate both inductive invariant checking \rg{state space exploration with black-box dynamics. In this paper, we analyzed safety properties for the benchmark using inductive invariant checking and validated assumptions separately}. While most formal analysis tools for distributed systems verify models of the protocols in form of automata, this framework actually verifies the program implementing the abstract model.
+\item  We built analysis tools on top of semantics to facilitate both inductive invariant checking state space exploration with black-box dynamics. In this paper, we analyzed safety properties for the benchmark using inductive invariant checking and validated assumptions separately. While most formal analysis tools for distributed systems verify models of the protocols in form of automata, this framework actually verifies the program implementing the abstract model.
 \item An intended useful outcome of this methodology is a list of formal assumptions for the platform or implementation specific components such sensors, schedulers, data structures, etc. In the end-to-end safety assurance cases~\cite{} for complex cyber-physical systems, these assumptions can serve as contracts for sensing devices, drivers, hardware platforms, and operating system modules that are often outside the control of the application programmer.
+\item Our design of \lgname creates a separation of device-specific from device-independent concerns. In our implementation, we enforced simple interface for every device-specific sensor and actuator modules. These interfaces allow a user to deploy (and simulate) the same program on heterogenous devices using \emph{configurations} without any alteration to the $\lgname$ program, or any additional compilation, thus shortening the test-debug-deployment cycle.
+\item We explored the trade-off between the level of abstraction of the minutiae of multi-robot systems and achieved a simple yet expressive language design enabling a versatile set of multi-robot applications. One of the design choices we made was to abstract away continuous time in language. This required a careful design of the memory model to provide consistency and sychrony guarantees. We achieved distributed shared memory through round-based synchronous message passing. Our compiler translates $\lgname$ programs to Python and a device-independent middle-ware implements the memory model and module interfaces.
+\item We created a simulation environment in Gazebo for testing $\lgname$ applications and validating assumptions, specifically on robot-environment behavior. The simulation environment only differs from a hardware deployment environment in the dynamics models of the physical platforms, but all software components are identical.
 
-\item Abstract away continuous time in language while provide guarantees by the carefully designed memory model
-\item Simple (and formally defined?) interfaces to interact with black-box modules thru sensor/actuator variables for continuous dynamics
-\item Separate device-specific from device-independent
-\item Trade-off between exposing more low level details and simplicity of the language
-\item Enable (manual) formal analysis (for example, on DMap or Task)
-\item A compiler translates Koord to Python and a device-independent middle-ware implements the memory model and module interfaces
-\item Achieve distributed shared memory thru round base synchronous message passing
+\rg{Not sure how to phrase these}
+%\item Enable (manual) formal analysis (for example, on DMap or Task)
 \item Convert pub-sub based message passing to black-box module interface
-\item Allow configurations to use different device-specific implementations
-\item A Gazebo based simulation environment for testing (and data driven verification?)
 \item Wrap around black-box modules (ROS packages) to satisfy assumptions identified in formal analysis : Most technically challenging but difficult to sell
 
 %\item Finally, \sayan{experimental evaluation. What did we learn that can generalize beyond this specific application? How did we extend CyPhyHouse capabilities generally?}
 
 \end{noinditem}
+\makeatletter
+\let\origsection\section
+\renewcommand\section{\@ifstar{\starsection}{\nostarsection}}
 
+\newcommand\nostarsection[1]
+{\sectionprelude\origsection{#1}\sectionpostlude}
+
+\newcommand\starsection[1]
+{\sectionprelude\origsection*{#1}\sectionpostlude}
+
+\newcommand\sectionprelude{%
+  \vspace{-0.5em}
+}
+
+\newcommand\sectionpostlude{%
+  \vspace{0em}
+}
+\makeatother
 %The application program \dmap is X lines of \lgname code with a \sayan{handful} external functions.
 %%
 %The application program, takes full advantage of the \lgname language's features shared memory semantics.

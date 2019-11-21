@@ -115,7 +115,7 @@ given a set of initial configurations of the system $\gset_0$,
 where $\eec{\Inv}{\gconfig}$ represents evaluating $\Inv$ over $\gconfig$.
 \end{definition}
 
-\begin{figure}
+\begin{figure}[!htbp]
 \newcommand{\vbar}{{\normalfont\ |\ }}
 \itshape
 \begin{tabular}{l@{\ }r@{\ \ }l}
@@ -376,6 +376,7 @@ In this case study, we only prove requirement~(b) for \Task.
     }
     \caption{ $\lgname$ code for robot $i$ for the Distributed Task Allocation}
     \label{fig:taskapp}
+    \vspace{-5mm}
 \end{figure}
 
 \Task consists of two events
@@ -549,6 +550,7 @@ In $\dmap$, the \MotionWithScan module provides a $\mathit{pscan}$ sensor used t
     }
     \caption{ $\lgname$ code for robot $i$ for the Distributed Mapping Application}
     \label{fig:mapapp }
+    \vspace{-5mm}
 \end{figure}
 
  The $\lgname$ program corresponding to this solution has three \emph{events}: \emph{NewPoint, LUpdate, GUpdate}. The shared allwrite variable $\gmap$ is used to construct a shared map of obstacles within the domain $D$, and has type $\mathit{GridMap}$, which is a 2-D array representing a grid over $D$. The local variable $\lmap$ represents each robot's \emph{local} knowledge of the domain $D$, and has the same type as $D$. A robot executing the \emph{NewPoint} event, finds an unoccupied point to move to using a user defined function $\mathit{pickFrontierPos}$ and plans a path to it using $\mathit{MotionWithScan.planner}$. It then updates its $\lmap$ from the shared variable $\gmap$. The $\mathit{LUpdate}$ event updates the $\lmap$ with scanned sensor data while the robot is in motion, and the $\mathit{GUpdate}$ event updates the shared $\gmap$ with the updated $\lmap$ information corresponding to the scanned data.
