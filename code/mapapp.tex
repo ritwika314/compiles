@@ -21,8 +21,8 @@ local:
 NewTarget:$\label{newpt}$
   pre !on_path
   eff:
-     target = \
-        pickFrontierPos(map, MotionWithScan.position)
+     target = pickFrontierPos(map, \
+                         MotionWithScan.position)
      obstacles = findObs(map)
      MotionWithScan.path = \
         MotionWithScan.planner(target, obstacles)
@@ -36,7 +36,8 @@ LUpdate:$\label{lup}$
    pre on_path and !MotionWithScan.reached
    eff:
       for p, s in MotionWithScan.pscan:
-         $\lmap$ $=$ merge($\lmap$,scanToMap(p, s))
+         $\lmap$ $=$ merge($\lmap$, \
+                             scanToMap(p, s))
 
 GUpdate: $\label{gup}$
   pre MotionWithScan.reached
