@@ -11,16 +11,17 @@ In addition, this separation will help combine different analysis techniques tha
 
 
 \paragraph{Approach} In this paper, we present $\lgname$: a language and supporting verification and testing tools for programming distributed robotic systems. 
-\begin{itemize}
+\begin{noinditem}
 \item {\em For the application developer}, our $\lgname$ language provides key abstractions (\emph{sensor and actuator ports, distributed shared memory, and synchronous execution}) to develop robot applications that interact with the the physical environment, and other participating robot programs.
 \item {\em For the V\&V engineer}, the \K-based formal executable semantics we have developed for $\lgname$ and our Z3-based prover, can help discharge key invariants of the $\lgname$ applications.  In some cases,  automatically. This verification process also identifies the {\em platform-dependent\/} proof obligations (or assumptions) that have to be discharged or validatedthrough simulations and testing. 
 \item {\em For the platform engineers\/} deploying the robot applications, our abstraction makes the $\lgname$ programs portable across platforms, and our high-fidelity $\lgname$ simulator help test the exact same code on different platforms.
-\end{itemize}
+\end{noinditem}
 
 \begin{figure}[h!]
 \includegraphics[width=\linewidth]{figs/koorduser.png}
 \caption{\small \lgname language  enables programmers to develop distributed robotics applications using a high-level language and prove properties using symbolic executable semantics in \K. Platform specific assumptions are abstracted and can be checked using simulations and hardware deployments.}
-\label{fig:koorduser}	
+\label{fig:koorduser}
+	\vspace{-5mm}
 \end{figure}
 
 \paragraph{Technical challenges and design decisions}
@@ -88,12 +89,13 @@ We admit that these choices leave out  issues related to robot failure,  dynamic
 \end{minipage}%
 	\caption{Swarm formation show by FireFly Inc. (\emph{Center}). Simulation of shape formation (\emph{Right}).}
     \label{fig:firefly}
+	\vspace{-5mm}
 \end{figure}
 
 %\paragraph{Implement trusted run-time environment}
 
-\rg{Outline implementation issues }
-\sayan{SM:Top of page 2/3 should have the end-to-end figure. Algorithm-code-simulator-deployment.}
+%\rg{Outline implementation issues }
+%\sayan{SM:Top of page 2/3 should have the end-to-end figure. Algorithm-code-simulator-deployment.}
 
 \marginpar{\scriptsize\sayan{[EuroSys'17] An Empirical Study on the Correctness of Formally Verified Distributed Systems.}}
 \begin{figure}[h!]
@@ -101,11 +103,13 @@ We admit that these choices leave out  issues related to robot failure,  dynamic
 \includegraphics[height=5cm]{figs/arch.png}
 \caption{\toolname framework.}
 \label{fig:arch}
+	\vspace{-5mm}
 \end{figure}
 
-\paragraph{Contributions}
-\begin{itemize}
-\item  We have developed the $\lgname$ language which provides, as first-class constructs,  abstractions for robot  programs to interact with the physical platform, as well as other robot programs.
+
+\begin{noinditem}
+
+\item  {We have developed the $\lgname$ language which provides, as first-class constructs,  abstractions for robot  programs to interact with the physical platform, as well as other robot programs.}
 \item These abstractions allow $\lgname$ programs to be portable across different; we  discuss our experiences in deploying several $\lgname$ applications on heterogeneous collections of ground vehicles and drones in Section~\ref{}. 
 \item  We have developed the formal executable semantics of $\lgname$ using the \K framework. To our knowledge this is the first formalization of a programming language for distributed cyber-physical systems which has also been deployed on actual platforms.
 \sayan{The rest has to be re-written consolidated.}
@@ -126,7 +130,7 @@ We admit that these choices leave out  issues related to robot failure,  dynamic
 \item \sayan{An intended useful outcome of this methodology  is a list of formal assumptions for the \sayan{sensors, schedulers, ...}. In the end-to-end safety assurance cases~\cite{} for complex cyber-physical systems, these assumptions  can serve as contracts for sensing devices, drivers, hardware platforms,  and operating system modules that are often outside the control of the application programmer.}
 %\item Finally, \sayan{experimental evaluation. What did we learn that can generalize beyond this specific application? How did we extend CyPhyHouse capabilities generally?}
 
-\end{itemize}
+\end{noinditem}
 
 %The application program \dmap is X lines of \lgname code with a \sayan{handful} external functions.
 %%

@@ -367,3 +367,10 @@
 \newcommand{\incurly}[1]{\left\{#1\right\}}
 \newcommand{\pathvar}{\mathit{shared\_path}}
 \newcommand{\evname}[1]{\emph{#1}}
+\newenvironment{noinditem}
+{ \begin{asparaitem}
+  \setlength{\itemsep}{0.5ex}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+  \addtolength{\itemindent}{-2em}  }
+{ \end{asparaitem} }
