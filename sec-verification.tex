@@ -1,5 +1,5 @@
 
-\section{Formal analysis of $\lgname$ programs}
+\section{Formal analysis of \lgname programs}
 \label{sec:verification}
 
 \newcommand{\Ev}{\ensuremath{e}\xspace}
@@ -22,7 +22,7 @@ where $\Ev$ is \emph{``eventName: {\normalfont\bf pre:} \EvCond\ {\normalfont\bf
 Given a set of system configurations $\gset$, we define the functions using the semantic rules of \refsect{semantics}:
 \begin{inparaenum}[(i)]
     \item $\Post_\Ev(\gconfig,i)$ returns the set of configurations obtained by robot $i$ executing event $\Ev \in \Event$ from a configuration $\gconfig$.
-    \marginpar{\scriptsize\sayan{are events deterministic? Did we discuss somewhere?}}
+          \sayan{are events deterministic? Did we discuss somewhere?}
     \item $\Post(\gset,i)$ returns the set of configurations obtained by robot $i$ executing any event from a configuration in $\gset$.
     \item $\Post(\gset,\pvec)$ returns all configurations visited, when robots execute their events in the order $\pvec$,
           where $\pvec$ is a sequence of $p_i \in \UINS$.
@@ -89,8 +89,9 @@ the set of all reachable states in $n$ rounds is defined inductively as follows:
 \Reach(\gset_0, n) :=
     \begin{cases}
         \gset_0, \text{ if } n = 0 \\[5pt]
-        \Reach(\gset_0,n-1) \text{\hspace{2cm}otherwise} \\
-        \quad \cup\ \pt{0}{\delta}(\Post(\frontier(\gset_0,n-1))),\\
+        \Reach(\gset_0,n-1) \text{\hspace{1.8cm}otherwise} \\
+        \hspace{0.5em} \cup\ \Post(\frontier(\gset_0,n-1))\\
+        \hspace{0.5em} \cup\ \pt{0}{\delta}(\Final(\frontier(\gset_0,n-1))),\\
     \end{cases}
 \]
 Notice that all transient configurations during both program~(computed by $\Post$) and environment~(computed by $\pt{0}{\delta}$) transitions are included in $\Reach$.
@@ -105,84 +106,128 @@ Invariant can be used to guarantee, for instance, that no two robots are ever wi
 or robots always stay within a designated area~(Geofencing).
 Formally,
 \begin{definition}
-An invariant $\Inv$ is a predicate~(Boolean valued function) over a configuration $\gconfig \in \pwg$ such that,
-given a set of initial configurations of the system $\gset_0$
+An invariant $\Inv$ is a predicate~(Boolean valued function) over a configuration $\gconfig$ such that,
+given a set of initial configurations of the system $\gset_0$,
 \[
 \forall n\in\naturals, \forall\gconfig \in \Reach(\gset_0, n), \eec{\Inv}{\gconfig},
 \]
 where $\eec{\Inv}{\gconfig}$ represents evaluating $\Inv$ over $\gconfig$.
 \end{definition}
-\chiao{Syntax for defining $\Inv$ as logic formulas?}
-\newcommand{\vbar}{{\normalfont\ |\ }}
 
 \begin{figure}
+\newcommand{\vbar}{{\normalfont\ |\ }}
 \itshape
-\begin{tabular}{lrl}
-   Term & ::= &  $\Var \vbar \Val \vbar \Cfield$ \vbar \\
-        &     &  Term $+$ Term \vbar Term $\times$ Term \vbar \\
-        &     &  Term $-$ Term \vbar Term \slash Term\\
-   BExpr & ::= & Term $\geq$ Term \vbar Term $\leq$ Term \vbar \\
-         &     & Term $=$ Term \vbar Term $>$ Term \vbar Term $<$ Term \vbar \\
-         &      & BExpr $\wedge$ BExpr \vbar BExpr $\vee$ BExpr \vbar\\
-         &      & $\neg$ BExpr \vbar BExpr $\Rightarrow$ BExpr \\
-   $\Inv$ & ::= & BExpr \vbar $\forall i \in \UINS, \Inv$ \vbar $\exists i \in \UINS, \Inv$
+\begin{tabular}{l@{\ }r@{\ \ }l}
+    Term   &   ::= & $\Var \vbar \Val \vbar \Cfield$                                           \\
+           & \vbar & Term $+$ Term \vbar Term $\times$ Term                                    \\
+           & \vbar & Term $-$ Term \vbar Term \slash Term                                      \\
+    BExpr  &   ::= & Term $\geq$ Term \vbar Term $\leq$ Term                                   \\
+           & \vbar & Term $=$ Term \vbar Term $>$ Term \vbar Term $<$ Term                     \\
+           & \vbar & BExpr $\wedge$ BExpr \vbar BExpr $\vee$ BExpr                             \\
+           & \vbar & $\neg$ BExpr \vbar BExpr $\Rightarrow$ BExpr                              \\
+    $\Inv$ &   ::= & BExpr \vbar $\forall i \in \UINS, \Inv$ \vbar $\exists i \in \UINS, \Inv$
 \end{tabular}
 
 \caption{$\Inv$ specification syntax}\label{fig:inv-syntax}
 \end{figure}
 
 
-
 \begin{definition}
 \label{def:ii}
 A predicate $\mathit{inv}$ is an \emph{inductive invariant} of a system if given a set of initial configurations of the system $\gset_0$,
-it satisfies the following:
+we can prove the following proof obligations~(POs):
 \begin{gather}
-\forall \gconfig_0\in \gset_0, \eec{\Inv}{\gconfig_0}\\
-\forall \gconfig \in \pwg, \eec{\Inv}{\gconfig} \Rightarrow \forall \gconfig' \in \Reach(\left\{\gconfig\right\},1), \eec{\Inv}{\gconfig'} \label{def:ind-hyp}
+\forall \gconfig_0\in \gset_0, \eec{\Inv}{\gconfig_0} \label{po:base}\tag{\textit{Base}}\\
+\forall \gconfig \in \pwg, \eec{\Inv}{\gconfig} \Rightarrow \forall \gconfig' \in \Reach(\left\{\gconfig\right\},1), \eec{\Inv}{\gconfig'} \label{po:ind-hyp-orig}
 \end{gather}
 \end{definition}
-This definition states that property $\Inv$ is satisfied by the initial configuration(s) of a system,
+This definition states that $\Inv$ is satisfied by the initial configuration(s) of a system,
 and also by any configuration reached during one round from any configuration satisfying the property.
 It is straightforward to prove that an inductive invariant is always an invariant by induction.
 
 Our proposed proof strategy for the presented case studies is thus to prove
-user-specified requirements are inductive invariants.
+user-specified requirements are inductive invariants by discharging the proof obligations.
 In addition, we \emph{decouple} the environment and program transition behaviors in $\Reach$,
 and analyze each separately.
-Formal analysis of the dynamic behavior of the system during environment transitions is a difficult problem by itself.
-We express the constraints on the configurations reached during environment transitions as assumptions.
-Criterion~\eqref{def:ind-hyp} can be expanded and simplified as:
-\begin{equation}\label{def:ind-hyp-env}
-\eec{\Inv}{\gconfig} \Rightarrow \forall \gconfig' \in \pt{0}{\delta}(\Post(\incurly{\gconfig})), \eec{\Inv}{\gconfig'}
-\end{equation}
-We state Criterion~\eqref{def:ind-hyp-env} as an assumption $A$,
-which can be verified separately by other tools, and tested using the \toolname simulator.
+More precisely, \PO{po:ind-hyp-orig} can be restated by expanding $\Reach$ and $\frontier$ as $\forall \gconfig \in \pwg,$
+\begin{gather}
+\eec{\Inv}{\gconfig} \Rightarrow \forall \gconfig' \in \Post(\incurly{\gconfig}), \eec{\Inv}{\gconfig'}\label{po:ind-hyp-prog}\\
+\small
+\eec{\Inv}{\gconfig} \Rightarrow \forall \gconfig' \in \pt{0}{\delta}(\Final(\incurly{\gconfig})), \eec{\Inv}{\gconfig'}\label{po:ind-hyp-env}
+\end{gather}
 
-A major source of nondeterminism in the behavior of these distributed programs with shared variables
-can be the order of writes to shared variables in one round,
-however, this is not a factor in proving inductive invariants.
+A major cause of state explosion in computing $\Post$ for \PO{po:ind-hyp-prog}
+is the permutation of all possible orders for all robots
+with reads/writes to shared contexts.
+We therefore seek for a stronger and easier to prove proof obligation using the lemma below:
 \begin{lemma}
-   \label{noninter}
-Given an arbitrary (symbolic) configuration $c$ and an inductive invariant $\mathit{inv}$,
-   {\small
-   $$\bigwedge_{i\in \UINS}\bigwedge_{e \in \Event}  \eec{\mathit{inv}}{\Post(\left\{c\right\}, i, e)} \Leftrightarrow \forall c' \in \Post(\left\{c\right\}), \eec{\mathit{inv}}{c'}$$ }
+   \label{lem:noninter}
+Given any predicate $\varphi$,
+for any configuration $c$ satisfying $\varphi$, the following always holds
+\[
+\small
+\left(\bigwedge_{i\in \UINS}\bigwedge_{\Ev \in \Event} \forall \gconfig' \in \Post_\Ev(\gconfig, i), \eec{\varphi}{\gconfig'}\right)
+    \Rightarrow \forall \gconfig' \in \Post(\incurly{\gconfig}), \eec{\varphi}{\gconfig'}
+\]
 \end{lemma}
-\begin{proof}
-Suppose that given an arbitrary configuration $c$, such that $\bigwedge_{i\in \UINS}\bigwedge_{e \in \Event} \eec{\mathit{inv}}{\Post(\left\{c\right\}, i, e)}$ holds true. Consider a permutation $\incurly{i_1,i_2,\ldots,i_{\NMAX}}$ of robots executing events $\incurly{e_1, e_2, \ldots , e_{\NMAX}}$ respectively in a program transition during a round, reaching configurations $c_1, c_2, \ldots, c_{\NMAX}$ respectively. By assumption, since $\Post(\incurly{c},i,e) = c_1$, $\eec{\mathit{inv}}{c_1}$. Since our assumption was about any arbitrary (symbolic) configuration $c$, the same argument therefore can be extended to all the configurations reached by the system during this program transition, i.e. $\forall c' \in \incurly{c_1, c_2, \ldots, c_n}, \eec{\mathit{inv}}{c}$.
-\end{proof}
+We skip the detail proof for \lem{lem:noninter} here.
+The idea is to simply expand the definition of $\Post$,
+and because $\varphi$ is preserved before and after every event transition $\Post_\Ev$ of every robot,
+the order of robots never cause violation of $\varphi$.
+With \lem{lem:noninter}, we strengthen and rewrite \PO{po:ind-hyp-prog} as $\forall \gconfig, \gconfig' \in \pwg,$
+\begin{equation}
+\small
+\bigwedge_{i\in \UINS}\bigwedge_{\Ev \in \Event} \eec{\Inv}{\gconfig} \land \gconfig' \in \Post_\Ev(\gconfig, i)
+    \Rightarrow \eec{\Inv}{\gconfig'}\label{po:ind-hyp-event}
+\end{equation}
+where we can construct $\gconfig' \in \Post_\Ev(\gconfig, i)$ for each event
+using our \K symbolic execution semantics.
 
-Given an event $e\in \Event$, we represent the precondition of an event as $\pre(e)$. The semantics ensures an event will not occur if the precondition is not satisfied. This and \lem{noninter} allows us to sharpen the induction hypothesis further :
-    $$ \bigwedge_{i\in \UINS} \bigwedge_{e \in \Event}  (\eec{\mathit{inv}}{c} \wedge \pre(e) \wedge A \Rightarrow \eec{\mathit{inv}}{\Post(\left\{c\right\}, i, e) }).$$
+We now discuss our approach to discharge \PO{po:ind-hyp-env}.
+To further decouple program and environment transitions,
+we expand $\pt{0}{\delta}$  and rewrite \PO{po:ind-hyp-env} as $\forall \gconfig, \gconfig', \gconfig'' \in \pwg,$
+\begin{equation}\label{po:ind-hyp-traj}
+\small
+\begin{array}{l}
+(\eec{\Inv}{\gconfig} \land\ \gconfig' \in \Final(\incurly{\gconfig})\\
+\qquad  \land\ \forall t \in [0, \delta], \gconfig'' = \traj(\gconfig', t)) \Rightarrow \eec{\Inv}{\gconfig''}
+\end{array}
+\end{equation}
+Obviously, \PO{po:ind-hyp-traj} requires a formalization of the dynamic behavior $\traj$ during environment transitions,
+and it is a challenging research problem by itself.
+As mentioned in \refsect{overview},
+we introduce assumptions to abstract away the continuous dynamic behavior.
+\begin{definition}
+A \emph{\portasum} $A(\gconfig, \gconfig')$ for $\traj$ is a predicate that
+we can prove the following proof obligation that $\forall \gconfig, \gconfig' \in \pwg,$
+\begin{equation}\label{po:port-ass}\tag{\textit{PA}}
+(\forall t \in [0,\delta], \gconfig' = \traj(\gconfig, t)) \Rightarrow A(\gconfig, \gconfig')
+\end{equation}
+\end{definition}
+The definition allows users to provide a relation that over-approximates $\traj$ regardless of the continuous time $t$.
+\PO{po:port-ass} can be validated with the \toolname simulator or verified separately by other tools specialized for continuous dynamics.
+Further, we know by definition $\Final(\incurly{\gconfig}) \subseteq \Post(\incurly{\gconfig})$,
+we can apply \lem{lem:noninter} in a similar way.
+Hence, with \PO{po:port-ass} and \lem{lem:noninter},
+we can merge \PO{po:ind-hyp-event} and \PO{po:ind-hyp-traj} and strengthen as
+$\forall \gconfig, \gconfig', \gconfig'' \in \pwg,$
+\begin{equation}\label{po:ind}\tag{\textit{Ind}}
+\small
+\bigwedge_{i\in \UINS} \bigwedge_{\Ev \in \Event} \eec{\Inv}{\gconfig} \land \gconfig' \in \Post_\Ev(\gconfig, i)
+\land A(\gconfig', \gconfig'')
+\Rightarrow \eec{\mathit{inv}}{\gconfig''}
+\end{equation}
 
+In the remainder of this section,
+we demonstrate the verification of proposed invariants on three case studies.
+In each case study, we describe the two proof obligations \PO{po:ind} and \PO{po:port-ass}
+as well as the \portasum{}s in use.
+We then show experiment results for proving/disproving the POs.
 
-The remainder of this section demonstrates the verification of proposed invariants on three case studies.
-
- %\rg{Detailed analysis of conditional statements within events?}.
 
 \subsection{Case Study: Lineform}
 
- We use the executable $\lgname$ semantics to prove \inv{inv:lineform} inductively, as discussed in \refsect{overview}.
+We use the executable $\lgname$ semantics to prove \inv{inv:lineform} inductively, as discussed in \refsect{overview}.
 
 We represent the variables in the symbolic post configuration using \emph{primed copies} of the variables in the current configuration. Symbolically executing the effect of the event \evname{TargetUpdate} (for robot $i$) using \K semantics gives us the constraint:
 
@@ -324,12 +369,12 @@ Task        & 10     &12.92   &18.34   & \Checkmark  \\
 Suppose there is a \emph{ground truth} function $\world_Q : Q \mapsto \left\{0,1\right\}$ that gives the actual occupancy of obstacles in this quantized arena. That is, $\forall p \in Q$,
 \begin{align}
 \world_Q(p) =
-		\left\{
-		\begin{array}{ll}
-			1 & \mathit{if}\ p \ \mathit{is \ occupied}\\
-			0 & \mathit{otherwise}.
-		\end{array}
-		\right.
+        \left\{
+        \begin{array}{ll}
+            1 & \mathit{if}\ p \ \mathit{is \ occupied}\\
+            0 & \mathit{otherwise}.
+        \end{array}
+        \right.
 \end{align}
 
 \newcommand{\MotionWithScan}{\emph{MotionWithScan}\xspace}
