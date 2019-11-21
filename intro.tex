@@ -35,6 +35,8 @@ In managing these complexities, we have baked-in several abstractions in the des
 \item Our formal executable semantics of $\lgname$ in the \K framework, assumes a {\em synchronous round-by-round computation model for the distributed system\/}. Each round lasts for a duration of time, say $\delta >0$, during which several things happen. First, each robot  executes some {\em event\/} in its program; the different events for different robots may interleave in arbitrary order. Each event may read sensor port values, updates program variables and actuator port values, it may send  some messages to updating the shared variables. Then, the  robots move in space (according to their set actuator values), which in turn update their sensor ports for the next round. This synchronous  model is a restrictive but standard model for distributed computing~\cite{lynch1996a,attiyawelch} and it significantly simplifies programming and verification, although it does not completely eliminate concurrency control. $\lgname$ provides constructs for mutual exclusion (see the \textbf{atomic} construct), as additional mechanisms for concurrency control with shared variables. Further, the synchronous model can be implemented under  assumptions that typically go without saying in typical robot networks\footnote{Bounded message delays and clocks with bounded drifts.}.  
 \item In order to reason about a {\em closed-loop\/} system,  one has to specify or model how the platform-dependent parts of the system react to the actuator values set by the $\lgname$ application. In practice, we may or may not have a detailed model of the platform (e.g., dynamical models for cars, wheel friction, engine torque, etc.). Over the past thirty years, the control theory and the hybrid systems communities have developed a bouquet of techniques for reasoning about software-controlled physical processes (dynamical systems) with different types of models~\cite{alurbook, platzerbook,seshiabook}. Our design of the  $\lgname$ semantics is neutral/\sayan{agnostic} towards these different approaches. In other words, any available model or actual black-box executable for the platform can be plugged into $\lgname$ semantics, and the corresponding analysis techniques available from the above-mentioned body of work can be brought to bear for verifying the closed system.
 \end{inparaenum}
+
+
 We admit that these choices leave out  issues related to robot failure,  dynamic joins and leaves, from the current semantics. These aspects could be included in the future. Further,  even without tackling these issues, as we shall see with the case studies presented in Section~\ref{},  $\lgname$ tools can handle analysis of interesting applications and requirements for distributed formation, task allocation, and mapping.
 
 %The program plane consists of a $\lgname$-program executing within the runtime system of every agent. The plant plane consists of the hardware platform of the agent. The control plane acts as a bridge between the program and the plant planes. It receives decisions from the program through the {\em actuator ports\/} (e.g., a sequence of way-points to visit, a temperature to maintain) and drives the plant by making low-level, hardware-dependent decisions (e.g., steering angles, throttle, turning furnaces on or off). It also makes information about the plant's state  (e.g., position coordinates, room temperatures) available to the program through the {\em sensor ports}. This decomposition enables us to formalize the semantics of $\lgname$ with the environment (controller and plant) as a parameter. It also makes it possible to develop verification tools that combine application semantics and environment behavior either as an explicit model, or an executable black-box.
@@ -93,8 +95,8 @@ We admit that these choices leave out  issues related to robot failure,  dynamic
 
 %\paragraph{Implement trusted run-time environment}
 
-\rg{Outline implementation issues }
-\sayan{SM:Top of page 2/3 should have the end-to-end figure. Algorithm-code-simulator-deployment.}
+%\rg{Outline implementation issues }
+%\sayan{SM:Top of page 2/3 should have the end-to-end figure. Algorithm-code-simulator-deployment.}
 
 \marginpar{\scriptsize\sayan{[EuroSys'17] An Empirical Study on the Correctness of Formally Verified Distributed Systems.}}
 \begin{figure}[h!]
@@ -105,9 +107,17 @@ We admit that these choices leave out  issues related to robot failure,  dynamic
 	\vspace{-5mm}
 \end{figure}
 
-\paragraph{Contributions}
-\begin{itemize}
-\item  We have developed the $\lgname$ language which provides, as first-class constructs,  abstractions for robot  programs to interact with the physical platform, as well as other robot programs.
+{\newenvironment{noinditem}
+{ \begin{asparaitem}
+  \setlength{\itemsep}{1.5ex}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+  \addtolength{\itemindent}{-2em}  }
+{ \end{asparaitem} }
+
+\begin{noinditem}
+
+\item  {We have developed the $\lgname$ language which provides, as first-class constructs,  abstractions for robot  programs to interact with the physical platform, as well as other robot programs.}
 \item These abstractions allow $\lgname$ programs to be portable across different; we  discuss our experiences in deploying several $\lgname$ applications on heterogeneous collections of ground vehicles and drones in Section~\ref{}. 
 \item  We have developed the formal executable semantics of $\lgname$ using the \K framework. To our knowledge this is the first formalization of a programming language for distributed cyber-physical systems which has also been deployed on actual platforms.
 \sayan{The rest has to be re-written consolidated.}
@@ -128,7 +138,7 @@ We admit that these choices leave out  issues related to robot failure,  dynamic
 \item \sayan{An intended useful outcome of this methodology  is a list of formal assumptions for the \sayan{sensors, schedulers, ...}. In the end-to-end safety assurance cases~\cite{} for complex cyber-physical systems, these assumptions  can serve as contracts for sensing devices, drivers, hardware platforms,  and operating system modules that are often outside the control of the application programmer.}
 %\item Finally, \sayan{experimental evaluation. What did we learn that can generalize beyond this specific application? How did we extend CyPhyHouse capabilities generally?}
 
-\end{itemize}
+\end{noinditem}}
 
 %The application program \dmap is X lines of \lgname code with a \sayan{handful} external functions.
 %%
