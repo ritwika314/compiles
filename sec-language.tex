@@ -10,11 +10,11 @@ There is a known set of identifiers $\UINS=\{0,1,\dots,\NMAX-1\}$, and each robo
 % Sayan. This is out of place here.
 %Programmers can use $\NMAX$ and $\myuin$ as constant values in a \lgname program.
 %
-The robots communicate with each other through distributed shared memory. 
+The robots communicate with each other through distributed shared memory.
 The execution of the \lgname program advances in a synchronous, \emph{round-by-round} fashion, where each round lasts for $\delta$ time,
 and $\delta >0$ is a platform specific execution parameter.
-During this period, the robots compute, move, and 
-communicate with each other through distributed shared memory. 
+During this period, the robots compute, move, and
+communicate with each other through distributed shared memory.
 
 
 
@@ -36,7 +36,7 @@ To summarize, there are following three types of names for reading/writing value
 \item \emph{Sensor and actuator ports} are used to read from sensor ports and write to actuator ports of controllers.
 \item \emph{Local program variables} record the state of the program.
 \item \emph{Distributed shared variables} are used for coordination across robots. All shared variables can be read by all participating robots; an
-      \textbf{allwrite} variable can be written by any participating robot; while an 
+      \textbf{allwrite} variable can be written by any participating robot; while an
       \textbf{allread} variable can be written only by a single-writer.
 \end{enumerate}
 
@@ -99,13 +99,13 @@ The expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$.
 The semantics of a \lgname program execution is based on synchronous rounds divided into \emph{event transitions} and \emph{environment transitions} that update the \emph{system configuration}.
 In each round, each robot performs at most one event.
 The update performed by a single robot executing an event is modeled as an instantaneous transition that updates the program variables; however, different events executed by the different robots may interleave in an arbitrary sequence.
-In between the events of successive rounds, $\delta>0$ duration of time elapses, the program variables remain constant while the values held by the sensor and actuator ports may change. 
+In between the events of successive rounds, $\delta>0$ duration of time elapses, the program variables remain constant while the values held by the sensor and actuator ports may change.
 %This is captured by an {\em environment transition\/}.
 %The \lgname program can only read the sampled values from and write to the ports every $\delta$ time.
 %\sayan{Need to choose the words carefully here. We should discuss. Whether the variables change value continuously or discretely is a modeling question and what we want to analyze.}
 These are modeled as environment transitions that advance time as well as the sensor and actuator ports.
 %
-Thus, each round consists of a burst of (at most \NMAX) event transitions followed by an environment transition. This is a standard model for synchronous distributed systems where the speed of computation is much faster than the speed of communication and physical movement~\cite{lynch1996a,attiyawelch}. 
+Thus, each round consists of a burst of (at most \NMAX) event transitions followed by an environment transition. This is a standard model for synchronous distributed systems where the speed of computation is much faster than the speed of communication and physical movement~\cite{lynch1996a,attiyawelch}.
 
 We now describe the system state, or \emph{system configurations} which we use to formalize \lgname semantics.
 
@@ -134,10 +134,7 @@ Given a \lgname program $P$, we can define $\Var$ be the set of variables,
 $\Val$ be the set of values that an expression in \lgname can evaluate to,
 $\Cfield$ be the set of sensor and actuator ports of the controller being used,
 and $\Event$ the set of events in $P$.
-%
-\marginpar{\scriptsize\sayan{Cfield is an odd name. All of the above has to be defined after we fix a Koord program $P$.}}
-%
-The configuration of an robot is a tuple $\agnt = ({M},\cp,\turn)$, where
+A robot configuration is a tuple $\agnt = ({M},\cp,\turn)$, where
 
 \begin{enumerate}[(i)]
 \item ${M} : \Var \mapsto \Val$ is its \emph{local context} mapping both local and shared variables to values.
@@ -149,7 +146,7 @@ For readability, we use the dot (``$.$'') notation to access components of a rob
 For example, $\agnt.M$ means accessing the local context $M$ in the tuple $\agnt$.
 
 \paragraph{Black-box functions for environment transitions}
-To define the  executable \K semantics of  \lgname applications, we have to provide executable descriptions for the environment transitions. The type of this executable object ($f$) is defined by $\Cfield$, namely, 
+To define the  executable \K semantics of  \lgname applications, we have to provide executable descriptions for the environment transitions. The type of this executable object ($f$) is defined by $\Cfield$, namely,
 $f: [\Cfield \mapsto \Val] \times \nnreals \mapsto [\Cfield \mapsto \Val]$.
 That is, given old sensor and actuator values and a time point, $f$ should return the new values for all sensor and actual ports.
 %
@@ -195,9 +192,32 @@ the executable semantics will enable different types of analysis as we shall see
     {}
     {\langle{S}, \agnt, \EndEvent\ StList \rangle \stmtrule  \langle{S}, \agnt, StList \rangle }
 
+    \inferrule*[leftskip=1cm, Right=\SVarUpdate]
+    {
+        x \in \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\lconfig{i} .{M}) \wedge \lconfig{i}^\prime.M = \lconfig{i}.M[x\mapsto v]
+    }
+    {\langle{S},\lconfig{i}, x = v \rangle {\rightarrow_{S}}  \langle{S}[x\mapsto v],\lconfig{i}^\prime,\cdot\rangle}\label{va1} \\
+    \inferrule*[leftskip=1cm, Right=\LVarUpdate]
+    {
+        x \notin \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\lconfig{i} .{M}) \wedge\  \lconfig{i}^\prime.M = \lconfig{i}.M[x\mapsto v]  }
+    {\langle{S},\lconfig{i}, x = v \rangle {\rightarrow_{S}}  \langle{S},\lconfig{i}^\prime,\cdot\rangle}\label{va2}\\
+\end{mathpar}
+\caption{Example statement level semantic rules for \lgname.}\label{fig:assignrules}
+\end{figure}
+
+%
+We will describe only the interesting semantic rules of \lgname above the event level. Rule~\LVarUpdate and Rule ~\SVarUpdate showing the semantic rules for local and shared variable assignment respectively are provided as examples of statement level rules. Rule~\StmtSeqRuleOne and \StmtSeqRuleTwo show how a statement representing a sequence of statements should be executed.  (\rg{more details on statement and expression level semantics we refer the readers in a future extended version of the paper}).
+
+
+\paragraph{Per robot semantics.}
+
+\begin{figure}
+\scriptsize
+\begin{mathpar}
+    \mprset{flushleft}
     \inferrule*[leftskip=1.5cm, Right=\SelectEventRule]
     {
-        \agnt.\turn = \prog
+        \agnt.\turn = \prog \\\\
         \land ``\mathit{Name}\textbf{: pre: } \mathit{Cond} \textbf{ eff: }\mathit{Body}" \in \Event
         \land \mathit{\EvalExpr{\mathit{Cond}}}
     }
@@ -206,61 +226,23 @@ the executable semantics will enable different types of analysis as we shall see
 
     \inferrule*[Right=\SkipEventRule]
     {}
-    {\langle{S}, \agnt, \SelectEvent \rangle \stmtrule  \langle{S}, \agnt, \EndEvent \rangle }    \\
+    {\langle{S}, \agnt, \SelectEvent \rangle \stmtrule  \langle{S}, \agnt, \EndEvent \rangle }
+    \\
 
     \inferrule*[Right=\EndEventRule]
     {}
     {\langle{S},({M},\cp,\prog), \EndEvent \rangle \stmtrule  \langle{S},({M},\cp,\env), \EndEvent \rangle }
 
-    \inferrule*[Right=\EventTransRule]
+    \inferrule*[leftskip=1cm, Right=\RobotEnvRule]
     {
-        \exists i \in \UINS, \langle S,\lconfig{i}, \SelectEvent \rangle \stmtrule
-        \langle S^{\prime},\lconfig{i}', \EndEvent\rangle \\\\
-        \land\ \lconfig{i}.\turn = \prog \land \lconfig{i}^\prime.\turn = \env
+        \forall x \in \mathit{Keys}({S}),M' = {M}[x \mapsto S[x]] \land \cp' = \mathit{f}(\cp,\delta)
     }
-    {(\lset, S, \tau, \prog)\rightarrow_G (\lsetp, S^{\prime}, \tau, \prog)}
+    {  \langle S, (M, cp, \env) \rangle \envtrans \langle S, (M', cp', \prog) \rangle}
 
-    \inferrule*[Right=\EndProgTransRule]
-    {
-        \forall i \in\UINS, \lconfig{i}.\turn=\env
-    }
-    {(\lset, S, \tau, \prog)\rightarrow_G (\lset, S, \tau, \env)}
-    \\
-
-
-%    \inferrule*[Right=\RobotEnvToProgRule]
-%    {  \forall i \in \UINS, \lconfig{i}.\turn = \env \land \lconfig{i}^\prime.\turn = \prog }
-%    {  (\lset, S, \tau, \env)\rightarrow_G (\lsetp, S, \tau, \env)}
-%
-%    \inferrule*[Right=\EnvToProgRule]
-%    {  \forall i \in \UINS, \lconfig{i}.\turn = \prog }
-%    {  (\lset, S,\tau, \env)\rightarrow_G (\lset, S, \tau, \prog)}
 \end{mathpar}
-\caption{Partial robot level semantic rules for \lgname.}\label{fig:partial-semantics}
+\caption{Partial per robot semantic rules for \lgname.}\label{fig:partial-semantics}
 \end{figure}
 
-
-%
-We will describe only the interesting semantic rules of \lgname above the event level. Rule~\LVarUpdate and Rule ~\SVarUpdate showing the semantic rules for local and shared variable assignment respectively are provided as examples of statement level rules. Rule~\StmtSeqRuleOne and \StmtSeqRuleTwo show how a statement representing a sequence of statements should be executed.  (\rg{more details on statement and expression level semantics we refer the readers in a future extended version of the paper}).
-
-\begin{figure}
-\scriptsize
-\begin{mathpar}
-    \mprset{flushleft}
-\inferrule*[leftskip=1cm, Right=\SVarUpdate]
-    {
-    x \in \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\lconfig{i} .{M}) \wedge \lconfig{i}^\prime.M = \lconfig{i}.M[x\mapsto v]
-    }
-    {\langle{S},\lconfig{i}, x = v \rangle {\rightarrow_{S}}  \langle{S}[x\mapsto v],\lconfig{i}^\prime,\cdot\rangle}\label{va1} \\
-\inferrule*[leftskip=1cm, Right=\LVarUpdate]
-    {
-    x \notin \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\lconfig{i} .{M}) \wedge\  \lconfig{i}^\prime.M = \lconfig{i}.M[x\mapsto v]  }
-    {\langle{S},\lconfig{i}, x = v \rangle {\rightarrow_{S}}  \langle{S},\lconfig{i}^\prime,\cdot\rangle}\label{va2}\\
-\end{mathpar}
-\caption{Example statement level semantic rules for \lgname.}\label{fig:assignrules}
-\end{figure}
-
-\paragraph{Per robot semantics.}
 First, we present the semantics of executing an event for each robot,
 which will help us discuss the semantics of the whole system.
 All rules for statement semantics are of type
@@ -268,7 +250,7 @@ All rules for statement semantics are of type
 \stmtrule \subseteq (\pws \times \pwl\times (\pwstmt \cup \{\SelectEvent, \EndEvent\})) \mapsto \wp(\pws\times \pwl \times \pwstmt\cup \{\EndEvent\}),
 \]
 where $\pwstmt$ refers to the set of all possible statements allowed by \lgname syntax.
-This relation takes as input a tuple of (1) a global context, (2) an robot configuration, and (3) a statement,
+This relation takes as input a tuple of (1) a global context, (2) a robot configuration, and (3) a statement,
 and maps it to a set of such tuples.
 
 
@@ -328,22 +310,30 @@ indicating the end of program transition, and an environment transition will occ
 \scriptsize
 \begin{mathpar}
     \mprset{flushleft}
-
- \inferrule*[leftskip=1cm, Right=\RobotEnvRule]
+    \inferrule*[leftskip=1cm, Right=\EventTransRule]
     {
-        \forall x \in \mathit{Keys}({S}),M' = {M}[x \mapsto S[x]] \land \cp' = \mathit{f}(\cp,\delta)
+        \exists i \in \UINS, \langle S,\lconfig{i}, \SelectEvent \rangle \stmtrule
+        \langle S^{\prime},\lconfig{i}', \EndEvent\rangle \\\\
+        \land\ \lconfig{i}.\turn = \prog \land \lconfig{i}^\prime.\turn = \env
     }
-    {  \langle S, (M, cp, \env) \rangle \envtrans \langle S, (M', cp', \prog) \rangle}
+    {(\lset, S, \tau, \prog)\rightarrow_G (\lsetp, S^{\prime}, \tau, \prog)}
+    \\
 
-    \inferrule*[Right=\EnvTransRule]{
+    \inferrule*[leftskip=1cm, Right=\EndProgTransRule]
+    {
+        \forall i \in\UINS, \lconfig{i}.\turn=\env
+    }
+    {(\lset, S, \tau, \prog)\rightarrow_G (\lset, S, \tau, \env)}
+    \\
+
+    \inferrule*[leftskip=1cm, Right=\EnvTransRule]{
         \forall i \in \UINS, \langle S, \lconfig{i} \rangle \envtrans \langle S, \lconfig{i}^\prime \rangle \\\\
-        \land \lconfig{i}.\turn = \env \land \lconfig{i}^\prime.\turn = \prog
+        \land\ \lconfig{i}.\turn = \env \land \lconfig{i}^\prime.\turn = \prog
     }
     { (\lset, {S}, \tau,\env)\rightarrow_G (\lsetp, {S}, \tau + \delta,\prog)}
 \end{mathpar}
-\caption{Partial system level semantic rules for \lgname.}\label{fig:partial-semantics-global}
+\caption{Global semantic rules for \lgname.}\label{fig:partial-semantics-global}
 \end{figure}
-
 
 
 Rule~\EnvTransRule shows the semantics of the system configuration after rule~\EndProgTransRule.
