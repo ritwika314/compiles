@@ -1,15 +1,11 @@
-\section{Related work}\label{sec:related}
+\section{Related work}
+\label{sec:related}
 
-%\chiao{<= 0.5 page}
-
-\rg{The actual implementation details of the systems component of the CyPhyHouse robotics framework, which includes the entire stack of the $\lgname$ language compiler, simulator, software modules implementing distributed shared memory and runtime system interfaces, motion planning modules, the simulator design and hardware deployment experiments have been presented in (cite arxiv paper) .  The design principle of the $\lgname$ language semantics, without details on the actual semantic rules, with preliminary bounded-depth state space exploration of textbook distributed algorithms, and testing on a pre-existing Java-based robotics library, have been presented in (cite workshop paper)}.
-
-%\chiao{Some other works mentioned by the reviewers.
-%BIP (Verimag),
-%ptolemy (UC-Berkeley),
-%}
-Table~\ref{tab:summary} includes a summary of some of the robotics frameworks intended for actual robotics and hardware deployment.
-\
+%Programming languages like C\# and Swift, and   compiler infrastructures like LLVM~\cite{llvm} have revolutionized the application development ecosystem in mobile computing.
+%
+%Inspired by these successes, t
+There is a surge of interest in open and portable languages that raise the level of abstraction for robotics~\cite{Buzzlanguage,Bohrer:2018:VVC:3192366.3192406,reactlang,williams2003model} (see the survey of robotics Domain Specific Languages (DSLs) for more details~\cite{Nordmann2014}). Most of these languages are proprietary or generate executables that are tied to specific platforms.
+%
 \begin{table}[!ht]
     \footnotesize
     \centering
@@ -22,18 +18,23 @@ Table~\ref{tab:summary} includes a summary of some of the robotics frameworks in
         Robotarium~\cite{robotarium}          &            & \checkmark   & \checkmark & Matlab             &            &            \\
         Drona~\cite{desai2017drona}           & \checkmark &              & \checkmark & P~\cite{Planguage} & \checkmark & \checkmark \\
         Live~\cite{campusanofabry:lrp2016}    &            & \checkmark   &            & LPR                & \checkmark &            \\
-        \toolname                             & \checkmark & \checkmark   & \checkmark & \lgname            & \checkmark & \checkmark \\ \hline
+        \lgname                             & \checkmark & \checkmark   & \checkmark & \lgname            & \checkmark & \checkmark \\ \hline
     \end{tabular}
             \caption{}
         \label{tab:summary}
 \vspace{-8mm}
 \end{table}
 
+Here we focus on languages and systems that are platform agnostic. {\em Robot Operating System (ROS)\/}~\cite{ros} is the predominant member in this category.   At core, ROS gives a   publish-subscribe-based communication system and the ROS community has built libraries for  many  different sensors and platforms. 
+Our implementation of the $\lgname$ abstractions for the quadcopter and vehicle platforms use ROS just like  thousands of other robotics products and  projects. 
+ 
+ Table~\ref{tab:summary} gives a summary of robotics languages that have been deployed on hardware platforms.
+\sayan{Add sentences about Drona, ROSBuzz, etc. Where is PyRobot etc in the table?}
+The Live Robot Programming language~\cite{campusanofabry:lrp2016} not only provides a higher-level programming abstraction in terms of nested state machines, but also allows the program to be changed while running, hence reducing the feedback loop across writing, compiling, and testing of robot programs.
 
-Modern programming languages like C\# and Swift, and   compiler infrastructures like LLVM~\cite{llvm} have revolutionized the application development ecosystem in mobile computing.
-%\paragraph*{D.}
-Inspired by these successes, there is a surge of interest in open and portable languages that raise the level of abstraction~\cite{Buzzlanguage,Bohrer:2018:VVC:3192366.3192406,reactlang,williams2003model} (For an earlier survey of Domain Specific Programming Languages (DSLs) for robotic systems see~\cite{Nordmann2014}. Most of these older languages are proprietary or generate executable files that are tied to specific platforms).
-%The Live Robot Programming language~\cite{campusanofabry:lrp2016} not only provides a higher-level programming abstraction in terms of nested state machines, but also allows the program to be changed while running, hence reducing the feedback loop across writing, compiling, and testing of robot programs.
+
+
+
 %The goals of React language for robotics aligns with our goals~\cite{react-lang}
 %Buzz currently does not  connect with  verification tools, and the verification approach implemented with React uses precise models of the environment and performs model checking using dReal~\cite{Gao2013}.
 
@@ -88,4 +89,6 @@ Programming systems using the  shared memory paradigm have been developed for se
 
 %Voltron programming system to explore the concept of team-level programming in active sensing applications. Voltron offers programming constructs to create the illusion of a simple sequential execution model while still maximizing opportunities to dynamically re-task the drones as needed. We implement Voltron by targeting a popular aerial drone platform, and evaluate the resulting system using a combination of real deployments, user studies, and emulation. Our results indicate that Voltron enables simpler code and produces marginal overhead in terms of CPU, memory, and network utilization. In addition, it greatly facilitates implementing correct and complete collaborative drone applications, compared to existing drone programming systems. (?)
 %\end{enumerate}
+
+\rg{In a 4-page workshop abstract, Gosh et al. discussed some of the ideas underlying the  abstractions embodies in $\lgname$~\cite{Applied}. The implementation and deployment of the Task application using $\lgname$ on real hardware platforms is discussed in~\cite{arxiv}. That technical report does not discuss language design,  semantics, nor the V\&V approaches.}.
 
