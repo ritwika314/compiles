@@ -284,49 +284,59 @@ Table \ref{tab:lineform} summarizes the verification of these constraints on sys
 
 \begin{table}
     \scriptsize
- \centering
-   \begin{tabular}{ l|   c c c c  }
+        \begin{minipage}{.49\linewidth}
+   \begin{tabular}{ |l|c @{\hspace{0.5mm}} c  c  c|  }
  \hline
-       (\NMAX) &\tb{dim} & $T_K$ (s) & $T_V$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
+       ($N$) &\tb{dim}  & $T_K$ (s) & $T_V$ (s)  & \tb{Safe} \\ \hline
    3   & 1 &4.90  &9.09   & \Checkmark  \\
  3   & 2 &4.19  &10.13   & \Checkmark  \\
  4    & 1 &4.79  &12.21  & \Checkmark   \\
 4    & 2 &5.28  &12.49  & \Checkmark   \\
  4    & 3 &5.06  &12.77  & \Checkmark   \\
  5   & 1  &4.91  &18.46  & \Checkmark   \\
+\hline
+\end{tabular}
+\end{minipage}
+        \begin{minipage}{.49\linewidth}
+       \begin{tabular}{ |l| @{\hspace{0.5mm}} c c  c  c|  }
+ \hline
+       ($N$) &\tb{dim} & $T_K$ (s) & $T_V$ (s)  & \tb{Safe} \\ \hline
  5   & 2  &5.60  &18.91  & \Checkmark   \\
 5   & 3  &5.42  &20.30  & \Checkmark   \\
 10  & 1  &10.92   &32.34   & \Checkmark  \\
 10  & 2  &10.96   &32.42   & \Checkmark  \\
 10  & 3  &11.34   &33.61   & \Checkmark  \\
- 15  & 1 &12.23  & 53.89   &\Checkmark
+ 15  & 1 &12.23  & 53.89   &\Checkmark\\
+           \hline
 \end{tabular}
-    \caption{ \small Summary of semantics based verification for \LineForm.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for construction of constraints and verification in Z3. Robots moving along a line are represented by \tb{dim} = 1, along a plane by \tb{dim} = 2, and in a 3D space by \tb{dim} = 3.}
-            \label{tab:lineform}
+\end{minipage}
+\vspace{1mm}
 
+    \caption{ \small Summary of semantics based verification for \LineForm. $N$ is $N_{SYS}$,  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for construction of constraints and verification in Z3. Robots moving along a line are represented by \tb{dim} = 1, along a plane by \tb{dim} = 2, and in a 3D space by \tb{dim} = 3.}
+            \label{tab:lineform}
+\vspace{-8mm}
 \end{table}
 
-We can define a $J$, a weaker invariant which simply constrains the position of each robot, and doesn't constrain the shared $x[i]$,
+We can define a $\mathit{WI}$, a weaker invariant which simply constrains the position of each robot, and doesn't constrain the shared $x[i]$,
 \[
-J := \mathit{M.pos}_i \in \mathit{rect}[x_{min}, x_{max}]
+\mathit{WI} := \mathit{M.pos}_i \in \mathit{rect}[x_{min}, x_{max}]
 \]
 Table~\ref{tab:lineform1} shows the results we obtained without the proof obligations as assumptions,
-and this weaker invariant on a system of robots moving in 2D.
+and this weaker invariant on a system of robots moving in 2D. The verification procedure only tells us that the invariant is not inductive, it doesn't tell us whether the invariant doesn't hold, which is why we don't know whether the system is safe w.r.t the proposed invariant.
 
-\begin{table}
+\begin{table}[!htbp]
     \scriptsize
  \centering
    \begin{tabular}{ l|   c c c c  }
  \hline
        (\NMAX) &\tb{constraint} & $T_K$ (s) & $T_V$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
-   3   & $\Pr \wedge E\wedge I \Rightarrow I'$ &  &  & \emph{Unknown}  \\
- 3   & $\Pr \wedge E \wedge J \Rightarrow J'$ &  &   & \emph{Unknown}  \\
- 4    & $\Pr\wedge E \wedge I \Rightarrow I' $ &   &  &  \emph{Unknown} \\
-4    & $\Pr \wedge E \wedge J\Rightarrow J'$ &  &  & \emph{Unknown}   \\
- 4    & $\Pr \wedge E \wedge A \wedge I \Rightarrow I'$ &  &  & \emph{Unknown}   \\
+   15   & $\Pr \wedge E\wedge I \Rightarrow I'$ &  &  & \emph{Unknown}  \\
+ 15   & $\Pr \wedge E \wedge \mathit{WI} \Rightarrow \mathit{WI}'$ &  &   & \emph{Unknown}  \\
+ 15    & $\Pr \wedge E \wedge A \wedge \mathit{WI}\Rightarrow \mathit{WI}'$ &  &  & \emph{Unknown}   \\
 \end{tabular}
-    \caption{ \small Verification summary for weaker invariants on \LineForm. The \tb{constraint} column displays the induction hypothesis used in the verification. The verification procedure only tells us that the invariant is not inductive, it doesn't tell us whether the invariant doesn't hold, which is why we don't know whether the system is safe w.r.t the proposed invariant. }
+    \caption{ \small Verification summary for weaker invariants on \LineForm. The \tb{constraint} column displays the induction hypothesis used in the verification.  }
             \label{tab:lineform1}
+    \vspace{-8mm}
 \end{table}
 
 \newcommand{\Task}{\textsf{Task}\xspace}
@@ -431,6 +441,7 @@ Task        & 10     &12.92   &18.34   & \Checkmark  \\
 \end{tabular}
     \caption{ \small Summary of semantics based verification for \Task.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for generation of constraints and verification in Z3 and $\NMAX$ is the number of robots in the system.}
     \label{tab:task}
+    \vspace{-8mm}
 \end{table}
 
 \subsubsection{Case Study: Mapping}
@@ -500,5 +511,6 @@ Table \ref{tab:map} summarizes the verification of these constraints on systems 
 \dmap        & 10     &   &   & \Checkmark  \\
 \end{tabular}
     \caption{ \small Summary of semantics based verification for \dmap.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for generation of constraints and verification in Z3 and \emph{robots}(N) is the number of robots in the system.}
+    \vspace{-8mm}
 \end{table}
 
