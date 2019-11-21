@@ -160,6 +160,8 @@ the executable semantics will enable different types of analysis as we shall see
 \subsection{Semantics}\label{sec:semantics}
 
 %%semantic rule references
+\newcommand{\SVarUpdate}{\textsc{SharedAssign}\xspace}
+\newcommand{\LVarUpdate}{\textsc{LocalAssign}\xspace}
 \newcommand{\StmtSeqRuleOne}{\textsc{StmtSeq1}\xspace}
 \newcommand{\StmtSeqRuleTwo}{\textsc{StmtSeq2}\xspace}
 \newcommand{\SelectEventRule}{\textsc{SelectEvent}\xspace}
@@ -239,9 +241,24 @@ the executable semantics will enable different types of analysis as we shall see
 
 
 %
-We will describe only the interesting semantic rules of \lgname  above the event level.
-Rule~\StmtSeqRuleOne and \StmtSeqRuleTwo show how a statement representing a sequence of statements should be executed (\rg{more details on statement and expression level semantics we refer the readers in a future extended version of the paper}).
-%
+We will describe only the interesting semantic rules of \lgname above the event level. Rule~\LVarUpdate and Rule ~\SVarUpdate showing the semantic rules for local and shared variable assignment respectively are provided as examples of statement level rules. Rule~\StmtSeqRuleOne and \StmtSeqRuleTwo show how a statement representing a sequence of statements should be executed.  (\rg{more details on statement and expression level semantics we refer the readers in a future extended version of the paper}).
+
+\begin{figure}
+\scriptsize
+\begin{mathpar}
+    \mprset{flushleft}
+\inferrule*[leftskip=1cm, Right=\SVarUpdate]
+    {
+    x \in \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\lconfig{i} .{M}) \wedge \lconfig{i}^\prime.M = \lconfig{i}.M[x\mapsto v]
+    }
+    {\langle{S},\lconfig{i}, x = v \rangle {\rightarrow_{S}}  \langle{S}[x\mapsto v],\lconfig{i}^\prime,\cdot\rangle}\label{va1} \\
+\inferrule*[leftskip=1cm, Right=\LVarUpdate]
+    {
+    x \notin \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\lconfig{i} .{M}) \wedge\  \lconfig{i}^\prime.M = \lconfig{i}.M[x\mapsto v]  }
+    {\langle{S},\lconfig{i}, x = v \rangle {\rightarrow_{S}}  \langle{S},\lconfig{i}^\prime,\cdot\rangle}\label{va2}\\
+\end{mathpar}
+\caption{Example statement level semantic rules for \lgname.}\label{fig:assignrules}
+\end{figure}
 
 \paragraph{Per robot semantics.}
 First, we present the semantics of executing an event for each robot,
@@ -253,6 +270,9 @@ All rules for statement semantics are of type
 where $\pwstmt$ refers to the set of all possible statements allowed by \lgname syntax.
 This relation takes as input a tuple of (1) a global context, (2) an robot configuration, and (3) a statement,
 and maps it to a set of such tuples.
+
+
+
 The symbols `\SelectEvent' and `\EndEvent' are not in \lgname but internal syntactic structures.
 `\SelectEvent' is to denote nondeterministic selection of events,
 and `\EndEvent' is to indicate an ``empty" statement.
