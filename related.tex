@@ -8,27 +8,27 @@
 BIP (Verimag),
 ptolemy (UC-Berkeley),
 }
-
-\begin{table*}[!ht]
+Table~\ref{tab:summary} includes a summary of some of the robotics frameworks intended for actual robotics and hardware deployment.
+\
+\begin{table}[!ht]
     \footnotesize
     \centering
-    \caption{}
-    \label{tab:summary}
-    \begin{tabular}{|l| c c c c c c c|}
+    \begin{tabular}{|l| c @{\hspace{0.5mm}} c @{\hspace{1mm}}c c  c @{\hspace{0.5mm}} c|}
         \hline
-        & \tb{HW}    & \tb{Dist.} & \tb{Hetero-} & \tb{Sim}   & \tb{Prog.}         & \tb{Comp.} & \tb{V\&V}  \\
-        \tb{Name}                            & \tb{Depl.} & \tb{Sys.}  & \tb{geneous} &            & \tb{Lang.}         &            &            \\ \hline
-        ROS~\cite{ros}                       & \checkmark &            & \checkmark   & \checkmark & C++/Python/...     &            &            \\
-        ROSBuzz~\cite{ROSBuzz}               & \checkmark & \checkmark & \checkmark   & \checkmark & Buzz               & \checkmark &            \\
-        PythonRobotics                       &            &            & \checkmark   & \checkmark & Python             &            &            \\
-        PyRobot~\cite{pyrobot2019}           & \checkmark &            & \checkmark   & \checkmark & Python             &            &            \\
-        MRPT~\cite{MRPT}                     & \checkmark &            & \checkmark   &            & C++                &            &            \\
-        Robotarium~\cite{robotarium}         & \checkmark &            & \checkmark   & \checkmark & Matlab             &            &            \\
-        Drona~\cite{desai2017drona}          & \checkmark & \checkmark &              & \checkmark & P~\cite{Planguage} & \checkmark & \checkmark \\
-        Live~\cite{campusanofabry:lrp2016}   & \checkmark &            & \checkmark   &            & LPR                & \checkmark &            \\
-        \toolname                            & \checkmark & \checkmark & \checkmark   & \checkmark & \lgname            & \checkmark & \checkmark \\ \hline
+            & \tb{Dist.} & \tb{Hetero-} & \tb{Sim}   & \tb{Prog.}         & \tb{Comp.} & \tb{V\&V}  \\
+        \tb{Name}                             & \tb{Sys.}  & \tb{geneous} &            & \tb{Lang.}         &            &            \\ \hline
+        ROS~\cite{ros}                        &            & \checkmark   & \checkmark & C++/Python/...     &            &            \\
+        ROSBuzz~\cite{ROSBuzz}               & \checkmark & \checkmark   & \checkmark & Buzz               & \checkmark &            \\
+        MRPT~\cite{MRPT}                     &            & \checkmark   &            & C++                &            &            \\
+        Robotarium~\cite{robotarium}          &            & \checkmark   & \checkmark & Matlab             &            &            \\
+        Drona~\cite{desai2017drona}           & \checkmark &              & \checkmark & P~\cite{Planguage} & \checkmark & \checkmark \\
+        Live~\cite{campusanofabry:lrp2016}    &            & \checkmark   &            & LPR                & \checkmark &            \\
+        \toolname                             & \checkmark & \checkmark   & \checkmark & \lgname            & \checkmark & \checkmark \\ \hline
     \end{tabular}
-\end{table*}
+            \caption{}
+        \label{tab:summary}
+
+\end{table}
 
 
 Modern programming languages like C\# and Swift, and   compiler infrastructures like LLVM~\cite{llvm} have revolutionized the application development ecosystem in mobile computing.
@@ -59,15 +59,20 @@ Inspired by these successes, there is a surge of interest in open and portable l
 %this task. In our approach,
 
 %\paragraph*{Languages for distributed shared memory systems}
+
+The $\lgname$ approach towards programming and analysis of CyberPhysical systems by interleaving discrete and continuous system behaviors is a hybrid system model that has been explored in various other modeling languages. Zelus~\cite{zelus} is a modeling language for hybrid systems using a synchronous language compiler to handle the discrete logical time transitions and an ODE solver to handle its continuous time evolution transitions. BIP~\cite{bip} is a modeling and analysis framework for heterogeneous real-time components of system, including interactions between the components.
 %
-Programming systems using the  shared memory paradigm have been developed for several distributed computing systems~\cite{dsm1991,Adve96sharedmemory,Azure,Cassandra,Dynamo}.  Zelus~\cite{zelus1} is a modeling language for hybrid systems using a synchronous language compiler to handle the discrete logical time transitions and an ODE solver to handle its continuous time evolution transitions. P~\cite{Planguage}  and PSync~\cite{PSyncLanguage} are DSLs for asynchronous partially distributed systems, but cyberphysical interactions are not supported. P has been integrated into DRONA, a framework for building reliable distributed mobile robotics applications, which focuses specifically on the task and the motion planning aspects of these applications, as opposed to $\lgname$'s model for various types of sensors and actuators, possibly related to perception, and computer vision available to a robotics system.
+Programming systems using the  shared memory paradigm have been developed for several distributed computing systems~\cite{dsm1991,Adve96sharedmemory,Azure,Cassandra,Dynamo}.  P~\cite{Planguage}  and PSync~\cite{PSyncLanguage} are DSLs for asynchronous partially distributed systems, but cyberphysical interactions are not supported. P has been integrated into DRONA, a framework for building reliable distributed mobile robotics applications, which focuses specifically on the task and the motion planning aspects of these applications, as opposed to $\lgname$'s model for various types of sensors and actuators, possibly related to perception, and computer vision available to a robotics system.
+
+
+%IOTA,~\cite{iota} is a calculus modeling an Event-Condition-Action language which provide non-experts the means to program IOT systems. A precise semantics enables formal analysis of conflicting rules through model checking, and provides algorithms for provenance through execution trace analysis.
 %DSM has also been proposed as a programming model in the context of wireless networks~\cite{hcs,rs}.
 %These  programming models are defined mathematically in terms of state machines or in terms of APIs, and are  typically not embodied in a programming language with carefully designed syntax and semantics to enforce the models.
 
 
 % The framework of~\cite{Hotline_CPS_srivastava} supports shared memory over multi-hop wireless networks, with a consistency model analogous to {\em release} consistency.
 %
- IOTA,~\cite{iota} is a calculus modeling an Event-Condition-Action language which provide non-experts the means to program IOT systems. A precise semantics enables formal analysis of conflicting rules through model checking, and provides algorithms for provenance through execution trace analysis.
+
 
 
 
