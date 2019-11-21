@@ -123,3 +123,10 @@ Mutual exclusion is an essential feature required in a distributed system with s
 \label{sec:module}
 \chiao{As mentioned in \refsect{semantics}, the assumptions over modules will be directed by the target invariant/property.
     What does \lgname provide to help identify the assumptions?}
+
+
+\subsection{Proofs}
+\begin{proof}
+    Proof for Lemma~\ref{lem:noninter}:
+    Suppose that given an arbitrary configuration $c$, such that $\bigwedge_{i\in \UINS}\bigwedge_{e \in \Event} \eec{\mathit{inv}}{\Post(\left\{c\right\}, i, e)}$ holds true. Consider a permutation $\incurly{i_1,i_2,\ldots,i_{\NMAX}}$ of robots executing events $\incurly{e_1, e_2, \ldots , e_{\NMAX}}$ respectively in a program transition during a round, reaching configurations $c_1, c_2, \ldots, c_{\NMAX}$ respectively. By assumption, since $\Post(\incurly{c},i,e) = c_1$, $\eec{\mathit{inv}}{c_1}$. Since our assumption was about any arbitrary (symbolic) configuration $c$, the same argument therefore can be extended to all the configurations reached by the system during this program transition, i.e. $\forall c' \in \incurly{c_1, c_2, \ldots, c_n}, \eec{\mathit{inv}}{c}$.
+\end{proof}
