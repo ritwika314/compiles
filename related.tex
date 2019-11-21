@@ -14,6 +14,8 @@ There is a surge of interest in open and portable languages that raise the level
             & \tb{Dist.} & \tb{Hetero-} & \tb{Sim}   & \tb{Prog.}         & \tb{Comp.} & \tb{V\&V}  \\
         \tb{Name}                             & \tb{Sys.}  & \tb{geneous} &            & \tb{Lang.}         &            &            \\ \hline
         ROSBuzz~\cite{ROSBuzz}               & \checkmark & \checkmark   & \checkmark & Buzz               & \checkmark &            \\
+        PythonRobotics                      &            & \checkmark   & \checkmark & Python             &            &            \\
+        PyRobot~\cite{pyrobot2019}          &            & \checkmark   & \checkmark & Python             &            &            \\
         MRPT~\cite{MRPT}                     &            & \checkmark   &            & C++                &            &            \\
         Robotarium~\cite{robotarium}          &            & \checkmark   & \checkmark & Matlab             &            &            \\
         Drona~\cite{desai2017drona}           & \checkmark &              & \checkmark & P~\cite{Planguage} & \checkmark & \checkmark \\
@@ -25,70 +27,16 @@ There is a surge of interest in open and portable languages that raise the level
 \vspace{-8mm}
 \end{table}
 
-Here we focus on languages and systems that are platform agnostic. {\em Robot Operating System (ROS)\/}~\cite{ros} is the predominant member in this category.   At core, ROS gives a   publish-subscribe-based communication system and the ROS community has built libraries for  many  different sensors and platforms. 
-Our implementation of the $\lgname$ abstractions for the quadcopter and vehicle platforms use ROS just like  thousands of other robotics products and  projects. 
+Here we focus on platform-agnostic languages and systems. {\em Robot Operating System (ROS)\/}~\cite{ros} is the predominant member in this category. At its core, ROS supports a publish-subscribe-based communication system and the ROS community has built libraries for  many  different sensors and platforms.
+Our implementation of the $\lgname$ abstractions for the quadcopter and vehicle platforms use ROS just like thousands of other robotics products and  projects.
  
- Table~\ref{tab:summary} gives a summary of robotics languages that have been deployed on hardware platforms.
-\sayan{Add sentences about Drona, ROSBuzz, etc. Where is PyRobot etc in the table?}
-The Live Robot Programming language~\cite{campusanofabry:lrp2016} not only provides a higher-level programming abstraction in terms of nested state machines, but also allows the program to be changed while running, hence reducing the feedback loop across writing, compiling, and testing of robot programs.
+ Table~\ref{tab:summary} gives a summary of robotics languages and libraries that have been deployed on hardware platforms.
+%\sayan{Add sentences about Drona, ROSBuzz, etc. Where is PyRobot etc in the table?}
+ ROSBuzz~\cite{ROSBuzz} supports the Buzz language, which doesn't provide abstractions like $\lgname$ for path planning, de-conflicting, and shared variables. The Live Robot Programming language~\cite{campusanofabry:lrp2016} not only provides a higher-level programming abstraction in terms of nested state machines, but also allows the program to be changed while running, hence reducing the feedback loop across writing, compiling, and testing of robot programs. Programming systems using the shared memory paradigm have been developed for several distributed computing systems~\cite{dsm1991,Adve96sharedmemory,Azure,Cassandra,Dynamo}. P~\cite{Planguage}  and PSync~\cite{PSyncLanguage} are DSLs for asynchronous partially distributed systems, but cyberphysical interactions are not supported. P has been integrated into DRONA, a framework for building reliable distributed mobile robotics applications, which focuses specifically on the task and the motion planning aspects of these applications, as opposed to $\lgname$'s model for various types of sensors and actuators, possibly related to perception, and computer vision available to a robotics system.
 
-
-
-
-%The goals of React language for robotics aligns with our goals~\cite{react-lang}
-%Buzz currently does not  connect with  verification tools, and the verification approach implemented with React uses precise models of the environment and performs model checking using dReal~\cite{Gao2013}.
-
-
-%Our approach is also similar in spirit to the Reactive Model-based Programming Language (RMPL)
-%~\cite{williams2003model}.
-%
-%There is been more recent development of domain specific languages for general cyberphysical systems (CPS)~\cite{pradhan2015chariot}. The main challenge addressed in this line of work is in supporting reconfiguration of complex, heterogeneous software components, for handling failures.
-%
-%There has also been work on programming abstractions for coordinating CPS~\cite{distCPSSri,Bundle}.
-%A group-based abstraction that facilitates dynamic creation of logical collections of sensors and actuators is presented in~\cite{Bundle}.
-%
-%
-%%React reactive robot programming language~\cite{DogmusEP15}.
-%%
-%``Correct-by-construction'' synthesis from high-level temporal logic specifications has been applied to mobile robotic systems (see, for example~\cite{kress2009temporal,kloetzer2008fully,wongpiromsarn2010receding,wongpiromsarn2011tulip,ulusoy2013optimality}).
-%% Many of these approaches have been applied to mobile robotic systems.
-%Our point of view on automating robot programming is different in that we expect that the programmer's creativity and efforts will be necessary well beyond writing high-level specs in solving distributed robotics problems; consequently only the tedious and standard steps in coordination and control are automated using the $\lgname$ compiler.
-
-%. A
-%correct-by-construction synthesis algorithm takes as input a high-level requirement (for example, ``from room A to B and see if you find a chair'') to generate robot programs for accomplishing
-%this task. In our approach,
-
-%\paragraph*{Languages for distributed shared memory systems}
 
 The $\lgname$ approach towards programming and analysis of CyberPhysical systems by interleaving discrete and continuous system behaviors is a hybrid system model that has been explored in various other modeling languages. Zelus~\cite{zelus} is a modeling language for hybrid systems using a synchronous language compiler to handle the discrete logical time transitions and an ODE solver to handle its continuous time evolution transitions. BIP~\cite{bip} is a modeling and analysis framework for heterogeneous real-time components of system, including interactions between the components.
 %
-Programming systems using the  shared memory paradigm have been developed for several distributed computing systems~\cite{dsm1991,Adve96sharedmemory,Azure,Cassandra,Dynamo}.  P~\cite{Planguage}  and PSync~\cite{PSyncLanguage} are DSLs for asynchronous partially distributed systems, but cyberphysical interactions are not supported. P has been integrated into DRONA, a framework for building reliable distributed mobile robotics applications, which focuses specifically on the task and the motion planning aspects of these applications, as opposed to $\lgname$'s model for various types of sensors and actuators, possibly related to perception, and computer vision available to a robotics system.
 
-
-%IOTA,~\cite{iota} is a calculus modeling an Event-Condition-Action language which provide non-experts the means to program IOT systems. A precise semantics enables formal analysis of conflicting rules through model checking, and provides algorithms for provenance through execution trace analysis.
-%DSM has also been proposed as a programming model in the context of wireless networks~\cite{hcs,rs}.
-%These  programming models are defined mathematically in terms of state machines or in terms of APIs, and are  typically not embodied in a programming language with carefully designed syntax and semantics to enforce the models.
-
-
-% The framework of~\cite{Hotline_CPS_srivastava} supports shared memory over multi-hop wireless networks, with a consistency model analogous to {\em release} consistency.
-%
-
-
-
-
-%
-%\paragraph*{Uncertainty and Robotics Abstractions}
-%$\lambda_O$~\cite{park2005probabilistic} is a probabilistic programming language in which sampling methods are used to specify probability distributions, while expressing and reasoning about these methods formally. It finds application in robot localization and mapping. In the same vein, $\mathit{Uncertain}\langle T\rangle$~\cite{bornholt2014uncertain} provides a programming language abstraction for uncertain data. It is a departure from previous probabilistic programming languages in the wide range of developers it serves, as opposed to being accessible only by experts. The language provides abstractions and semantics for uncertain data, like sensed information about location, temperature, etc. While $\lgname$ does not currently perform reasoning involving uncertainty in sensor readings or agent localization currently, these are realistic concerns that can be explored by exploiting the extensibility of the $\lgname$ semantics implemented in \K. While these languages provide semantics for uncertainity in robot abstractions and sensing issues, they do not provide distributed application design capabilities.
-%\sayan{I did not find much about this. Formal verification of mobile robot protocols: the DVE language, which is the input format of the model-checkers DiVinE and ITS tools, and formally prove the equivalence of the two models.}
-%\item
-%Buzz, a novel programming language for heterogeneous robot
-%swarms. Buzz advocates a compositional approach, offering primitives to define swarm
-%behaviors both from the perspective of the single robot and of the overall swarm.
-%
-%\item
-
-%Voltron programming system to explore the concept of team-level programming in active sensing applications. Voltron offers programming constructs to create the illusion of a simple sequential execution model while still maximizing opportunities to dynamically re-task the drones as needed. We implement Voltron by targeting a popular aerial drone platform, and evaluate the resulting system using a combination of real deployments, user studies, and emulation. Our results indicate that Voltron enables simpler code and produces marginal overhead in terms of CPU, memory, and network utilization. In addition, it greatly facilitates implementing correct and complete collaborative drone applications, compared to existing drone programming systems. (?)
-%\end{enumerate}
-
-\rg{In a 4-page workshop abstract, Gosh et al. discussed some of the ideas underlying the  abstractions embodies in $\lgname$~\cite{Applied}. The implementation and deployment of the Task application using $\lgname$ on real hardware platforms is discussed in~\cite{arxiv}. That technical report does not discuss language design,  semantics, nor the V\&V approaches.}.
+\rg{In a 4-page workshop abstract, Ghosh et al. discussed some of the ideas underlying the abstractions embodied in $\lgname$~\cite{applied}. The implementation and deployment of the Task application using $\lgname$ on real hardware platforms is discussed in~\cite{arxiv}. That technical report does not discuss language design, semantics, nor the V\&V approaches.}.
 
