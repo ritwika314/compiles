@@ -90,7 +90,6 @@ The expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$.
 \end{tabular}
 
 \caption{Partial \lgname syntax rules.}\label{fig:partial-syntax}
-    \vspace{-5mm}
 \end{figure}
 
 
@@ -201,11 +200,9 @@ the executable semantics will enable different types of analysis as we shall see
     \inferrule*[leftskip=1cm, Right=\LVarUpdate]
     {
         x \notin \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\lconfig{i} .{M}) \wedge\  \lconfig{i}^\prime.M = \lconfig{i}.M[x\mapsto v]  }
-    {\langle{S},\lconfig{i}, x = v \rangle {\rightarrow_{S}}  \langle{S},\lconfig{i}^\prime,\cdot\rangle}\label{va2}\\
+    {\langle{S},\lconfig{i}, x = v \rangle {\rightarrow_{S}}  \langle{S},\lconfig{i}^\prime,\cdot\rangle}\label{va2}
 \end{mathpar}
-\vspace{-8mm}
 \caption{Example statement level semantic rules for \lgname.}\label{fig:assignrules}
-    \vspace{-5mm}
 \end{figure}
 
 %
@@ -241,11 +238,8 @@ We will describe only the interesting semantic rules of \lgname above the event 
         \forall x \in \mathit{Keys}({S}),M' = {M}[x \mapsto S[x]] \land \cp' = \mathit{f}(\cp,\delta)
     }
     {  \langle S, (M, cp, \env) \rangle \envtrans \langle S, (M', cp', \prog) \rangle}
-
 \end{mathpar}
-\vspace{-5mm}
 \caption{Partial per robot semantic rules for \lgname.}\label{fig:partial-semantics}
-    \vspace{-5mm}
 \end{figure}
 
 First, we present the semantics of executing an event for each robot,
@@ -337,9 +331,7 @@ indicating the end of program transition, and an environment transition will occ
     }
     { (\lset, {S}, \tau,\env)\rightarrow_G (\lsetp, {S}, \tau + \delta,\prog)}
 \end{mathpar}
-\vspace{-4mm}
 \caption{Global semantic rules for \lgname.}\label{fig:partial-semantics-global}
-    \vspace{-5mm}
 \end{figure}
 
 
