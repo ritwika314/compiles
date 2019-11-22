@@ -1,7 +1,8 @@
 \section{Related work}
 \label{sec:related}
 
-There is a surge of interest in open and portable languages that raise the level of abstraction for robotics~\cite{Buzzlanguage,Bohrer:2018:VVC:3192366.3192406,reactlang,williams2003model} (see the survey of robotics Domain Specific Languages (DSLs) for more details~\cite{Nordmann2014}). Most of these languages are proprietary or generate executables that are tied to specific platforms.
+There is a surge of interest in open and portable languages that raise the level of abstraction for robotics~\cite{Buzzlanguage,Bohrer:2018:VVC:3192366.3192406,reactlang,williams2003model} (see the survey of robotics Domain Specific Languages (DSLs) in~\cite{Nordmann2014}).
+Most of these languages are proprietary or generate executables that are tied to specific platforms.
 %
 \begin{table}[!ht]
     \footnotesize
@@ -34,5 +35,8 @@ Our implementation of the $\lgname$ abstractions for the quadcopter and vehicle 
 The $\lgname$ approach towards programming and analysis of CyberPhysical systems by interleaving discrete and continuous system behaviors is a hybrid system model that has been explored in various other modeling languages. Zelus~\cite{zelus} is a modeling language for hybrid systems using a synchronous language compiler to handle the discrete logical time transitions and an ODE solver to handle its continuous time evolution transitions. BIP~\cite{bip} is a modeling and analysis framework for heterogeneous real-time components of system, including interactions between the components.
 %
 
-\rg{In a 4-page workshop abstract, Ghosh et al. discussed some of the ideas underlying the abstractions embodied in $\lgname$~\cite{applied}. The implementation and deployment of the Task application using $\lgname$ on real hardware platforms is discussed in~\cite{arxiv}. That technical report does not discuss language design, semantics, nor the V\&V approaches.}.
-
+In a 4-page workshop abstract~\cite{ghosh_language_2018}, Ghosh et al. discussed some of the ideas underlying the abstractions embodied in $\lgname$.
+In~\cite{ghosh2019cyphyhouse}, we present the overview of the whole tool chain on which \lgname runs,
+with the focus on deploying \Task application on hardware devices.
+In contrast, this paper presents the formal description of \lgname language and the key verification challenges.
+We cite the reference as ``\cite{ghosh2019cyphyhouse} Anonymous Author. Anonymized Paper. In ICRA 2020 submission''.
