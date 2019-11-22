@@ -1,5 +1,5 @@
 
-\section{Formal analysis of \lgname programs}
+\section{Verifying  \lgname programs}
 \label{sec:verification}
 
 \newcommand{\Ev}{\ensuremath{e}\xspace}
@@ -10,8 +10,7 @@
 % connect to definition of e.
 %make the post definition on a set.
 
-We have built the semantics of $\lgname$ in the \K framework to enable decoupled analyses of discrete and dynamic parts of distributed multi-robot systems.
-As discussed in the previous sections, the \emph{events} in an $\lgname$ program comprise the discrete computations in the system.
+We have built the semantics of $\lgname$ in the \K framework to enable decoupled analyses of platform-independent discrete part and the platform-dependent (dynamic) parts of distributed multi-robot systems. The \emph{events} in an $\lgname$ program define the discrete computations in the system.
 The effect of a robot $i$ executing event $\Ev \in \Event$ on a configuration $\gconfig \in \pwg$,
 can be seen as a $\stmtrule$ application to  $\left\langle \gconfig.S, \gconfig.\lconfig{i}, \EvBody \right\rangle $,
 where $\Ev$ is \emph{``eventName: {\normalfont\bf pre:} \EvCond\ {\normalfont\bf eff:} \EvBody''}.
@@ -20,10 +19,10 @@ where $\Ev$ is \emph{``eventName: {\normalfont\bf pre:} \EvCond\ {\normalfont\bf
 \subsection{Reachable configurations}
 
 Given a set of system configurations $\gset$,
-we define the functions using the semantic rules of \refsect{semantics}:
+we define the following functions using the semantic rules of \refsect{semantics}:
 \begin{inparaenum}[(i)]
     \item $\Post_\Ev(\gconfig,i)$ returns the set of configurations obtained by robot $i$ executing event $\Ev \in \Event$ from a configuration $\gconfig$.
-          \sayan{are events deterministic? Did we discuss somewhere?}
+%          \sayan{are events deterministic? Did we discuss somewhere?}
     \item $\Post(\gset,i)$ returns the set of configurations obtained by robot $i$ executing any event from a configuration in $\gset$.
     \item $\Post(\gset,\pvec)$ returns all configurations visited, when robots execute their events in the order $\pvec$,
           where $\pvec$ is a sequence of $p_i \in \UINS$.
@@ -39,24 +38,24 @@ we define the functions using the semantic rules of \refsect{semantics}:
 \footnotesize
 \newcommand{\Skip}{\mathit{Skip}\xspace}
 \begin{align*}
-    \Post_\Ev(\gconfig,i) := \{& \gconfig' \mid \eec{\EvCond}{\gconfig.S, \gconfig.\lconfig{i}} \\
-      & \land \left\langle \gconfig.S, \gconfig.\lconfig{i}, \EvBody \right\rangle \stmtrule \left\langle \gconfig'.S, \gconfig'.\lconfig{i}, \EndEvent \right\rangle\}, \\
-    \Skip(\gconfig,i) := \{& \gconfig' \mid \left\langle \gconfig.S, \gconfig.\lconfig{i}, \EndEvent \right\rangle \stmtrule \left\langle \gconfig'.S, \gconfig'.\lconfig{i}, \EndEvent \right\rangle \} \\
-    \Post(\gset,i) := & \bigcup_{\gconfig\in\gset} \left(\Skip(\gconfig, i) \cup \bigcup_{\Ev \in \Event} \Post_\Ev(\gconfig, i) \right),\\
-    \Post(\gset,\pvec) := &
+    \Post_\Ev(\gconfig,i) &:= \{ \gconfig' \mid \eec{\EvCond}{\gconfig.S, \gconfig.\lconfig{i}} \\
+      & \ \ \ \ \ \ \land \left\langle \gconfig.S, \gconfig.\lconfig{i}, \EvBody \right\rangle \stmtrule \left\langle \gconfig'.S, \gconfig'.\lconfig{i}, \EndEvent \right\rangle\}, \\
+    \Skip(\gconfig,i) &:= \{ \gconfig' \mid \left\langle \gconfig.S, \gconfig.\lconfig{i}, \EndEvent \right\rangle \stmtrule \left\langle \gconfig'.S, \gconfig'.\lconfig{i}, \EndEvent \right\rangle \} \\
+    \Post(\gset,i) &:=  \bigcup_{\gconfig\in\gset} \left(\Skip(\gconfig, i) \cup \bigcup_{\Ev \in \Event} \Post_\Ev(\gconfig, i) \right),\\
+    \Post(\gset,\pvec) &:= 
         \begin{cases}
             \emptyset, \text{ if } \pvec=()\\
             \Post(\Post(\gset,\pinit),\pvec'), \text{ if } \pvec=(\pinit, \pvec')\\
         \end{cases}\\
-    \Post(\gset) := & \bigcup_{\pvec\in \mathit{perms}(\UINS)} \Post(\gset,\pvec), \\
-    \Final(\gset) := & \left\{ \gconfig\in \Post(\gset)\mid \forall i \in \UINS, \gconfig.\lconfig{i}.\turn = \env \right\}.
+    \Post(\gset) &:=  \bigcup_{\pvec\in \mathit{perms}(\UINS)} \Post(\gset,\pvec), \\
+    \Final(\gset) &:=  \left\{ \gconfig\in \Post(\gset)\mid \forall i \in \UINS, \gconfig.\lconfig{i}.\turn = \env \right\}.
 \end{align*}
 \end{mdframed}
-where in a sequence $\pvec=(\pinit, \pvec')$, $\pinit$ refers to the first element of the sequence and $\pvec'$ refers to the rest of the sequence.
+In the above, a sequence $\pvec=(\pinit, \pvec')$, is written  as a concatenation of the first element $\pinit$ and the suffix $\pvec'$.
 Also, $\mathit{perms}(\UINS)$ refers to the set of permutations of $\UINS$.
 
-$\Final(\gset)$ returns the set of system configurations after a program transition.
-Now we further define how to compute reachable system configurations after an environment transition.
+%$\Final(\gset)$ returns the set of system configurations after a program transition.
+Next, we define how to compute reachable system configurations after an environment transition.
 Given the black-box function $f_i$ for each robot $i$,
 we can define the function $\traj: \pwg \times \left[0,\delta\right] \mapsto \pwg$ to represent the \emph{trajectory} of the system during an environment transition.
 $\traj$ is constructed by simply update all controller ports $\cp$ of all robots with their $f_i$.
@@ -234,8 +233,10 @@ In each case study, we describe the two proof obligations \PO{po:ind} and \PO{po
 as well as the \portasum{}s in use.
 For each case, we also show experiment results for proving/disproving the POs.
 
+\section{Case studies}
+\label{sec:cases} 
 
-\subsection{Case Study: \LineForm}
+\subsection{\LineForm: Distributed formation control}
 
 \newcommand{\Mposi}{\mathit{M.pos}_i}
 \newcommand{\Mtgti}{\mathit{M.tgt}_i}
@@ -355,7 +356,9 @@ and this weaker invariant on a system of robots moving in 2D. The verification p
 
 \newcommand{\Task}{\textsf{Task}\xspace}
 
-\subsection{Case Study: \Task}
+
+
+\subsection{\Task: Distributed task allocation}
 
 \newcommand{\ds}{\ensuremath{\epsilon}\xspace}
 
