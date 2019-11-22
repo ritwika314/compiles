@@ -26,7 +26,6 @@ In a distributed robotics setting, instances of the same \lgname program is exec
     }
     \caption{\lgname program \LineForm for a set of robots to form a line.}
     \label{fig:lineform}
-    \vspace{-5mm}
 \end{figure}
 
 \paragraph{Modules and port abstractions.}
@@ -66,7 +65,8 @@ This shared array is used to share the current position of each robot with all o
 \end{inparaenum}
 A detailed list of system parameters will be discussed later in \refsect{language}.
 
-$\lgname$ provides concurrency control with mutual exclusion and \textbf{atomic} blocks, for multiple robot programs writing to shared variables (see  {\sf Task} and {\sf Mapping} applications  in Section~\ref{}).
+\lgname provides concurrency control with mutual exclusion and \textbf{atomic} blocks,
+for multiple robot programs writing to shared variables (see \textsf{Task} and \textsf{Mapping} applications in \refsect{verification}).
 
 
 \subsection{Semantics and invariant properties}
@@ -141,7 +141,6 @@ In \refsect{verification}, we will discuss how these types of assumptions about 
 \end{tikzpicture}
 \caption{\K semantics based invariant checking for \lgname.}
 \label{fig:tools}
-    \vspace{-5mm}
 \end{figure}
 \marginpar{\scriptsize\sayan{Shouldn't this flowchart also have inputs Koord application code/requirement? Also, too much white space.}}
 
