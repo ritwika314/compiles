@@ -11,12 +11,17 @@ allwrite:$\label{awvar}$
     GridMap map
 
 #$\mathit{omitting\ initialization}$
-
 local:
    GridMap localMap
    Point target
    bool on_path = True
    List\<Grid\> obstacles
+
+GUpdate: $\label{gup}$
+  pre MotionWithScan.reached
+  eff: atomic:
+    map = merge(map, $\lmap$)
+    on_path = False
 
 NewTarget:$\label{newpt}$
   pre !on_path
@@ -38,9 +43,3 @@ LUpdate:$\label{lup}$
       for p, s in MotionWithScan.pscan:
          $\lmap$ $=$ merge($\lmap$, \
                              scanToMap(p, s))
-
-GUpdate: $\label{gup}$
-  pre MotionWithScan.reached
-  eff: atomic:
-        map = merge(map, $\lmap$)
-        on_path = False

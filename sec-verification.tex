@@ -330,7 +330,6 @@ Table \ref{tab:lineform} summarizes the verification of these constraints on sys
 
     \caption{ \small Summary of semantics based verification for \LineForm. $N$ is $N_{SYS}$,  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for construction of constraints and verification in Z3. Robots moving along a line are represented by \tb{dim} = 1, along a plane by \tb{dim} = 2, and in a 3D space by \tb{dim} = 3.}
             \label{tab:lineform}
-\vspace{-8mm}
 \end{table}
 
 We can define a $\mathit{WI}$, a weaker invariant which simply constrains the position of each robot, and doesn't constrain the shared $x[i]$,
@@ -340,19 +339,18 @@ We can define a $\mathit{WI}$, a weaker invariant which simply constrains the po
 Table~\ref{tab:lineform1} shows the results we obtained without the proof obligations as assumptions,
 and this weaker invariant on a system of robots moving in 2D. The verification procedure only tells us that the invariant is not inductive, it doesn't tell us whether the invariant doesn't hold, which is why we don't know whether the system is safe w.r.t the proposed invariant.
 
-\begin{table}[!htbp]
+\begin{table}[!tbp]
     \scriptsize
  \centering
    \begin{tabular}{ l|   c c c c  }
  \hline
        (\NMAX) &\tb{constraint} & $T_K$ (s) & $T_V$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
-   15   & $\Pr \wedge E\wedge I \Rightarrow I'$ &  &  & \emph{Unknown}  \\
- 15   & $\Pr \wedge E \wedge \mathit{WI} \Rightarrow \mathit{WI}'$ &  &   & \emph{Unknown}  \\
- 15    & $\Pr \wedge E \wedge A \wedge \mathit{WI}\Rightarrow \mathit{WI}'$ &  &  & \emph{Unknown}   \\
+   15   & $ E\wedge I \Rightarrow I'$ &  &  & \emph{Unknown}  \\
+ 15   & $E \wedge \mathit{WI} \Rightarrow \mathit{WI}'$ &  &   & \emph{Unknown}  \\
+ 15    & $E \wedge A \wedge \mathit{WI}\Rightarrow \mathit{WI}'$ &  &  & \emph{Unknown}   \\
 \end{tabular}
     \caption{ \small Verification summary for weaker invariants on \LineForm. The \tb{constraint} column displays the induction hypothesis used in the verification.  }
             \label{tab:lineform1}
-    \vspace{-8mm}
 \end{table}
 
 \newcommand{\Task}{\textsf{Task}\xspace}
@@ -373,14 +371,13 @@ In this case study, we only prove requirement~(b) for \Task.
 \begin{figure}[t]
     \two{0.4}{0.6}
     {
-        \lstinputlisting[language=NumKoord, lastline=21]{code/taskalloc.tex}
+        \lstinputlisting[language=NumKoord, lastline=22]{code/taskalloc.tex}
     }
     {
-        \lstinputlisting[language=NumKoord, firstline=22, firstnumber=22]{code/taskalloc.tex}
+        \lstinputlisting[language=NumKoord, firstline=23, firstnumber=23]{code/taskalloc.tex}
     }
     \caption{ $\lgname$ code for robot $i$ for the Distributed Task Allocation}
     \label{fig:taskapp}
-    \vspace{-5mm}
 \end{figure}
 
 \Task consists of two events
@@ -520,7 +517,6 @@ Task        & 10     &12.92   &18.34   & \Checkmark  \\
 \end{tabular}
     \caption{ \small Summary of semantics based verification for \Task.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for generation of constraints and verification in Z3 and $\NMAX$ is the number of robots in the system.}
     \label{tab:task}
-    \vspace{-8mm}
 \end{table}
 
 
@@ -541,14 +537,13 @@ and the robots are constrained to move in a 2D space.
 \begin{figure}[t]
     \two{0.4}{0.6}
     {
-        \lstinputlisting[language=NumKoord, lastline=20]{code/mapapp.tex}
+        \lstinputlisting[language=NumKoord, lastline=25]{code/mapapp.tex}
     }
     {
-        \lstinputlisting[language=NumKoord, firstline=21, firstnumber=21]{code/mapapp.tex}
+        \lstinputlisting[language=NumKoord, firstline=26, firstnumber=26]{code/mapapp.tex}
     }
     \caption{$\lgname$ code for Distributed Mapping Application \DMap}
     \label{fig:mapapp}
-    \vspace{-5mm}
 \end{figure}
 
 \newcommand{\MotionWithScan}{\emph{MotionWithScan}\xspace}
@@ -668,6 +663,5 @@ Table~\ref{tab:map} summarizes the verification of these constraints on systems 
 \dmap        & 10     &   &   & \Checkmark  \\
 \end{tabular}
     \caption{ \small Summary of semantics based verification for \dmap.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for generation of constraints and verification in Z3 and \emph{robots}(N) is the number of robots in the system.}\label{tab:map}
-    \vspace{-8mm}
 \end{table}
 
