@@ -341,12 +341,13 @@ and this weaker invariant on a system of robots moving in 2D. The verification p
 \begin{table}[!tbp]
     \scriptsize
  \centering
-   \begin{tabular}{ l|   c c c c  }
+   \begin{tabular}{ |l|   c c c c|  }
  \hline
        (\NMAX) &\tb{constraint} & $T_K$ (s) & $T_V$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
    15   & $ E\wedge I \Rightarrow I'$ & 13.06 & 23.03 & \emph{Unknown}  \\
  15   & $E \wedge \mathit{WI} \Rightarrow \mathit{WI}'$ & 9.92 & 18.26  & \emph{Unknown}  \\
  15    & $E \wedge A \wedge \mathit{WI}\Rightarrow \mathit{WI}'$ & 11.24 &  32.64 & \emph{Unknown}   \\
+       \hline
 \end{tabular}
     \caption{ \small Verification summary for weaker invariants on \LineForm. The \tb{constraint} column displays the induction hypothesis used in the verification.  }
             \label{tab:lineform1}
@@ -506,13 +507,14 @@ Table \ref{tab:task} summarizes the verification of these constraints with diffe
 \begin{table}
     \scriptsize
  \centering
-   \begin{tabular}{ l|  c c c c  }
+   \begin{tabular}{ |l|  c c c c|  }
  \hline
  \tb{Benchmark}       & $\NMAX$ & $T_K$ (s) & $T_V$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
  Task       & 3     &9.90  &10.6   & \Checkmark  \\
  Task       & 4      &9.79  &11.78  & \Checkmark   \\
  Task       & 5      &9.91  &14.92  & \Checkmark   \\
 Task        & 10     &12.92   &18.34   & \Checkmark  \\
+       \hline
 \end{tabular}
     \caption{ \small Summary of semantics based verification for \Task.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for generation of constraints and verification in Z3 and $\NMAX$ is the number of robots in the system.}
     \label{tab:task}
@@ -661,13 +663,14 @@ Table~\ref{tab:map} summarizes the verification of these constraints on systems 
 
     \scriptsize
  \centering
-   \begin{tabular}{ l|  c c c c  }
+   \begin{tabular}{ |l|  c c c c|  }
  \hline
  \tb{Benchmark}       & \tb{robots}(N) & $T_K$ (s) & $T_V$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
  \dmap       & 3     &  9.23 & 14.53  & \Checkmark  \\
  \dmap      & 4      &  9.33& 19.25 & \Checkmark   \\
  \dmap       & 5      &  9.19& 24.30 & \Checkmark   \\
 \dmap        & 10     &  9.31& 59.81  & \Checkmark  \\
+       \hline
 \end{tabular}
     \caption{ \small Summary of semantics based verification for \dmap.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for generation of constraints and verification in Z3 and \emph{robots}(N) is the number of robots in the system.}\label{tab:map}
 \end{table}
