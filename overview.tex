@@ -41,7 +41,8 @@ Thus, these  ports provide an abstraction over various possible sensor and contr
 Implementations of the modules are part of the {\em Koord runtime system\/} and they implement hardware specific functions.
 %, the actuator ports of different modules can be used to provide input to the controllers,
 %which drives the underlying physical plant and environment.
-For example, our implementation of the \Motion module for a quadcopter uses an indoor camera based positioning system to update the \emph{position} port and it uses an RRT based~\cite{} path planner and motion controller.
+For example, our implementation of the \Motion module for a quadcopter uses an indoor camera based positioning system to update the \emph{position} port,
+and it uses an RRT based~\cite{lavalle1998rapidly} path planner and motion controller.
 %
 The \Motion module abstraction is implemented for a small racing vehicle platform using the same indoor positioning system but a different model-predictive controller.
 
