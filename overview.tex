@@ -130,8 +130,8 @@ In \refsect{verification}, we will discuss how these types of assumptions about 
     \node (sym) {\K Symbolic Execution};
     \node [below of=sym] (prover) {\lgname prover};
     \node [diamond, aspect=2, below of=prover] (z3) {z3};
-    \node [below left=1cm and 1cm of z3] (proven) {Proven};
-    \node [below right=1cm and 1cm of z3] (incon) {Inconclusive};
+    \node [left=1.2cm of z3] (proven) {Proven};
+    \node [right=1.2cm of z3] (incon) {Inconclusive};
 
     \draw [->] (sym) edge (prover)
                (prover) edge (z3)
