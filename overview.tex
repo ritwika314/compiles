@@ -78,7 +78,7 @@ The \K rewriting engine makes the formal language semantics \emph{executable},
 and enables exhaustive exploration of non-deterministic behaviors of \lgname applications.
 In \refsect{verification}, we present a method for checking invariant properties for \lgname applications using symbolic execution of the $\lgname$ semantics in \K.
 
-For \LineForm, a natural requirement is to restrict all the robots to stay within a certain safe area, at all times (Geofencing).
+For \LineForm, a natural requirement is to restrict all robots to stay within a certain safe area, at all times (Geofencing).
 More precisely, given a (hyper)rectangle $\rect(x_{min}, x_{max})$ defined by its two corners $x_{min}$ and $x_{max}$,
 if all robots are initialized within the rectangle, then all robots should always stay in the rectangle.
 This requirement can be stated as:
@@ -142,25 +142,25 @@ In \refsect{verification}, we will discuss how these types of assumptions about 
 \caption{\K semantics based invariant checking for \lgname.}
 \label{fig:tools}
 \end{figure}
-\marginpar{\scriptsize\sayan{Shouldn't this flowchart also have inputs Koord application code/requirement? Also, too much white space.}}
+%\marginpar{\scriptsize\sayan{Shouldn't this flowchart also have inputs Koord application code/requirement? Also, too much white space.}}
 
 
 \subsection{Simulation based assumption validation}
 
 \asum{lineform-assume} may appear benign at a glance, but it may be violated in some conditions. Using the high-fidelity \lgname simulator, a designer can gain insights about when such assumptions are violated.
 %
-The simulator executes  complied \lgname code together with detailed physical  models for the robots, ROS-based interactions with sensor models, and UDP-based message passing.
+The simulator executes complied \lgname code together with detailed physical  models for the robots, ROS-based interactions with sensor models, and UDP-based message passing.
 %
 A Gazebo visualization of the simulator's output for 16 robots executing a 3D version of \LineForm is shown in \reffig{firefly}.
 %
-Using the \lgname simulator, we can discover that \asum{lineform-assume} is violated in two rather common scenarios:
+Using the \lgname simulator, we can discover that \asum{lineform-assume} is violated in three rather common scenarios:
 \chiao{Refer to simulator screenshot to show the violation.}
 First, if a robot has to avoid obstacles,
-then it may have to go around the obstacle and hence out of the bound. Second, the assumption  fails for robots with nonholonomic dynamics such as wheeled robots. 
-%For example, four wheel cars doing parallel parking may easily go out of the rectangle
-%because the cars need more space to make turns.
+then it may have to go around the obstacle and hence out of the bound.
+Second, the assumption fails for robots with nonholonomic dynamics such as wheeled robots. 
+Third, the inertia of the robot may force it go out of bound temporarily.
 
-In short, users can use the simulator to early detect whether the assumptions for correctness are too strong under specific scenarios, and revise the assumptions iteratively.
+In short, users can use the simulator to early detect if the assumptions for correctness are too strong under specific scenarios, and revise the assumptions iteratively.
 For example, to run the line formation program on cars,
 a different module including the orientation of cars as well as more relaxed assumptions are needed.
 
