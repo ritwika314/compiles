@@ -78,8 +78,18 @@
 \input{macros.tex}
 
 \begin{document}
-  \setlength{\abovedisplayskip}{3pt}
-\setlength{\belowdisplayskip}{3pt}
+% Vertical spacing for paragraph
+\setlength{\parskip}{0pt plus 1.0pt}
+% Vertical spacing for equation environment and math mode
+\setlength{\abovedisplayskip}{3pt plus 1.0pt minus 2.0pt}
+\setlength{\belowdisplayskip}{3pt plus 1.0pt minus 2.0pt}
+% Vertical spacing for figure environment
+\setlength{\textfloatsep}{3pt plus 1.0pt minus 2.0pt}
+\setlength{\intextsep}{3pt plus 1.0pt minus 2.0pt}
+\setlength{\floatsep}{3pt plus 1.0pt minus 2.0pt}
+% Vertical spacing for figure caption
+\setlength{\abovecaptionskip}{3pt plus 1.0pt minus 2.0pt}
+\setlength{\belowcaptionskip}{1pt plus 1.0pt}
 
 %% Title information
 \title{\lgname: a language programming and verifying distributed robotics applications}         %% [Short Title] is optional;
