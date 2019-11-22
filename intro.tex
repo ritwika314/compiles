@@ -22,7 +22,6 @@ In addition, this separation will help combine different analysis techniques tha
 \includegraphics[width=\linewidth]{figs/koorduser.png}
 \caption{\small \lgname language  enables programmers to develop distributed robotics applications using a high-level language and prove properties using symbolic executable semantics in \K. Platform specific assumptions are abstracted and can be checked using simulations and hardware deployments.}
 \label{fig:koorduser}
-	\vspace{-5mm}
 \end{figure}
 
 \paragraph{Technical challenges and design decisions}
@@ -33,11 +32,11 @@ Formally reasoning about a collection of robots communicating, coordinating, and
 \item We introduce an abstract interface of \emph{sensor} and \emph{actuator ports} through which a $\lgname$ program interacts with its environment. The program can read from sensor ports to receive updates about its environment;  and it can write to actuator ports to direct the low-level controllers and actuators. Beyond the names and types of these ports, the abstract interface may specify additional assumptions \sayan{requirements/pre-post conditions} that these ports should satisfy. The $\lgname$ programmer gets to assume these requirements to reason about the $\lgname$ application, while the platform engineer has to ensure that these requirements are indeed met by the implementation of the abstract interface for each platform.
 
 
-\item We provide a {\em distributed shared memory (DSM)\/} construct for $\lgname$ applications on different robots to communicate with each other. This makes  $\lgname$ applications very succinct (see examples in Figures~{}), and raises the level of abstraction for the programmers beyond sockets, message queues, ROS topics~\cite{}, and the such like. We have developed an implementation of distributed shared memory using UDP messages and \rg{deployed it across different robotic hardware platforms.}
+\item We provide a {\em distributed shared memory (DSM)\/} construct for $\lgname$ applications on different robots to communicate with each other. This makes  $\lgname$ applications very succinct (see examples in \reffig{lineform}), and raises the level of abstraction for the programmers beyond sockets, message queues, ROS topics~\cite{}, and the such like. We have developed an implementation of distributed shared memory using UDP messages and \rg{deployed it across different robotic hardware platforms.}
 \item Our formal executable semantics of $\lgname$ in the \K framework, assumes a {\em synchronous round-by-round computation model for the distributed system\/}. Each round lasts for a duration of time($\delta >0$) during which both the robots perform discrete computation and interact with the environment. First, each robot executes some {\em event\/} in its program; the different events for different robots may interleave in arbitrary order. Each event may read sensor port values, update program variables and actuator port values, it may send  some messages to update the shared variables. Then, the robots interact with the enviroment (for instance, move according to their set actuator values), updating their sensor ports for the next round. This synchronous model is a restrictive but standard model for distributed computing~\cite{lynch1996a,attiyawelch} and it while it does not completely eliminate concurrency control, it significantly simplifies programming and verification. $\lgname$ provides constructs for mutual exclusion as additional mechanisms for concurrency control with shared variables. This model can be implemented under typical synchrony assumptions for multi-robot networks\footnote{Bounded message delays and clocks with bounded drifts.}.
 \item In order to reason about a {\em closed-loop\/} system,  one has to specify or model how the platform-dependent parts of the system react to the actuator values set by the $\lgname$ application. In practice, a detailed model of the platform (e.g., dynamical models for cars, wheel friction, engine torque, etc.) may not be available. Over the past thirty years, the control theory and the hybrid systems communities have developed a bouquet of techniques for reasoning about software-controlled physical processes (dynamical systems) with different types of models~\cite{alurbook, platzerbook,seshiabook}. Our design of the  $\lgname$ semantics is agnostic towards these different approaches. In other words, any available model or actual black-box executable for the platform can be plugged into $\lgname$ semantics, and the corresponding analysis techniques available from the above-mentioned body of work can be brought to bear for verifying the closed system.
 \end{noinditem}
-These choices do leave out issues related to robot failure,  dynamic joins and leaves, from the current semantics, and could be included in the future. However, even without tackling these issues, $\lgname$ tools can handle analysis of interesting applications and requirements for distributed formation, task allocation, and mapping as demonstrated in \refsect{sec:verification}
+These choices do leave out issues related to robot failure,  dynamic joins and leaves, from the current semantics, and could be included in the future. However, even without tackling these issues, $\lgname$ tools can handle analysis of interesting applications and requirements for distributed formation, task allocation, and mapping as demonstrated in \refsect{verification}.
 
 %The program plane consists of a $\lgname$-program executing within the runtime system of every agent. The plant plane consists of the hardware platform of the agent. The control plane acts as a bridge between the program and the plant planes. It receives decisions from the program through the {\em actuator ports\/} (e.g., a sequence of way-points to visit, a temperature to maintain) and drives the plant by making low-level, hardware-dependent decisions (e.g., steering angles, throttle, turning furnaces on or off). It also makes information about the plant's state  (e.g., position coordinates, room temperatures) available to the program through the {\em sensor ports}. This decomposition enables us to formalize the semantics of $\lgname$ with the environment (controller and plant) as a parameter. It also makes it possible to develop verification tools that combine application semantics and environment behavior either as an explicit model, or an executable black-box.
 
@@ -87,20 +86,17 @@ These choices do leave out issues related to robot failure,  dynamic joins and l
 	\includegraphics[width=0.56\linewidth]{figs/quad.jpg}
 \end{minipage}%
 	\caption{Swarm formation show by FireFly Inc. (\emph{Center}). Simulation of shape formation (\emph{Right}).}
-    \label{firefly}
-	\vspace{-5mm}
+    \label{fig:firefly}
 \end{figure}
 
 %\paragraph{Implement trusted run-time environment}
 
-%\rg{Outline implementation issues }
-%\sayan{SM:Top of page 2/3 should have the end-to-end figure. Algorithm-code-simulator-deployment.}
-
-\marginpar{\scriptsize\sayan{[EuroSys'17] An Empirical Study on the Correctness of Formally Verified Distributed Systems.}}
+%\marginpar{\scriptsize\sayan{[EuroSys'17] An Empirical Study on the Correctness of Formally Verified Distributed Systems.}}
 \begin{noinditem}
 
 \item  {We have developed the $\lgname$ language which provides, as first-class constructs,  abstractions for robot  programs to interact with the physical platform, as well as other robot programs.}
-\item These abstractions allow $\lgname$ programs to be portable across different hardware; we  discuss our experiences in deploying several $\lgname$ applications on heterogeneous collections of ground vehicles and drones in Section~\ref{}.
+\item These abstractions allow $\lgname$ programs to be portable across different hardware;
+      we discuss our experiences in deploying several $\lgname$ applications on heterogeneous collections of ground vehicles and drones in Section~\ref{}.
 \item  We have developed the formal executable semantics of $\lgname$ using the \K framework. To our knowledge this is the first formalization of a programming language for distributed cyber-physical systems which has also been deployed on actual platforms.
 \item  We built analysis tools on top of semantics to facilitate both inductive invariant checking and state space exploration with black-box dynamics. In this paper, we proved inductive invariants for the benchmarks using symbolic execution while identifying assumptions and proof obligations. While most formal analysis tools for distributed systems verify models of the protocols in form of automata, this framework actually verifies the program implementing the abstract model.
 \item An intended useful outcome of this methodology is a list of formal assumptions for the platform or implementation specific components such sensors, schedulers, data structures, etc. In the end-to-end safety assurance cases~\cite{} for complex cyber-physical systems, these assumptions can serve as contracts for sensing devices, drivers, hardware platforms, and operating system modules that are often outside the control of the application programmer.
@@ -116,24 +112,24 @@ These choices do leave out issues related to robot failure,  dynamic joins and l
 %\item Finally, \sayan{experimental evaluation. What did we learn that can generalize beyond this specific application? How did we extend CyPhyHouse capabilities generally?}
 
 \end{noinditem}
-\makeatletter
-\let\origsection\section
-\renewcommand\section{\@ifstar{\starsection}{\nostarsection}}
-
-\newcommand\nostarsection[1]
-{\sectionprelude\origsection{#1}\sectionpostlude}
-
-\newcommand\starsection[1]
-{\sectionprelude\origsection*{#1}\sectionpostlude}
-
-\newcommand\sectionprelude{%
-  \vspace{-0.5em}
-}
-
-\newcommand\sectionpostlude{%
-  \vspace{0em}
-}
-\makeatother
+%\makeatletter
+%\let\origsection\section
+%\renewcommand\section{\@ifstar{\starsection}{\nostarsection}}
+%
+%\newcommand\nostarsection[1]
+%{\sectionprelude\origsection{#1}\sectionpostlude}
+%
+%\newcommand\starsection[1]
+%{\sectionprelude\origsection*{#1}\sectionpostlude}
+%
+%\newcommand\sectionprelude{%
+%  \vspace{-0.5em}
+%}
+%
+%\newcommand\sectionpostlude{%
+%  \vspace{0em}
+%}
+%\makeatother
 %The application program \dmap is X lines of \lgname code with a \sayan{handful} external functions.
 %%
 %The application program, takes full advantage of the \lgname language's features shared memory semantics.
@@ -146,24 +142,8 @@ These choices do leave out issues related to robot failure,  dynamic joins and l
 %
 
 
-%Define abstraction for sampled sensing. (refine this)
-
-
-
-
-
-
-
-
-
-
 %The simulator enables the user to test their discrete event loop with simple motion models to test and debug the application program logic without incurring the cost of hardware deployment in case of buggy programs.
 %The simulator also serves as a visualization tool as it can be used to plot the behavior of any program variables, or controller variables. For instance, we implemented a robot \emph{formation} app in $\lgname$, where several robots form a shape in which they are evenly distributed.
-
-
-
-
-
 
 %\subsubsection{Other by-products}
 
