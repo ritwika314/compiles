@@ -69,6 +69,12 @@ In the design of the $\dmap$ application, we employ the use of \emph{sampled} se
 Mutual exclusion is an essential feature required in a distributed system with shared variables. The robot updates the shared variable $\gmap$ in the event \emph{GUpdate} using the value of its $\lmap$, which may have been updated with newly detected obstacles
 
 
+\begin{figure*}[t]
+    \includegraphics[width=0.3\textwidth]{figs/exp-empty.png}
+    \includegraphics[width=0.3\textwidth]{figs/exp-u-shape.png}
+    \includegraphics[width=0.3\textwidth]{figs/exp-i-shape.png}
+    \caption{Percentage of exploration for map without obstacles~(\emph{Left}), with U-shape~(\emph{Mid}), and with I-shape~(\emph{Right}).}\label{fig:percent}
+\end{figure*}
 
 %
 % Algorithm~\ref{ag1}  computes reachable states of a given system based on the above functions and check $n$-invariance.
