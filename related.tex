@@ -1,16 +1,15 @@
 \section{Related work}
 \label{sec:related}
 
-There is a surge of interest in open and portable languages that raise the level of abstraction for robotics~\cite{Buzzlanguage,Bohrer:2018:VVC:3192366.3192406,reactlang,williams2003model} (see the survey of robotics Domain Specific Languages (DSLs) in~\cite{Nordmann2014}).
-Most of these languages are proprietary or generate executables that are tied to specific platforms.
+Early domain specific languages for robotics were proprietary and tied to specific platforms. See~\cite{Nordmann2014} for a detailed survey. With the lowering hardware costs and increasing popularity, there is a growing interest in open and portable frameworks and languages~\cite{Buzzlanguage,Bohrer:2018:VVC:3192366.3192406,reactlang,williams2003model}. 
 %
 \begin{table}[!ht]
     \footnotesize
     \centering
     \begin{tabular}{|l| c @{\hspace{0.5mm}} c @{\hspace{1mm}}c c  c @{\hspace{0.5mm}} c|}
         \hline
-            & \tb{Dist.} & \tb{Hetero-} & \tb{Sim}   & \tb{Prog.}         & \tb{Comp.} & \tb{V\&V}  \\
-        \tb{Name}                             & \tb{Sys.}  & \tb{geneous} &            & \tb{Lang.}         &            &            \\ \hline
+           \tb{Framework} & \tb{Dist.} & \tb{Hetero-} & \tb{Sim}   & \tb{Prog.}         & \tb{Compiler} & \tb{V\&V}  \\
+        \tb{/system}                             & \tb{Sys.}  & \tb{geneous} &            & \tb{Lang.}         &            &            \\ \hline
         ROSBuzz~\cite{ROSBuzz}               & \checkmark & \checkmark   & \checkmark & Buzz               & \checkmark &            \\
         PythonRobotics                      &            & \checkmark   & \checkmark & Python             &            &            \\
         PyRobot~\cite{pyrobot2019}          &            & \checkmark   & \checkmark & Python             &            &            \\
@@ -20,23 +19,29 @@ Most of these languages are proprietary or generate executables that are tied to
         Live~\cite{campusanofabry:lrp2016}    &            & \checkmark   &            & LPR                & \checkmark &            \\
         \lgname                             & \checkmark & \checkmark   & \checkmark & \lgname            & \checkmark & \checkmark \\ \hline
     \end{tabular}
-            \caption{}
+%            \caption{}
         \label{tab:summary}
 \end{table}
-
-Here we focus on platform-agnostic languages and systems. {\em Robot Operating System (ROS)\/}~\cite{ros} is the predominant member in this category. At its core, ROS supports a publish-subscribe-based communication system and the ROS community has built libraries for  many  different sensors and platforms.
-Our implementation of the $\lgname$ abstractions for the quadcopter and vehicle platforms use ROS just like thousands of other robotics products and  projects.
- 
- Table~\ref{tab:summary} gives a summary of robotics languages and libraries that have been deployed on hardware platforms.
-%\sayan{Add sentences about Drona, ROSBuzz, etc. Where is PyRobot etc in the table?}
- ROSBuzz~\cite{ROSBuzz} supports the Buzz language, which doesn't provide abstractions like $\lgname$ for path planning, de-conflicting, and shared variables. The Live Robot Programming language~\cite{campusanofabry:lrp2016} not only provides a higher-level programming abstraction in terms of nested state machines, but also allows the program to be changed while running, hence reducing the feedback loop across writing, compiling, and testing of robot programs. Programming systems using the shared memory paradigm have been developed for several distributed computing systems~\cite{dsm1991,Adve96sharedmemory,Azure,Cassandra,Dynamo}. P~\cite{Planguage}  and PSync~\cite{PSyncLanguage} are DSLs for asynchronous partially distributed systems, but cyberphysical interactions are not supported. P has been integrated into DRONA, a framework for building reliable distributed mobile robotics applications, which focuses specifically on the task and the motion planning aspects of these applications, as opposed to $\lgname$'s model for various types of sensors and actuators, possibly related to perception, and computer vision available to a robotics system.
-
-
-The $\lgname$ approach towards programming and analysis of CyberPhysical systems by interleaving discrete and continuous system behaviors is a hybrid system model that has been explored in various other modeling languages. Zelus~\cite{zelus} is a modeling language for hybrid systems using a synchronous language compiler to handle the discrete logical time transitions and an ODE solver to handle its continuous time evolution transitions. BIP~\cite{bip} is a modeling and analysis framework for heterogeneous real-time components of system, including interactions between the components.
 %
+{\em Robot Operating System (ROS)\/}~\cite{ros} is the predominant member in this category. At its core, ROS supports a publish-subscribe-based communication  and the ROS community has built drivers for  numerous hardware components.
+Our implementation of the $\lgname$ abstractions for the quadcopter and vehicle platforms use ROS just like thousands of other robotics products and  projects.
+ %
+  Table~\ref{tab:summary} gives a summary of robotics languages that have been deployed on hardware.
 
-In a 4-page workshop abstract~\cite{ghosh_language_2018}, Ghosh et al. discussed some of the ideas underlying the abstractions embodied in $\lgname$.
-In~\cite{ghosh2019cyphyhouse}, we present the overview of the whole tool chain on which \lgname runs,
-with the focus on deploying \Task application on hardware devices.
-In contrast, this paper presents the formal description of \lgname language and the key verification challenges.
-We cite the reference as ``\cite{ghosh2019cyphyhouse} Anonymous Author. Anonymized Paper. In ICRA 2020 submission''.
+%\sayan{Add sentences about Drona, ROSBuzz, etc. Where is PyRobot etc in the table?}
+ ROSBuzz~\cite{ROSBuzz} supports the Buzz language, which doesn't provide abstractions like $\lgname$ for path planning and shared variables. The Live Robot Programming language~\cite{campusanofabry:lrp2016} provides abstractions in terms of nested state machines and allows the program to be changed while running. It does not support robot ensembles. Programming systems using the shared memory paradigm have been developed for several distributed computing systems~\cite{dsm1991,Adve96sharedmemory,Azure,Cassandra,Dynamo}. P~\cite{Planguage} and PSync~\cite{PSyncLanguage} are DSLs for asynchronous partially distributed systems, but cyber-physical interactions are not supported. P has been integrated into the DRONA framework~\cite{desai2017drona} and the latter has very similar objectives to our work, but the approaches and solutions are different. 
+ In brief, DRONA abstractions, like conflict-free path planning, are more concrete and dynamics-dependent, than \lgname's abstractions. In fact, our Task application implements something similar to the distributed plan generator which is a built-in feature for DRONA. On the other hand, \lgname's port interfaces allow portability across arbitrary planners.
+
+ 
+%The $\lgname$ approach towards programming and analysis of CyberPhysical systems by interleaving discrete and continuous system behaviors is a hybrid system model that has been explored in various other modeling languages. 
+%Zelus~\cite{zelus} is a modeling language for hybrid systems using a synchronous language compiler to handle the discrete logical time transitions and an ODE solver to handle its continuous time evolution transitions. BIP~\cite{bip} is a modeling and analysis framework for heterogeneous real-time components of system, including interactions between the components.
+%
+\sayan{
+A position paper~\cite{ghosh_language_2018} proposes combining shared memory with physical interactions in a high-level language. This paper presents a detailed study on how to connect those.
+%In a 4-page workshop abstract~\cite{ghosh_language_2018}, Ghosh et al. discussed some of the ideas underlying the abstractions embodied in $\lgname$.
+In~\cite{ghosh2019cyphyhouse} we present the overview of the whole software stack on which Koord runs, with the focus on deploying Task application (3rd case study) on vehicle and quadcopter hardware. In contrast, this paper presents the formal description of $\lgname$ language  and the key language and verification challenges. 
+}
+%In~\cite{ghosh2019cyphyhouse}, we present the overview of the whole tool chain on which \lgname runs,
+%with the focus on deploying \Task application on hardware devices.
+%In contrast, this paper presents the formal description of \lgname language and the key verification challenges.
+%We cite the reference as ``\cite{ghosh2019cyphyhouse} Anonymous Author. Anonymized Paper. In ICRA 2020 submission''.
