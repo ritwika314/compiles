@@ -326,7 +326,6 @@ Table \ref{tab:lineform} summarizes the verification of these constraints on sys
            \hline
 \end{tabular}
 \end{minipage}
-\vspace{1mm}
 
     \caption{ \small Summary of semantics based verification for \LineForm. $N$ is $N_{SYS}$,  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for construction of constraints and verification in Z3. Robots moving along a line are represented by \tb{dim} = 1, along a plane by \tb{dim} = 2, and in a 3D space by \tb{dim} = 3.}
             \label{tab:lineform}
@@ -533,6 +532,14 @@ The difference comes with the assumption that the robots know their \emph{global
 and only attempt to map static obstacles within this area.
 Further, the only sensors available for sensing obstacles are LIDAR based,
 and the robots are constrained to move in a 2D space.
+
+\begin{figure}[!h]
+    \includegraphics[width=0.24\linewidth]{figs/exp-gazebo.jpg}
+    \includegraphics[width=0.24\linewidth]{figs/exp-progress-1.png}
+    \includegraphics[width=0.24\linewidth]{figs/exp-progress-2.png}
+    \includegraphics[width=0.24\linewidth]{figs/exp-progress-3.png}
+    \caption{Four cars in U-shape world in simulator~(\emph{Left}). Visualization of the global map at three different time stamps~(\emph{Right})}\label{fig:U-map-progress}
+\end{figure}
 
 \begin{figure}[t]
     \two{0.4}{0.6}
