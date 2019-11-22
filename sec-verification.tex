@@ -664,10 +664,10 @@ Table~\ref{tab:map} summarizes the verification of these constraints on systems 
    \begin{tabular}{ l|  c c c c  }
  \hline
  \tb{Benchmark}       & \tb{robots}(N) & $T_K$ (s) & $T_V$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
- \dmap       & 3     &  &   & \Checkmark  \\
- \dmap      & 4      &  &  & \Checkmark   \\
- \dmap       & 5      &  &  & \Checkmark   \\
-\dmap        & 10     &   &   & \Checkmark  \\
+ \dmap       & 3     &  9.23 & 14.53  & \Checkmark  \\
+ \dmap      & 4      &  9.33& 19.25 & \Checkmark   \\
+ \dmap       & 5      &  9.19& 24.30 & \Checkmark   \\
+\dmap        & 10     &  9.31& 59.81  & \Checkmark  \\
 \end{tabular}
     \caption{ \small Summary of semantics based verification for \dmap.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for generation of constraints and verification in Z3 and \emph{robots}(N) is the number of robots in the system.}\label{tab:map}
 \end{table}
