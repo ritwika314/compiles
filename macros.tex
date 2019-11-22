@@ -239,24 +239,26 @@
     {--}{{$-\ $}}1
     {\\TT}{{\hspace{1.5em}}}3
 }
-	
+
+	\lstdefinestyle{tight}
+    {
+        framesep=0pt,
+        numbersep=15pt,
+        numberstyle=\tiny,
+        stepnumber=1,
+        numbersep=4pt,
+    }
 	
 	\lstdefinelanguage{NumKoord}[]{Koord}
 	{
+        style=tight,
 		numbers=left,
-		numbersep=15pt,
-		numberstyle=\tiny,
-		stepnumber=1,
-		numbersep=4pt,
 	}
 	
 	\lstdefinelanguage{KoordNum}[]{Koord}
 	{
+        style=tight,
 		numbers=right,
-		numbersep=15pt,
-		numberstyle=\tiny,
-		stepnumber=1,
-		numbersep=4pt,
 	}
 
 
