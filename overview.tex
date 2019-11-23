@@ -7,14 +7,14 @@ We will discuss the key features of the \lgname language and programming system 
 The \lgname application \LineForm shown in \reffig{lineform} implements a simple formation control protocol of the type  used for drone shows like the one seen in \reffig{firefly}.
 \LineForm makes an arbitrary number of robots (drones) line up uniformly between two extremal robots.
 Small modifications to the code make the drones form other shapes like squares, cubes, and stars.
-The \lgname programming tools can compile and deploy this code on a heterogeneous fleet of robots platforms; they can  help automate the verification of these types of applications by decomposing the proofs into platform dependent and independent proof obligations. Finally, the \lgname simulator can help find violations of assumptions made in for verification.
+The \lgname programming tools can compile and deploy this code on a heterogeneous fleet of robots platforms; they can help automate the verification of these types of applications by decomposing the proofs into platform dependent and independent proof obligations. Finally, the \lgname simulator can help find violations of assumptions made for verification.
 
 \subsection{\lgname language}
 \label{sec:koord-language}
 % 1 sentence intro of the language
 \lgname is a high-level, event-driven language in which application programs use \emph{shared variables} for coordination across robots
-and \emph{ports} for interacting with hardware-specific subroutines.
-In a distributed robotics setting, instances of the same \lgname program is executed by each participating robots to solve problems collectively.
+and \emph{ports} for interaction with hardware-specific subroutines.
+In a distributed robotics setting, instances of the same \lgname program are executed by each participating robot to solve problems collectively.
 
 \begin{figure}[h!]
     \two{0.32}{0.59}
@@ -73,7 +73,7 @@ For multiple robot programs writing to shared variables
 \subsection{Semantics and invariant properties}
 
 We have developed the full semantics of \lgname using \K~\cite{rosu-serbanuta-2013-k}, and present the details in \refsect{language}.
-The execution semantics of any applications for multi-robot system are complicated by issues of asynchrony,
+The execution semantics of any applications for multi-robot systems are complicated by issues of asynchrony,
 consistency of shared memory, and interactions between software and the physical environment.
 The \K rewriting engine makes the formal language semantics \emph{executable},
 and enables exhaustive exploration of non-deterministic behaviors of \lgname applications.
@@ -104,11 +104,11 @@ we show that the targets computed by \LineForm are also in $\rect(x_{min}, x_{ma
 The \K semantics of \lgname allows us to construct the symbolic post states of the \emph{TargetUpdate} event
 and prove \inv{inv:lineform} using the $\lgname$ prover (\reffig{tools}) as detailed in \refsect{verification}.
 
-The second step is to show, that for any robot, assuming that the computed target are in $\rect(x_{min}, x_{max})$,
+The second step is to show that for any robot, assuming that the computed targets are in $\rect(x_{min}, x_{max})$,
 the controller implementing \Motion module indeed keeps the robot inside $\rect(x_{min}, x_{max})$.
 %
 For this step, one has to reason about how each robot moves when its implementation of the \Motion module is given a \emph{target}.
-\lgname helps to identify and decompose the overall proof into assumptions that the \emph{Module} implementations need to guarantee.
+\lgname helps identify and decompose the overall proof into assumptions that the \emph{Module} implementations need to guarantee.
 For example, we can state the key assumption needed for Invariant~\ref{inv:lineform} as:
 \begin{assumption}
 \label{lineform-assume}
@@ -154,22 +154,22 @@ The simulator executes complied \lgname code together with detailed physical  mo
 %
 A Gazebo visualization of the simulator's output for 16 robots executing a 3D version of \LineForm is shown in \reffig{firefly}.
 %
-Using the \lgname simulator, we can discover that \asum{lineform-assume} is violated in three rather common scenarios:
-\chiao{Refer to simulator screenshot to show the violation.}
+\rg{Users can also use the simulator to detect early in the development process if the assumptions for correctness are too strong under specific scenarios, and revise the assumptions iteratively. Using the \lgname simulator in conjunction with other verification tools, we can discover that \asum{lineform-assume} is violated in three rather common scenarios:
+%\chiao{Refer to simulator screenshot to show the violation.}
 First, if a robot has to avoid obstacles,
 then it may have to go around the obstacle and hence out of the bound.
 Second, the assumption fails for robots with nonholonomic dynamics such as wheeled robots. 
-Third, the inertia of the robot may force it go out of bound temporarily.
+Third, the inertia of the robot may force it go out of bound temporarily. We see through an example in \refsect{sec:verification} how the third scenario can be detected.}
 
-In short, users can use the simulator to early detect if the assumptions for correctness are too strong under specific scenarios, and revise the assumptions iteratively.
-For example, to run the line formation program on cars,
-a different module including the orientation of cars as well as more relaxed assumptions are needed.
+
+%For example, to run the line formation program on cars,
+%a different module including the orientation of cars as well as more relaxed assumptions are needed.
 
 \subsection{Compilation and deployment.}
 In addition to the formal language, semantics, analysis, and simulation,
 our complete tool chain also includes compilation and deployment to heterogeneous platforms including drones and race cars.
 Once developers install our ROS~\cite{ros} based run-time libraries~(middleware) on a platform
-and provides a device specific configuration denoting the mapping from \lgname module ports
+and provide a device specific configuration denoting the mapping from \lgname module ports
 to low level sensor and actuator ROS messages,
-our module port based abstraction then allows the same \lgname program to run on this platform.
+our port based abstraction (module) then allows the same \lgname program to run on this platform.
 Detailed description of the tool chain is available in~\cite{ghosh2019cyphyhouse}.\footnote{Under submission, anonymized for the purposes of double blind reviewing.}
