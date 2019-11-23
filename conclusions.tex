@@ -1,19 +1,12 @@
 \section{Conclusions and Future Work}
 
-The design and implementation of \lgname is the initial step towards providing a programming methodology for building verified distributed cyberphysical systems.
-Our vision is to enable programming safe distributed applications without the need of complete domain expertise in all related areas such as control theory, robotics motion control, and network protocols.
+
+Our vision is to provide a programming methodology to enable programming safe distributed cyberphysical applications without the need of complete domain expertise in all related areas such as control theory, robotics motion control, and network protocols.
 To this end, we demonstrated how \lgname application developers can write succinct multi-robot applications involving distributed coordination,
-different types of sensing and actuation, and path planning in three case studies,
-and all three cases require only preliminary knowledge
-in shared memory and basic concurrency control via atomic blocks and assumption on sensor and actuator ports of controllers.
-V\&V engineers with deep understanding in distributed computing is able to focus on formally analyzing invariant properties of \lgname programs via symbolic execution.
-Platform engineers having more robotics background can validate the feasibility of made assumptions by examining rigorously defined proof obligations.
+different types of sensing and actuation, and path planning in three case studies, each of which requires only preliminary knowledge
+in shared memory and basic concurrency control via atomic blocks and assumptions on sensor and actuator ports of controllers.
+V\&V engineers with deep understanding in distributed computing are able to focus on formally analyzing invariant properties of \lgname programs via symbolic execution, and roboticists can validate the feasibility of assumptions by examining rigorously defined proof obligations.
 
-A major advantage of developing the executable semantics in \K is that the resultant language design is highly extendable and customizable
-We acknowledge the fact that our \portasum based abstraction may not cover various vastly different types of robots.
+We acknowledge the fact that our \portasum based abstractions may not cover various vastly different types of robots.
 \K semantics framework can allow us to extend our language to tailor to specific robot types on demand
-while retaining the same framework for formal analysis.
-
-For formal analyses,
-progress properties, while more difficult to prove than safety, are just as important of a concern in distributed applications.
-We plan to extend this work to include specification and verification of progress properties under fairness constraints for \lgname applications.
+while retaining the same framework for formal analysis. We also plan to extend this work to include specification and verification of progress properties under fairness constraints for \lgname applications.
