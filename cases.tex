@@ -73,7 +73,7 @@ Table \ref{tab:lineform} summarizes the verification of these constraints on sys
         \begin{minipage}{.49\linewidth}
    \begin{tabular}{ |l|c @{\hspace{0.5mm}} c  c  c|  }
  \hline
-       ($N$) &\tb{dim}  & $T_K$ (s) & $T_V$ (s)  & \tb{Safe} \\ \hline
+       $\NMAX$&\tb{dim}  & $T_K$ (s) & $T_V$ (s)  & \tb{Safe} \\ \hline
    3   & 1 &4.90  &9.09   & \Checkmark  \\
  3   & 2 &4.19  &10.13   & \Checkmark  \\
  4    & 1 &4.79  &12.21  & \Checkmark   \\
@@ -86,7 +86,7 @@ Table \ref{tab:lineform} summarizes the verification of these constraints on sys
         \begin{minipage}{.49\linewidth}
        \begin{tabular}{ |l| @{\hspace{0.5mm}} c c  c  c|  }
  \hline
-       ($N$) &\tb{dim} & $T_K$ (s) & $T_V$ (s)  & \tb{Safe} \\ \hline
+       $\NMAX$ &\tb{dim} & $T_K$ (s) & $T_V$ (s)  & \tb{Safe} \\ \hline
  5   & 2  &5.60  &18.91  & \Checkmark   \\
 5   & 3  &5.42  &20.30  & \Checkmark   \\
 10  & 1  &10.92   &32.34   & \Checkmark  \\
@@ -97,7 +97,7 @@ Table \ref{tab:lineform} summarizes the verification of these constraints on sys
 \end{tabular}
 \end{minipage}
 
-    \caption{ \small Summary of semantics based verification for \LineForm. $N$ is $N_{SYS}$,  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for construction of constraints and verification in Z3. Robots moving along a line are represented by \tb{dim} = 1, along a plane by \tb{dim} = 2, and in a 3D space by \tb{dim} = 3.}
+    \caption{ \small Summary of semantics based verification for \LineForm. $N$ is $\NMAX$,  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for construction of constraints and verification in Z3. Robots moving along a line are represented by \tb{dim} = 1, along a plane by \tb{dim} = 2, and in a 3D space by \tb{dim} = 3.}
             \label{tab:lineform}
 \end{table}
 
@@ -113,7 +113,7 @@ and this weaker invariant on a system of robots moving in 2D. The verification p
  \centering
    \begin{tabular}{ |l|   c c c c|  }
  \hline
-       (\NMAX) &\tb{constraint} & $T_K$ (s) & $T_V$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
+       \NMAX &\tb{constraint} & $T_K$ (s) & $T_V$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
    15   & $ E\wedge I \Rightarrow I'$ & 13.06 & 23.03 & \emph{Unknown}  \\
  15   & $E \wedge \mathit{WI} \Rightarrow \mathit{WI}'$ & 9.92 & 18.26  & \emph{Unknown}  \\
  15    & $E \wedge A \wedge \mathit{WI}\Rightarrow \mathit{WI}'$ & 11.24 &  32.64 & \emph{Unknown}   \\
@@ -125,15 +125,7 @@ and this weaker invariant on a system of robots moving in 2D. The verification p
 
 \newcommand{\Task}{\textsf{Task}\xspace}
 
-\paragraph*{Simulation based reachability analysis}
 
-We can use other tools to compute the reachable configurations during environment transitions to validate or disprove proof obligations for proving an invariant of the system. To this end, we performed reachability analysis on Gazebo simulation traces of cars and drones moving from their current position to a given target point using DryVR~\cite{DryVR2017}. The design of the controller may include several other parameters such as velocity and orientation, not covered in our assumptions (proof obligations). \reffig{fig:dryvr} shows the reach tube computations DryVR yielded for the car and the drone. We observed that the assumptions are affected by factors such as velocity, orientation, specially in the case of the drone, where the reach tube is larger due to the drone overshooting its target position initially.
-
-\begin{figure}[!h]
-    \includegraphics[width=0.4\linewidth]{figs/car_trajs.png}
-    \includegraphics[width=0.4\linewidth]{figs/drone_trajs.png}
-    \caption{\emph{Left}: Reachtube for car. \emph{Right}: Reachtube for drone}\label{fig:dryvr}
-\end{figure}
 
 \subsection{\Task: Distributed task allocation}
 
