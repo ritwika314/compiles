@@ -149,13 +149,15 @@ there are following two requirements:
 In this case study, we only prove requirement~(b) for \Task.
 
 \begin{figure}[t]
-    \two{0.4}{0.6}
+
+    \begin{mdframed}{%\centering
+    \two{0.38}{0.6}
     {
         \lstinputlisting[language=NumKoord, lastline=22]{code/taskalloc.tex}
     }
     {
         \lstinputlisting[language=NumKoord, firstline=23, firstnumber=23]{code/taskalloc.tex}
-    }
+    }}\end{mdframed}
     \caption{ $\lgname$ code for robot $i$ for the Distributed Task Allocation}
     \label{fig:taskapp}
 \end{figure}
@@ -323,14 +325,19 @@ and the robots are constrained to move in a 2D space.
     \caption{Four cars in U-shape world in simulator~(\emph{Left}). Visualization of the global map at three different time stamps~(\emph{Right})}\label{fig:U-map-progress}
 \end{figure}
 
+
+
 \begin{figure}[t]
-    \two{0.4}{0.6}
+    \begin{mdframed}
+    \two{0.38}{0.6}
     {
         \lstinputlisting[language=NumKoord, lastline=25]{code/mapapp.tex}
     }
     {
         \lstinputlisting[language=NumKoord, firstline=26, firstnumber=26]{code/mapapp.tex}
     }
+\end{mdframed}
+
     \caption{$\lgname$ code for Distributed Mapping Application \DMap}
     \label{fig:mapapp}
 \end{figure}
