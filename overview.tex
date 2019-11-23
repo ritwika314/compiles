@@ -65,9 +65,9 @@ This shared array is used to share the current position of each robot with all o
     \item the number \NMAX of all participating robots.
 \end{inparaenum}
 A detailed list of system parameters will be discussed later in \refsect{language}.
-
+For multiple robot programs writing to shared variables
 \lgname provides concurrency control with mutual exclusion and \textbf{atomic} blocks,
-for multiple robot programs writing to shared variables (see \textsf{Task} and \textsf{Mapping} applications in \refsect{verification}).
+(see \textsf{Task} and \textsf{Mapping} applications in \refsect{verification}).
 
 
 \subsection{Semantics and invariant properties}
@@ -77,7 +77,7 @@ The execution semantics of any applications for multi-robot system are complicat
 consistency of shared memory, and interactions between software and the physical environment.
 The \K rewriting engine makes the formal language semantics \emph{executable},
 and enables exhaustive exploration of non-deterministic behaviors of \lgname applications.
-In \refsect{verification}, we present a method for checking invariant properties for \lgname applications using symbolic execution of the $\lgname$ semantics in \K.
+In \refsect{verification}, we present a method for checking invariant properties using symbolic execution of the $\lgname$ semantics in \K.
 
 For \LineForm, a natural requirement is to restrict all robots to stay within a certain safe area, at all times (Geofencing).
 More precisely, given a (hyper)rectangle $\rect(x_{min}, x_{max})$ defined by its two corners $x_{min}$ and $x_{max}$,
@@ -102,7 +102,7 @@ Using \lgname's supporting proof tools, an invariant like the above can be estab
 first, assuming that all the robot positions are in $\rect(x_{min}, x_{max})$,
 we show that the targets computed by \LineForm are also in $\rect(x_{min}, x_{max})$.
 The \K semantics of \lgname allows us to construct the symbolic post states of the \emph{TargetUpdate} event
-and we can automatically prove this using the $\lgname$ prover (\reffig{tools}) as detailed in \refsect{verification}.
+and prove \inv{inv:lineform} using the $\lgname$ prover (\reffig{tools}) as detailed in \refsect{verification}.
 
 The second step is to show, that for any robot, assuming that the computed target are in $\rect(x_{min}, x_{max})$,
 the controller implementing \Motion module indeed keeps the robot inside $\rect(x_{min}, x_{max})$.
@@ -172,4 +172,4 @@ Once developers install our ROS~\cite{ros} based run-time libraries~(middleware)
 and provides a device specific configuration denoting the mapping from \lgname module ports
 to low level sensor and actuator ROS messages,
 our module port based abstraction then allows the same \lgname program to run on this platform.
-\sayan{Detailed description of the tool chain is available in~\cite{ghosh2019cyphyhouse}.\footnote{\rg{Under submission, anonymized for the purposes of double blind reviewing.}}}
+Detailed description of the tool chain is available in~\cite{ghosh2019cyphyhouse}.\footnote{Under submission, anonymized for the purposes of double blind reviewing.}
