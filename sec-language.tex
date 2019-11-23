@@ -351,7 +351,7 @@ Following our semantic rules in \refsect{semantics},
 careful readers would notice that all event transitions of \lgname program takes \emph{zero} time.
 The environment transitions however take $\delta$ time for the evolution of the sensor and actuator ports
 together with the update of the local context from the global context.
-In this section, we discuss how this semantic abstracts the behavior of a distributed cyberphysical system,
+In this section, we discuss how this semantic abstracts the behavior of a distributed cyber-physical system,
 and how our tool chain in~\cite{ghosh2019cyphyhouse} provides a faithful implementation of such abstraction.
 
 To reiterate, the following are the timing requirements for rule~\EventTransRule and \EnvTransRule:
@@ -363,7 +363,7 @@ To reiterate, the following are the timing requirements for rule~\EventTransRule
 \end{inparaenum}
 The first two requirements are achievable if the time taken to complete a program transition is negligible compared to $\delta$,
 and $\delta$ can be a common multiple of the sampling intervals of all controller ports in use.
-These constraints are reasonable for cyberphysical systems where the computation and communication is comparatively much faster.
+These constraints are reasonable when computation and communication is comparatively much faster.
 For \Motion module as an example, our position sensor on each device publishes every 0.01 sec~(100Hz) while the CPU on each drone is 1.4 GHz.
 If we set $\delta$ to be 0.01 sec, an event transition taking 10K CPU cycles is still less than 0.1\% of $\delta$.
 
