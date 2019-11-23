@@ -206,7 +206,8 @@ the executable semantics will enable different types of analysis as we shall see
 \end{figure}
 
 %
-We will describe only the interesting semantic rules of \lgname above the event level. Rule~\LVarUpdate and Rule ~\SVarUpdate showing the semantic rules for local and shared variable assignment respectively are provided as examples of statement level rules. Rule~\StmtSeqRuleOne and \StmtSeqRuleTwo show how a statement representing a sequence of statements should be executed.  (\rg{more details on statement and expression level semantics we refer the readers in a future extended version of the paper}).
+We will describe only the interesting semantic rules of \lgname above the event level. Rule~\LVarUpdate and Rule ~\SVarUpdate showing the semantic rules for local and shared variable assignment respectively are provided as examples of statement level rules. Rule~\StmtSeqRuleOne and \StmtSeqRuleTwo show how a statement representing a sequence of statements is executed.
+More details on statement and expression level semantics will be available in a future extended version of the paper.
 
 
 \paragraph{Per robot semantics.}
@@ -279,8 +280,8 @@ New sensor readings $\cp'$ is then obtained by evaluating the black-box dynamics
 In an actual execution, the controller would run the program on hardware,
 whose sensor ports evolve for $\delta$ time between program transitions.
 This formalization allows the ports to behave arbitrarily over $\delta$-transitions.
-In verification of invariant properties,
-additional assumptions will be needed to constrain the behavior of the sensor and actuator ports.
+Hence in verification,
+additional assumptions over the behavior of the sensor and actuator ports are needed.
 Finally, the $\turn$ of the robot is set back to $\prog$.
 
 
@@ -354,8 +355,8 @@ To reiterate, the following are the timing requirements for rule~\EventTransRule
 \begin{inparaenum}[(a)]
 \item an event transition takes \emph{zero} time,
 \item new values of controller ports are sampled at the end of each round
-\item shared variables should reach consistent values within $\delta$ time, and
-\item a global clock is used to synchronize each $\delta$-time round.
+\item \label{consistency} shared variables should reach consistent values within $\delta$ time, and
+\item \label{gclock} a global clock is used to synchronize each $\delta$-time round.
 \end{inparaenum}
 The first two requirements are achievable if the time taken to complete a program transition is negligible compared to $\delta$,
 and $\delta$ can be a common multiple of the sampling intervals of all controller ports in use.
@@ -363,9 +364,9 @@ These constraints are reasonable for cyberphysical systems where the computation
 For \Motion module as an example, our position sensor on each device publishes every 0.01 sec~(100Hz) while the CPU on each drone is 1.4 GHz.
 If we set $\delta$ to be 0.01 sec, an event transition taking 10K CPU cycles is still less than 0.1\% of $\delta$.
 
-The remaining requirements are common research questions in distributed computing with an extensive literature.
+Requirement~\eqref{consistency} and~\eqref{gclock} are common research questions in distributed computing with an extensive literature.
 A global clock can be achieved with existing techniques that synchronize all local clocks on robots.
 In~\cite{ghosh2019cyphyhouse}, we use message passing to implement distributed shared memory for shared variables.
-We ensure that the time taken to propagate values thru message passing and reach consistency is smaller than $\delta$,
-and the update is then  visible in the next round of program transitions for all robots.
+We ensure that the time taken to propagate values thru messages and reach consistency is smaller than $\delta$,
+and the update is visible in the next round of program transitions for all robots.
 We therefore conclude our round based semantic with shared memory is a reasonable abstraction.
