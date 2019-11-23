@@ -5,12 +5,10 @@ In this section, we present the syntax and the semantics of \lgname.
 %
 %\subsection{Synchronous run-time system }
 %
-When a \lgname application is deployed on a fleet of robots, multiple instances of the same program runs on a collection of $\NMAX$ robots.
-There is a known set of identifiers $\UINS=\{0,1,\dots,\NMAX-1\}$, and each robot is assigned  a unique index $\myuin \in \UINS$.
+When a \lgname application is deployed on a fleet of $\NMAX$ robots, each robot runs an instance of the same program. There is a known set of identifiers $\UINS=\{0,1,\dots,\NMAX-1\}$, and each robot is assigned  a unique index $\myuin \in \UINS$.
 % Sayan. This is out of place here.
 %Programmers can use $\NMAX$ and $\myuin$ as constant values in a \lgname program.
 %
-The robots communicate with each other through distributed shared memory.
 The execution of the \lgname program advances in a synchronous, \emph{round-by-round} fashion, where each round lasts for $\delta$ time,
 and $\delta >0$ is a platform specific execution parameter.
 During this period, the robots compute, move, and
@@ -36,8 +34,8 @@ To summarize, there are following three types of names for reading/writing value
 \item \emph{Sensor and actuator ports} are used to read from sensor ports and write to actuator ports of controllers.
 \item \emph{Local program variables} record the state of the program.
 \item \emph{Distributed shared variables} are used for coordination across robots. All shared variables can be read by all participating robots; an
-      \textbf{allwrite} variable can be written by any participating robot; while an
-      \textbf{allread} variable can be written only by a single-writer.
+      \textbf{allwrite} variables can be written by any participating robot; while an
+      \textbf{allread} variables can be written only by a single-writer.
 \end{enumerate}
 
 User can then optionally specify a statement to set the initial values of program variables~(rule~\emph{Init}).
@@ -126,7 +124,7 @@ Bookkeeping variables are invisible in the language syntax, and only used in the
 
 \paragraph{Robot configurations.}
 
-A \emph{robot configurations} is used to specify the semantics of each robot.
+A \emph{robot configuration} is used to specify the semantics of each robot.
 As a \lgname program is run on a system of robots,
 each participating robot would have its own set of module ports and local variables,
 along with a local copy of each shared variable.
@@ -150,7 +148,7 @@ To define the  executable \K semantics of  \lgname applications, we have to prov
 $f: [\Cfield \mapsto \Val] \times \nnreals \mapsto [\Cfield \mapsto \Val]$.
 That is, given old sensor and actuator values and a time point, $f$ should return the new values for all sensor and actual ports.
 %
-Depending on whether  we have an explicit or a black-box model for $f$,
+Depending on whether we have an explicit or a black-box model for $f$,
 the executable semantics will enable different types of analysis as we shall see in \refsect{verification}.
 
 
@@ -273,7 +271,7 @@ The environment transition rule is of type
 \envtrans \subseteq (\pws \times \pwl) \mapsto \wp(\pws\times \pwl),
 \]
 which takes a global context and a robot configuration as input.
-Rule~\RobotEnvRule simply states that the new local context $M'$ is
+Rule~\RobotEnvRule simply states that the new local context $M'$ is the
 old local context $M$ updated with the global context $S$;
 thus ensuring that all robots have consistent shared variable values before the next program transition.
 New sensor readings $\cp'$ is then obtained by evaluating the black-box dynamics $f$ with time $\delta$.
@@ -367,6 +365,6 @@ If we set $\delta$ to be 0.01 sec, an event transition taking 10K CPU cycles is 
 Requirement~\eqref{consistency} and~\eqref{gclock} are common research questions in distributed computing with an extensive literature.
 A global clock can be achieved with existing techniques that synchronize all local clocks on robots.
 In~\cite{ghosh2019cyphyhouse}, we use message passing to implement distributed shared memory for shared variables.
-We ensure that the time taken to propagate values thru messages and reach consistency is smaller than $\delta$,
+We ensure that the time taken to propagate values through messages and reach consistency is smaller than $\delta$,
 and the update is visible in the next round of program transitions for all robots.
 We therefore conclude our round based semantic with shared memory is a reasonable abstraction.
