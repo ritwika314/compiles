@@ -55,17 +55,17 @@ In the above, a sequence $\pvec=(\pinit, \pvec')$, is written  as a concatenatio
 Also, $\mathit{perms}(\UINS)$ refers to the set of permutations of $\UINS$.
 
 %$\Final(\gset)$ returns the set of system configurations after a program transition.
-Next, we define how to compute reachable system configurations after an environment transition.
-Given the black-box function $f_i$ for each robot $i$,
-we can define the function $\traj: \pwg \times \left[0,\delta\right] \mapsto \pwg$ to represent the \emph{trajectory} of the system during an environment transition.
+\sayan{Next, we define the configurations that are reached during and after an environment transition. Recall, environment transitions capture the evolution of the actuator ports  over a time interval $[0,\delta]$---all other parts of the configuration remain unchanged. Our $\lgname$ semantics defines the environment transitions with a {\em parameter\/} which is a (possibly black-box) function that captures the dynamics of individual robots\footnote{For different platforms, this function could be defined in closed form, as solutions of differential equations, or in terms of a numerical simulator.}.}
+% 
+Given such a function $f_i$ for each robot $i$, we  define the function $\traj: \pwg \times \left[0,\delta\right] \mapsto \pwg$ to represent the  evolution of the system over a  $[0,\delta]$ time interval.
 $\traj$ is constructed by simply update all controller ports $\cp$ of all robots with their $f_i$.
 In short,
 \[
-\gconfig' = \traj(\gconfig, t) \implies \forall i, \gconfig'.\lconfig{i}.cp = f_i(\gconfig.\lconfig{i}.cp, t)
+\traj(\gconfig, t) := \gconfig \ \mathit{with} \  \gconfig.\lconfig{i}.cp = f_i(\gconfig.\lconfig{i}.cp, t), \forall i\in \UINS.
 \]
-We then define the set of system configurations $\pt{t_1}{t_2}(\gset)$ reached in an interval $[t_1,t_2]$:
+The set of system configurations $\pt{t_1}{t_2}(\gset)$ reached in an interval $[t_1,t_2]$:
 \[
-\pt{t_1}{t_2}(\gset) := \left\{\gconfig' \mid \exists \gconfig\in \gset, t_1 \leq t\leq t_2 , \gconfig' = \traj(\gconfig,t)\right\}
+\pt{t_1}{t_2}(\gset) := \left\{\gconfig' \mid \exists \gconfig\in \gset, t_1 \leq t\leq t_2 , \gconfig' = \traj(\gconfig,t)\right\}.
 \]
 The set of points reached at the end of an environment transition from $\gset$ is denoted by  $\ft(\gset) := \pt{\delta}{\delta}(\gset)$.
 
@@ -84,11 +84,11 @@ Formally,
 
 
 Finally, given a set of configurations $\gset_0\subseteq\pwg$,
-the set of all reachable states in $n$ rounds is defined inductively as follows:
+the set of all reachable states in $n$ rounds is defined inductively:
 \[
 \Reach(\gset_0, n) :=
     \begin{cases}
-        \gset_0, \text{ if } n = 0 \\[5pt]
+        \gset_0  \ \ \mathit{if} n = 0 \\
         \Reach(\gset_0,n-1) \text{\hspace{1.8cm}otherwise} \\
         \hspace{0.5em} \cup\ \Post(\frontier(\gset_0,n-1))\\
         \hspace{0.5em} \cup\ \pt{0}{\delta}(\Final(\frontier(\gset_0,n-1))),\\
@@ -102,9 +102,9 @@ Notice that all transient configurations during both program~(computed by $\Post
 
 \newcommand{\Inv}{\mathit{inv}\xspace}
 
-An \emph{invariant} of a \lgname program is a safety property that holds in all reachable system configurations.
-Invariant can be used to guarantee, for instance, that no two robots are ever within a specified radius of each other~(Collision avoidance),
-or robots always stay within a designated area~(Geofencing).
+An \emph{invariant} of a \lgname program is a predicate over its variables that holds in all reachable system configurations.
+Invariant requirements can express safety, for instance, that no two robots are ever too close~(Collision avoidance),
+or that robots always stay within a designated area~(Geofencing).
 Formally,
 \begin{definition}
 An invariant $\Inv$ is a predicate~(Boolean valued function) over a configuration $\gconfig$ such that,
