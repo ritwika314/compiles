@@ -234,12 +234,12 @@ Notice that \PO{po:ind} allows us to reason in per event fashion as well as per 
 
 \subsection{Validating port assumptions: reachability analysis}
 \label{sec:port-assumptions}
- Over  three decades of research on verification of complex dynamical and hybrid systems~\cite{Alur:2015:PCS,Platzer:2018} has led to the creation of a powerful toolbox for linear~\cite{bak2017hylaa,Spaceex}, nonlinear~\cite{CAS13,DMVemsoft2013,FanQM0D16:CAV}, and black-box systems~\cite{DryVR2017}. Depending on the type and availability of the platform models, these tools can be used for discharging the port assumptions. 
-
-In this section, we briefly illustrate how the traces from the $\lgname$ simulator together with the DryVR~\cite{DryVR2017} tool can be used  for wheeled vehicles and quadcopters  moving from their current position to a given target point using DryVR~\cite{DryVR2017}. The design of the controller may include several other parameters such as velocity and orientation, not covered in our assumptions (proof obligations). \reffig{dryvr} shows the reach tube computations DryVR yielded for the car and the drone. We observed that the assumptions are affected by factors such as velocity, orientation, specially in the case of the drone, where the reach tube is larger due to the drone overshooting its target position initially.
-
+ Over  three decades of research on verification of complex dynamical and hybrid systems~\cite{Alur:2015:PCS,Platzer:2018} has led to the creation of a powerful toolbox for linear~\cite{bak2017hylaa,Spaceex}, nonlinear~\cite{CAS13,DMVemsoft2013,FanQM0D16:CAV}, and black-box systems~\cite{DryVR2017}. Depending on the type and availability of the platform models, these tools can be used for discharging the port assumptions. Here, for the sake of completing the picture, we briefly discuss how the traces from the $\lgname$ simulator together with the DryVR tool~\cite{DryVR2017},  could be used to check port assumptions for various platforms or find counterexamples. 
+ 
+ DryVR uses numerical simulations to learn the sensitivity of the trajectories of the vehicle to changes in initial conditions, with a certain confidence level. Then it uses this sensitivity and additional simulations to either prove the given invariant (in our case the port assumption) or find a counter-example. Under certain robustness assumptions, this process is also guaranteed to terminate. We used $\lgname$ simulator to generate traces of a vehicle (and quadcopter) moving from a set of initial conditions to a target waypoint. From these traces, DryVR computes the reachable states (see~\reffig{fig:dryVR}). Notice that for the same relative distance between the initial position and the target, the quadcopter has a larger reachset than the vehicle because the former overshoots. 
 \begin{figure}[!h]
     \includegraphics[width=0.4\linewidth]{figs/car_trajs.png}
     \includegraphics[width=0.4\linewidth]{figs/drone_trajs.png}
-    \caption{\emph{Left}: Reachtube for car. \emph{Right}: Reachtube for drone}\label{fig:dryvr}
+    \caption{\emph{Left}: Reachsets  for car. \emph{Right}: Reachtube for drone}
+    \label{fig:dryVR}
 \end{figure}
