@@ -99,7 +99,8 @@ The expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$.
 
 The semantics of a \lgname program execution is based on synchronous rounds divided into \emph{event transitions} and \emph{environment transitions} that update the \emph{system configuration}.
 In each round, each robot performs at most one event.
-The update performed by a single robot executing an event is modeled as an instantaneous transition that updates the program variables; however, different events executed by the different robots may interleave in an arbitrary sequence.
+The update performed by a single robot executing an event is modeled as an instantaneous transition that updates the program variables;
+however, different events executed by different robots may interleave in an arbitrary order.
 In between the events of successive rounds, $\delta>0$ duration of time elapses, the program variables remain constant while the values held by the sensor and actuator ports may change.
 %This is captured by an {\em environment transition\/}.
 %The \lgname program can only read the sampled values from and write to the ports every $\delta$ time.
@@ -198,13 +199,13 @@ the executable semantics will enable different types of analysis as we shall see
 
     \inferrule*[leftskip=1cm, Right=\SVarUpdate]
     {
-        x \in \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\lconfig{i} .{M}) \wedge \lconfig{i}^\prime.M = \lconfig{i}.M[x\mapsto v]
+        x \in \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\agnt.{M}) \wedge \agnt^\prime.M = \agnt.M[x\mapsto v]
     }
-    {\langle{S},\lconfig{i}, x = v \rangle {\rightarrow_{S}}  \langle{S}[x\mapsto v],\lconfig{i}^\prime,\cdot\rangle}\label{va1} \\
+    {\langle{S}, \agnt, x = v \rangle {\rightarrow_{S}}  \langle{S}[x\mapsto v],\agnt^\prime,\cdot\rangle}\label{va1} \\
     \inferrule*[leftskip=1cm, Right=\LVarUpdate]
     {
-        x \notin \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\lconfig{i} .{M}) \wedge\  \lconfig{i}^\prime.M = \lconfig{i}.M[x\mapsto v]  }
-    {\langle{S},\lconfig{i}, x = v \rangle {\rightarrow_{S}}  \langle{S},\lconfig{i}^\prime,\cdot\rangle}\label{va2}
+        x \notin \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\agnt.{M}) \wedge \agnt^\prime.M = \agnt.M[x\mapsto v]  }
+    {\langle{S},\agnt, x = v \rangle {\rightarrow_{S}}  \langle{S},\agnt^\prime,\cdot\rangle}\label{va2}
 \end{mathpar}
 \end{mdframed}
 \caption{Example statement level semantic rules for \lgname.}\label{fig:assignrules}
@@ -294,7 +295,7 @@ additional assumptions over the behavior of the sensor and actuator ports are ne
 Finally, the $\turn$ of the robot is set back to $\prog$.
 
 
-\paragraph{Global semantics.}
+\paragraph{System semantics.}
 
 With the event semantic for each robot, we can then define the execution for the distributed \lgname program.
 The rewrite rule is a mapping from an initial system configuration to a set of configurations.
@@ -302,9 +303,9 @@ It has the type
 \[
 \rightarrow_G\ \subseteq \pwg \mapsto \wp(\pwg),
 \]
-where $\pwg$ is the set of all possible global configurations.
+where $\pwg$ is the set of all possible system configurations.
 
-Rule~\EventTransRule expresses that starting from a global configuration $\gconfig = (\lset, S, \tau, \prog)$,
+Rule~\EventTransRule expresses that starting from a system configuration $\gconfig = (\lset, S, \tau, \prog)$,
 a robot $i$ with the configuration $\lconfig{i}$ starts by selecting an enabled event,
 executes the event via a sequence of $\stmtrule$ rewrites,
 and sets its own $\turn$ to $\env$ at the end of the event execution.
@@ -346,7 +347,7 @@ indicating the end of program transition, and an environment transition will occ
     { (\lset, {S}, \tau,\env)\rightarrow_G (\lsetp, {S}, \tau + \delta,\prog)}
 \end{mathpar}
 \end{mdframed}
-\caption{Global semantic rules for \lgname.}\label{fig:partial-semantics-global}
+\caption{System semantic rules for \lgname.}\label{fig:partial-semantics-global}
 \end{figure}
 
 
@@ -355,7 +356,7 @@ This rule synchronizes the environment transitions of each robot and
 ensure that the global time $\tau$ advances to $\tau + \delta$.
 
 
-\subsection{Synchronization and Consistency}
+\subsection{Synchronization and consistency}
 \label{sec:sync}
 
 Following our semantic rules in \refsect{semantics},
@@ -365,7 +366,7 @@ together with the update of the local context from the global context.
 In this section, we discuss how this semantic abstracts the behavior of a distributed cyber-physical system,
 and how our tool chain in~\cite{ghosh2019cyphyhouse} provides a faithful implementation of such abstraction.
 
-To reiterate, the following are the timing requirements for rule~\EventTransRule and \EnvTransRule:
+To reiterate, the following are the timing requirements from rule~\EventTransRule and \EnvTransRule:
 \begin{inparaenum}[(a)]
 \item an event transition takes \emph{zero} time,
 \item new values of controller ports are sampled at the end of each round

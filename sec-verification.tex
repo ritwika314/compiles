@@ -161,7 +161,7 @@ That is, $\Inv$ holds in the initial configuration(s)~(\PO{po:base}),
 and $\Inv$ is preserved by both platform-independent discrete program transitions and the platform-dependent environment transitions~(\PO{po:ind-hyp-orig}).
 It is straightforward to prove that an inductive invariant is  an invariant.
 
-Our  verification strategy for user-specified  (inductive) invariants is to dischare the proof obligations.
+Our verification strategy for user-specified (inductive) invariants is to discharge the proof obligations.
 \PO{po:base} is usually trivial. Therefore, we focus on~\PO{po:ind-hyp-orig}. The $\lgname$ semantics enables us to \emph{decouple} the environment and program transitions in $\Reach$, and analyze each separately. \PO{po:ind-hyp-orig} can be restated by expanding $\Reach$ and $\frontier$ as $\forall \gconfig \in \pwg,$
 \begin{align}
 \eec{\Inv}{\gconfig} &\Rightarrow \forall \gconfig' \in \Post(\incurly{\gconfig}), \eec{\Inv}{\gconfig'}\label{po:ind-hyp-prog}\\
@@ -209,11 +209,12 @@ we expand $\pt{0}{\delta}$  and rewrite \PO{po:ind-hyp-env} as $\forall \gconfig
 %
 %
 \begin{definition}
-Given a configuration $\gconfig'$ and $\traj$, a \emph{\portasum} $A(\cdot, \cdot)$ is a predicate on $\pwg\times \pwg$ if  $\forall \gconfig', \gconfig'' \in \pwg,$
+Given the $\traj$ function, a \emph{\portasum} $A(\cdot, \cdot)$ is a predicate on $\pwg\times \pwg$ if  $\forall \gconfig', \gconfig'' \in \pwg,$
 \begin{equation}\label{po:port-asm}\tag{\textit{PAsm}}
 (\forall t \in [0,\delta], \gconfig'' = \traj(\gconfig', t)) \Rightarrow A(\gconfig', \gconfig'').
 \end{equation}
 \end{definition}
+\noindent
 Port assumptions allow users to over-approximate $\traj$ and prove the invariant at hand.
 \PO{po:port-asm} can be validated with our $\lgname$ simulator or with other specialized tools for continuous dynamics (see Section~\ref{sec:port-assumptions}).
 Further, we know by definition $\Final(\incurly{\gconfig}) \subseteq \Post(\incurly{\gconfig})$,
