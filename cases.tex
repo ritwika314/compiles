@@ -146,7 +146,9 @@ In this case study, we only prove requirement~(b) for \Task.
 \begin{figure}[t]
         \captionsetup{font=scriptsize}
 
-    \begin{mdframed}{%\centering
+    \begin{mdframed}
+        [innertopmargin=0pt,innerbottommargin=0pt]
+        {%\centering
     \two{0.38}{0.6}
     {
         \lstinputlisting[language=NumKoord, lastline=22]{code/taskalloc.tex}
@@ -327,6 +329,7 @@ and the robots are constrained to move in a 2D space.
 \begin{figure}[t]
             \captionsetup{font=scriptsize}
     \begin{mdframed}
+    [innertopmargin=0pt,innerbottommargin=0pt]
     \two{0.38}{0.6}
     {
         \lstinputlisting[language=NumKoord, lastline=25]{code/mapapp.tex}

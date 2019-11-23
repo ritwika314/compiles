@@ -63,8 +63,10 @@ The expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$.
 \newcommand{\vbar}{{\normalfont\ |\ }}
 \newcommand{\mterm}[1]{{\normalfont \textbf{#1}}}
 \newcommand{\delim}{\mterm{:\ }\xspace}
-\itshape
-        \begin{mdframed}
+
+\begin{mdframed}
+    [innertopmargin=2pt,innerbottommargin=0pt]
+\itshape\small
 \begin{tabular}{lrl}
     Program   & ::= & Def\zeromore Import\zeromore DeclBlock Init\zeroone Event\onemore \\
     Def       & ::= & TypeDef \vbar FuncDef                                             \\
@@ -183,7 +185,7 @@ the executable semantics will enable different types of analysis as we shall see
 \begin{figure}
             \captionsetup{font=scriptsize}
 \scriptsize
-            \begin{mdframed}
+            \begin{mdframed}[innertopmargin=0pt,innerbottommargin=1pt]
 \begin{mathpar}
     \mprset{flushleft}
     \inferrule*[Right=\StmtSeqRuleOne]
@@ -218,6 +220,7 @@ More details on statement and expression level semantics will be available in a 
 \begin{figure}
             \captionsetup{font=scriptsize}
 \begin{mdframed}
+    [innertopmargin=0pt,innerbottommargin=2pt]
 \scriptsize
 \begin{mathpar}
     \mprset{flushleft}
@@ -316,7 +319,8 @@ indicating the end of program transition, and an environment transition will occ
             \captionsetup{font=scriptsize}
 
 \scriptsize
-            \begin{mdframed}
+\begin{mdframed}
+[innertopmargin=0pt,innerbottommargin=2pt]
 \begin{mathpar}
     \mprset{flushleft}
     \inferrule*[leftskip=1cm, Right=\EventTransRule]
