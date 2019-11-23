@@ -78,19 +78,15 @@ While it does not completely eliminate concurrency control, it significantly sim
 \lgname provides constructs for mutual exclusion as additional mechanisms for concurrency control with shared memory mentioned above.
 This model can be implemented under typical synchrony assumptions for multi-robot networks.\footnote{Bounded message delays and clocks with bounded drifts.}
 
-\item We present a \K symbolic execution-based formal verification \sayan{methodology} which does {\em not} require explicit dynamical models of the platform.
+\item We present a \K symbolic execution-based formal verification methodology which does {\em not} require explicit dynamical models of the platform.
 In practice, a detailed model of the platform (e.g., dynamic models for cars, wheel friction, engine torque, etc.) may not be available.
-The \lgname semantics is \sayan{parameterized} so that any available model or an actual black-box executable for the platform can be plugged in,
+The \lgname semantics is parameterized so that any available model or an actual black-box executable for the platform can be plugged in,
 and our formal analyses facilitate both inductive invariant checking and state space exploration with black-box dynamics.
 
-\item We identify and separate platform-independent from platform-dependent \emph{proof obligations} derived from our formal analysis of $\lgname$ semantics. We  propose an approach to discharge the former obligations with existing SMT solvers automatically. \rg{On one hand, platform dependent proof obligations can represent the infeasibility of implementing such systems,
-when they are difficult to discharge or easily violated in simulation or testing.}
-On the other hand, these proof obligations can serve as contracts for sensors, drivers, and operating system modules that are outside the purview  of application developers.
-An intended useful outcome of this methodology is a list of formal assumptions for the platform or implementation-specific components such sensors, schedulers, data structures, etc.
+\item We identify and separate platform-independent from platform-dependent \emph{proof obligations} derived from our formal analysis of $\lgname$ semantics. We  propose an approach to discharge the former obligations with existing SMT solvers automatically. On the one hand, platform dependent proof obligations can suggest the infeasibility of implementing such systems, when they are difficult to discharge or quickly violated in simulation or testing. On the other hand, these proof obligations can serve as contracts for sensors, drivers, and operating system modules that are outside the purview  of application developers. An intended useful outcome of this methodology is a list of formal assumptions for the platform or implementation-specific components.
 \end{noinditem}
 %
-These choices do leave out issues related to robot failure and dynamic joins and leaves from the current semantics, which could be included in the future.
-\rg{However, even without tackling these issues, \lgname tools can handle analysis of behavior and requirements for interesting applications such as distributed formation (a set of robots coordinate to form shapes), task allocation (robots perform a set of tasks in a distributed manner), and mapping (robots collaboratively map obstacles in a given space) as demonstrated in \refsect{verification}.}
+These choices do leave out issues related to robot failure and dynamic joins and leaves from the current semantics, which could be included in the future. Even without tackling these, \lgname tools can analyze  interesting deployed applications such as distributed formation (a set of robots coordinating to form shapes), task allocation (robots performing tasks mutually exclusively and without collision), and mapping (robots collaboratively mapping  a given space) as demonstrated in Section~\ref{cases}.}
 
 %Our semantics facilitates the development of formal analysis tools using techniques such as symbolic post-state computation and bounded-model-checking combined with sensitivity analysis. We present our tools in \refsect{verification}. To our knowledge, this is the only distributed (CPS) system analysis framework with a language semantics component to it, thus reducing the gap between theory and practice.
 %Furthermore, as \reffig{krdarch} shows, the components of the $\lgname$ framework interact using interfaces, allowing interchangeability of formal analysis components. For instance Z3 can be replaced by any other SMT solver depending on the user requirements. In fact, by using \K to implement the executable language semantics, we leave room for consistent extensibility of the language to support even more diverse applications.   
@@ -105,7 +101,7 @@ These choices do leave out issues related to robot failure and dynamic joins and
 %
 
 
-\begin{figure}[h!]
+\begin{figure}[htb!]
             \captionsetup{font=scriptsize}
 \begin{minipage}{0.32\columnwidth}
 	\includegraphics[width=\linewidth]{figs/firefly.png}
