@@ -63,8 +63,8 @@ The expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$.
 \newcommand{\vbar}{{\normalfont\ |\ }}
 \newcommand{\mterm}[1]{{\normalfont \textbf{#1}}}
 \newcommand{\delim}{\mterm{:\ }\xspace}
-
 \itshape
+        \begin{mdframed}
 \begin{tabular}{lrl}
     Program   & ::= & Def\zeromore Import\zeromore DeclBlock Init\zeroone Event\onemore \\
     Def       & ::= & TypeDef \vbar FuncDef                                             \\
@@ -86,6 +86,7 @@ The expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$.
               &     &                                                                   \\
     Stmt      & ::= & \mterm{atomic} Stmt \vbar Stmt StmtList \vbar \textellipsis
 \end{tabular}
+\end{mdframed}
 
 \caption{Partial \lgname syntax rules.}\label{fig:partial-syntax}
 \end{figure}
@@ -156,8 +157,8 @@ the executable semantics will enable different types of analysis as we shall see
 \subsection{Semantics}\label{sec:semantics}
 
 %%semantic rule references
-\newcommand{\SVarUpdate}{\textsc{SharedAssign}\xspace}
-\newcommand{\LVarUpdate}{\textsc{LocalAssign}\xspace}
+\newcommand{\SVarUpdate}{\textsc{SvarAssign}\xspace}
+\newcommand{\LVarUpdate}{\textsc{LvarAssign}\xspace}
 \newcommand{\StmtSeqRuleOne}{\textsc{StmtSeq1}\xspace}
 \newcommand{\StmtSeqRuleTwo}{\textsc{StmtSeq2}\xspace}
 \newcommand{\SelectEventRule}{\textsc{SelectEvent}\xspace}
@@ -182,6 +183,7 @@ the executable semantics will enable different types of analysis as we shall see
 \begin{figure}
             \captionsetup{font=scriptsize}
 \scriptsize
+            \begin{mdframed}
 \begin{mathpar}
     \mprset{flushleft}
     \inferrule*[Right=\StmtSeqRuleOne]
@@ -202,6 +204,7 @@ the executable semantics will enable different types of analysis as we shall see
         x \notin \mathit{Keys}({S}) \wedge x \in \mathit{Keys}(\lconfig{i} .{M}) \wedge\  \lconfig{i}^\prime.M = \lconfig{i}.M[x\mapsto v]  }
     {\langle{S},\lconfig{i}, x = v \rangle {\rightarrow_{S}}  \langle{S},\lconfig{i}^\prime,\cdot\rangle}\label{va2}
 \end{mathpar}
+\end{mdframed}
 \caption{Example statement level semantic rules for \lgname.}\label{fig:assignrules}
 \end{figure}
 
@@ -214,7 +217,7 @@ More details on statement and expression level semantics will be available in a 
 
 \begin{figure}
             \captionsetup{font=scriptsize}
-
+\begin{mdframed}
 \scriptsize
 \begin{mathpar}
     \mprset{flushleft}
@@ -242,6 +245,7 @@ More details on statement and expression level semantics will be available in a 
     }
     {  \langle S, (M, cp, \env) \rangle \envtrans \langle S, (M', cp', \prog) \rangle}
 \end{mathpar}
+\end{mdframed}
 \caption{Partial per robot semantic rules for \lgname.}\label{fig:partial-semantics}
 \end{figure}
 
@@ -310,7 +314,9 @@ indicating the end of program transition, and an environment transition will occ
 
 \begin{figure}
             \captionsetup{font=scriptsize}
+
 \scriptsize
+            \begin{mdframed}
 \begin{mathpar}
     \mprset{flushleft}
     \inferrule*[leftskip=1cm, Right=\EventTransRule]
@@ -335,6 +341,7 @@ indicating the end of program transition, and an environment transition will occ
     }
     { (\lset, {S}, \tau,\env)\rightarrow_G (\lsetp, {S}, \tau + \delta,\prog)}
 \end{mathpar}
+\end{mdframed}
 \caption{Global semantic rules for \lgname.}\label{fig:partial-semantics-global}
 \end{figure}
 

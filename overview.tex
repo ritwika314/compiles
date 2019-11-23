@@ -15,19 +15,20 @@ The \lgname programming tools can compile and deploy this code on a heterogeneou
 \lgname is a high-level, event-driven language in which application programs use \emph{shared variables} for coordination across robots
 and \emph{ports} for interaction with hardware-specific subroutines.
 In a distributed robotics setting, instances of the same \lgname program are executed by each participating robot to solve problems collectively.
-
 \begin{figure}[h!]
             \captionsetup{font=scriptsize}
+            \begin{mdframed}
     \two{0.32}{0.59}
     {
         \lstinputlisting[language=NumKoord, lastline=8]{code/lineform.tex}
     }
     {
         \lstinputlisting[language=NumKoord, firstline=9, firstnumber=9]{code/lineform.tex}
-    }
+    }\end{mdframed}
     \caption{\lgname program \LineForm for a set of robots to form a line.}
     \label{fig:lineform}
 \end{figure}
+\
 
 \paragraph{Modules and port abstractions.}
 A \lgname program interacts with the sensors and low-level controllers of the robot platform through \emph{sensor} and \emph{actuator} ports.
