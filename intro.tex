@@ -2,25 +2,21 @@
 \label{sec:intro}
 
 \paragraph{Motivation and goals}
-Distributed robotic applications could transform manufacturing, transportation, agriculture, delivery, surveillance, and mapping~\cite{find}.
+Distributed robotic applications could transform manufacturing~\cite{pires2000object,gauthier1987interprocess}, transportation~\cite{gerla2014internet,guo2012autonomous}, agriculture~\cite{blender2016managing,r2018research}, delivery~\cite{mosterman2014heterogeneous}, and mapping~\cite{thrun2002robotic}.
 Following the trends in cloud, mobile, and machine learning applications, programmability is key in unlocking this potential
 as robotics platforms become more open and hardware developers shift to the applications marketplace.
 Available domain specific languages (DSL) for robotics are tightly coupled with platforms,
 and they combine low-level sensing, communication, and control tasks with the application-level logic
-(see the related work in~\refsect{related} for more details).
+(see~\refsect{related} for more details).
 This tight-coupling and the attendant lack of abstraction hinders application development on all fronts---portability, code reuse, and verification and validation (V\&V).
 
 In particular, formal reasoning about a collection of robots communicating, coordinating, and interacting with a physical environment
 is complexified by cyber-physical interactions.
-Correctness under concurrency and asynchrony are prominent research problems in distributed programming area.
-Safety guarantees under noise, disturbances, and imprecise or incomplete models for sensors and robot platforms are also studied intensively in robotics area.
-These areas involve related but entirely different hardware level concepts of control and sensing,
-and software level concepts of distributed protocols and program interactions.
-It is however obvious the analysis techniques from two communities are based on quite different formal models and languages,
-and it is unlikely that formal analyses from either community alone would be able to provide satisfactory guarantees
-to the safety of distributed robotic applications.
-Our opinion towards such observation is not to design a formal language with analyses that encompass both sides,
-but rather we search for a language for separating the concerns to divide and conquer using existing analyses from both communities.
+Correctness under concurrency and asynchrony are prominent research problems in distributed computing. Correctness under noise, disturbances, and imprecise platform (plant) models is studied intensively by roboticists and control theorists. 
+%These areas involve related but entirely different hardware level concepts of control and sensing, and software level concepts of distributed protocols and program interactions. 
+The analysis techniques from these communities are based on very different formal models and mathematics, and both would be necessary  to provide satisfactory safety guarantees for  distributed robotic applications.
+\sayan{Our view is {\em not\/} to combine all of the above in an {\em all encompassing formalism\/},
+but to create a language that separates  the concerns to divide and conquer using existing analyses from both communities.}
 
 Our approach is to design abstractions and language constructs that separate the \emph{platform-independent} decision and coordination from \emph{platform-dependent} actions.
 For example, in an application for distributed package delivery with mobile robots,
@@ -29,8 +25,7 @@ Such application code will be portable, with appropriate platform-specific imple
 e.g., steering controller for car, thrust controller for a quadcopter, and GPS or indoor localization subroutines.
 %
 In addition, this separation will enable the joining of analysis techniques.
-For example, in this paper we show how symbolic executions for the application program can be combined with model-free and data-driven analysis of the platform-specific controllers.\rg{include/exclude based on dryvr analysis.}
-
+For example, in this paper we show how symbolic executions for the application program can be combined with model-free and data-driven analysis of the platform-specific controllers.
 
 \paragraph{Approach}
 In this paper, we present \lgname: a language and supporting verification and testing tools for programming distributed robotic systems.
@@ -42,7 +37,7 @@ In this paper, we present \lgname: a language and supporting verification and te
       can help discharge key invariants of the \lgname applications.
       This verification process also helps identify the \emph{platform-dependent} proof obligations that have to be discharged or validated through simulation and testing.
 \item \emph{For the platform engineers} deploying the robot applications, our abstraction makes the \lgname programs portable across platforms,
-      and our high-fidelity \lgname simulator help test the exact same code on different platforms.\chiao{Remove this if simulator is not included.}
+      and our high-fidelity \lgname simulator helps test the exact same code on different platforms.\chiao{Remove this if simulator is not included.}
 \end{noinditem}
 
 \begin{figure}[h!]
@@ -65,27 +60,27 @@ The program can read from sensor ports to receive updates about its environment;
 and it can write to actuator ports to direct the low-level controllers and actuators.
 Beyond the names and types of these ports, the abstract interface may specify additional \emph{\portasum{}s} that these ports should satisfy.
 Application developers get to use these assumptions to reason about the \lgname application,
-while platform engineers ensure that these assumptions are met when implementing of the interface for each platform.
+while platform engineers ensure that these assumptions are met when implementing the interface for each platform.
 These interfaces allow deploying and simulating the same \lgname program on heterogeneous devices without any alteration,
 and thus shorten the test-debug-deployment cycle.
 
 \item We provide a \emph{distributed shared memory (DSM)} construct for \lgname applications on different robots to communicate with each other.
 This makes \lgname applications very succinct (see examples in \reffig{lineform}),
 and raises the level of abstraction for the programmers beyond sockets, message queues, ROS topics~\cite{ros}, and the such like.
-We have developed an implementation of distributed shared memory using UDP messages and \rg{deployed it across different robotic hardware platforms.}
+We have developed an implementation of distributed shared memory using UDP messages and %\rg{deployed it across different robotic hardware platforms.}
 
 \item We develop the executable \K semantics~\cite{rosu-serbanuta-2013-k} of \lgname.
 To our knowledge this is the first formalization of a programming language for distributed cyber-physical systems which has also been deployed on actual platforms.
-Our formal executable semantics of \lgname in \K, assumes a \emph{synchronous round-by-round computation model for the distributed system}.
+Our executable semantics of \lgname in \K, assumes a \emph{synchronous round-by-round computation model for the distributed system}.
 Each round lasts for a fixed time period, and all robots synchronize at the beginning of each round.
-This synchronous model is a restrictive but standard model for distributed computing~\cite{lynch1996a,attiyawelch}.
+This synchronous model is a restrictive but standard model for distributed systems~\cite{lynch1996a,attiyawelch}.
 While it does not completely eliminate concurrency control, it significantly simplifies programming and verification.
 \lgname provides constructs for mutual exclusion as additional mechanisms for concurrency control with shared memory mentioned above.
 This model can be implemented under typical synchrony assumptions for multi-robot networks.\footnote{Bounded message delays and clocks with bounded drifts.}
 
-\item We present a \K symbolic execution semantics based formal analysis which does NOT require explicit dynamical models of the platform.
-In practice, a detailed model of the platform (e.g., dynamical models for cars, wheel friction, engine torque, etc.) may not be available.
-The \lgname semantics is designed in a way that any available model or actual black-box executable for the platform can be plugged in,
+\item We present a \K symbolic execution-based formal verification \sayan{methodology} which does {\em not} require explicit dynamical models of the platform.
+In practice, a detailed model of the platform (e.g., dynamic models for cars, wheel friction, engine torque, etc.) may not be available.
+The \lgname semantics is \sayan{parameterized} so that any available model or an actual black-box executable for the platform can be plugged in,
 and our formal analyses facilitate both inductive invariant checking and state space exploration with black-box dynamics.
 
 \item We identify and separate platform-independent from platform-dependent \emph{proof obligations} derived from our formal analysis.
