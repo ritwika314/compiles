@@ -30,27 +30,17 @@ we define the following functions using the semantic rules of \refsect{semantics
     \item $\Final(\gset)$ is the set of configurations reached from $\gset$ \emph{after} a program transition.
 \end{inparaenum}
 
-\newcommand{\Skip}{\mathit{Skip}\xspace}
 \begin{mdframed}[
     skipabove=5pt, skipbelow=5pt,
     innertopmargin=0pt,
     innerleftmargin=0pt, innerrightmargin=0pt
 ]
 \footnotesize
+\newcommand{\Skip}{\mathit{Skip}\xspace}
 \begin{align*}
     \Post_\Ev(\gconfig,i) &:= \{ \gconfig' \mid \eec{\EvCond}{\gconfig.S, \gconfig.\lconfig{i}} \\
       & \ \ \ \ \ \ \land \left\langle \gconfig.S, \gconfig.\lconfig{i}, \EvBody \right\rangle \stmtrule \left\langle \gconfig'.S, \gconfig'.\lconfig{i}, \EndEvent \right\rangle\}, \\
-    \Skip(\gconfig,i) &:= \{ \gconfig' \mid \left\langle \gconfig.S, \gconfig.\lconfig{i}, \EndEvent \right\rangle \stmtrule \left\langle \gconfig'.S, \gconfig'.\lconfig{i}, \EndEvent \right\rangle \}
-\end{align*}
-\end{mdframed}
-
-\begin{mdframed}[
-    skipabove=5pt, skipbelow=5pt,
-    innertopmargin=0pt,
-    innerleftmargin=0pt, innerrightmargin=0pt
-]
-\footnotesize
-\begin{align*}
+    \Skip(\gconfig,i) &:= \{ \gconfig' \mid \left\langle \gconfig.S, \gconfig.\lconfig{i}, \EndEvent \right\rangle \stmtrule \left\langle \gconfig'.S, \gconfig'.\lconfig{i}, \EndEvent \right\rangle \} \\
     \Post(\gset,i) &:=  \bigcup_{\gconfig\in\gset} \left(\Skip(\gconfig, i) \cup \bigcup_{\Ev \in \Event} \Post_\Ev(\gconfig, i) \right),\\
     \Post(\gset,\pvec) &:= 
         \begin{cases}
@@ -246,7 +236,7 @@ Notice that \PO{po:ind} allows us to reason in per event fashion as well as per 
 \label{sec:port-assumptions}
  Over  three decades of research on verification of complex dynamical and hybrid systems~\cite{Alur:2015:PCS,Platzer:2018} has led to the creation of a powerful toolbox for linear~\cite{bak2017hylaa,Spaceex}, nonlinear~\cite{CAS13,DMVemsoft2013,FanQM0D16:CAV}, and black-box systems~\cite{DryVR2017}. Depending on the type and availability of the platform models, these tools can be used for discharging the port assumptions. Here, for the sake of completing the picture, we briefly mention how the traces from the $\lgname$ simulator together with the DryVR tool~\cite{DryVR2017},  could be used to check port assumptions for various platforms or find counterexamples. 
  
- DryVR uses numerical simulations to learn the sensitivity of the trajectories of the vehicle to changes in initial conditions, with a certain confidence level. Then it uses this sensitivity and additional simulations to either prove the given invariant (in our case the port assumption) or find a counter-example. Under certain robustness assumptions, this process is also guaranteed to terminate. We used $\lgname$ simulator to generate traces of a vehicle (and quadcopter) moving from a set of initial conditions to a target waypoint. From these traces, DryVR computes the reachable states (see~\reffig{fig:dryVR}). Notice that for the same relative distance between the initial position and the target, the quadcopter has a larger reachset than the vehicle because the former overshoots. 
+ DryVR uses numerical simulations to learn the sensitivity of the trajectories of the vehicle to changes in initial conditions, with a certain confidence level. Then it uses this sensitivity and additional simulations to either prove the given invariant (in our case the port assumption) or find a counter-example. Under certain robustness assumptions, this process is also guaranteed to terminate. We used \lgname simulator to generate traces of a vehicle (and quadcopter) moving from a set of initial conditions to a target waypoint. From these traces, DryVR computes the reachable states (see~\reffig{dryVR}). Notice that for the same relative distance between the initial position and the target, the quadcopter has a larger reachset than the vehicle because the former overshoots. 
 \begin{figure}[!h]
             \captionsetup{font=scriptsize}
     \includegraphics[width=0.4\linewidth]{figs/car_trajs.png}
