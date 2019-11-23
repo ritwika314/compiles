@@ -12,8 +12,10 @@ This tight-coupling and the attendant lack of abstraction hinders application de
 
 In particular, formal reasoning about a collection of robots communicating, coordinating, and interacting with a physical environment
 is complexified by cyber-physical interactions.
-Correctness under concurrency and asynchrony are prominent research problems in distributed programming community.
-Safety guarantees under noise, disturbances, and imprecise or incomplete models for sensors and robot platforms are also studied intensively in robotics and control theory community.
+Correctness under concurrency and asynchrony are prominent research problems in distributed programming area.
+Safety guarantees under noise, disturbances, and imprecise or incomplete models for sensors and robot platforms are also studied intensively in robotics and control theory area.
+These areas involve related but entirely different hardware level concepts of control and sensing,
+and software level concepts of distributed protocols and program interactions.
 It is however obvious the analysis techniques from two communities are based on quite different formal models and languages,
 and it is unlikely that formal analyses from either community alone would be able to provide satisfactory guarantees
 to the safety of distributed robotic applications.
@@ -53,8 +55,9 @@ In this paper, we present \lgname: a language and supporting verification and te
 
 \paragraph{Contributions and design decisions}
 
-In managing these complexities, we have baked-in several abstractions in the design of \lgname.
-\chiao{Moved the complexities as motivation. Need to describe our contributions in a high level.}
+We have baked-in several abstractions in the design of \lgname to simplify the distributed robotics programming.
+Our design of \lgname creates a separation of platform-specific from platform-independent concerns.
+The formal semantics of \lgname enables our formal analysis to benefit from this separation of concerns.
 
 \begin{noinditem}
 \item We introduce an abstract interface of \emph{sensor} and \emph{actuator ports} through which a \lgname program interacts with its environment.
@@ -63,7 +66,7 @@ and it can write to actuator ports to direct the low-level controllers and actua
 Beyond the names and types of these ports, the abstract interface may specify additional \emph{\portasum{}s} that these ports should satisfy.
 Application developers get to use these assumptions to reason about the \lgname application,
 while platform engineers ensure that these assumptions are met when implementing of the interface for each platform.
-These interfaces allow deploying and simulating the same program on heterogenous devices without any alteration to the \lgname program,
+These interfaces allow deploying and simulating the same \lgname program on heterogeneous devices without any alteration,
 and thus shorten the test-debug-deployment cycle.
 
 \item We provide a \emph{distributed shared memory (DSM)} construct for \lgname applications on different robots to communicate with each other.
@@ -71,26 +74,29 @@ This makes \lgname applications very succinct (see examples in \reffig{lineform}
 and raises the level of abstraction for the programmers beyond sockets, message queues, ROS topics~\cite{ros}, and the such like.
 We have developed an implementation of distributed shared memory using UDP messages and \rg{deployed it across different robotic hardware platforms.}
 
-\item We develop the executable semantics of \lgname in the \K framework~\cite{rosu-serbanuta-2013-k}.
+\item We develop the executable \K semantics~\cite{rosu-serbanuta-2013-k} of \lgname.
 To our knowledge this is the first formalization of a programming language for distributed cyber-physical systems which has also been deployed on actual platforms.
 Our formal executable semantics of \lgname in \K, assumes a \emph{synchronous round-by-round computation model for the distributed system}.
 Each round lasts for a fixed time period, and all robots synchronize at the beginning of each round.
 This synchronous model is a restrictive but standard model for distributed computing~\cite{lynch1996a,attiyawelch}.
 While it does not completely eliminate concurrency control, it significantly simplifies programming and verification.
 \lgname provides constructs for mutual exclusion as additional mechanisms for concurrency control with shared memory mentioned above.
-This model can be implemented under typical synchrony assumptions for multi-robot networks\footnote{Bounded message delays and clocks with bounded drifts.}.
+This model can be implemented under typical synchrony assumptions for multi-robot networks.\footnote{Bounded message delays and clocks with bounded drifts.}
 
-\item We present a \K semantics based formal analysis which does NOT require explicit dynamical models of the platform.
+\item We present a \K symbolic execution semantics based formal analysis which does NOT require explicit dynamical models of the platform.
 In practice, a detailed model of the platform (e.g., dynamical models for cars, wheel friction, engine torque, etc.) may not be available.
 The \lgname semantics is designed in a way that any available model or actual black-box executable for the platform can be plugged in,
-and our formal analyses can still be performed using the \portasum{}s on the platform.
+and our formal analyses facilitate both inductive invariant checking and state space exploration with black-box dynamics.
 
-\item We identify and separate platform-independent from platform-dependent proof obligations derived from our formal analysis.
-We also propose an approach to discharge platform-independent proof obligations with existing SMT solvers,
-and .
-the feasibility of implementation of the systems.
-These areas involve related but entirely different hardware level concepts of control and sensing,
-and software level concepts of distributed protocols and program interactions.
+\item We identify and separate platform-independent from platform-dependent \emph{proof obligations} derived from our formal analysis.
+We also propose an approach to discharge platform-independent proof obligations with existing SMT solvers automatically.
+For platform-dependent proof obligations,
+on one side it can represent the infeasibility of implementing such systems
+when these proof obligations is difficult to discharge or easily violated in simulation or testing.
+On the other hand,
+these proof obligations can serve as contracts for sensing devices, drivers, hardware platforms, and operating system modules
+that are often outside the control of application developers in the end-to-end safety for complex cyber-physical systems.
+An intended useful outcome of this methodology is a list of formal assumptions for the platform or implementation specific components such sensors, schedulers, data structures, etc.
 \end{noinditem}
 %
 These choices do leave out issues related to robot failure, dynamic joins and leaves, from the current semantics, and could be included in the future.
@@ -105,11 +111,9 @@ for distributed formation, task allocation, and mapping as demonstrated in \refs
 
 %\paragraph{Incomplete model for environment}
 %
-%Need explicit language constructs for black-box parts.
 %
 %Allow trade-off between exposing more low level details and simplicity of the language constructs
 %
-%For formal analysis, requires specifying assumptions over black-box parts.
 
 
 \begin{figure}[h!]
@@ -132,19 +136,14 @@ for distributed formation, task allocation, and mapping as demonstrated in \refs
 %\paragraph{Implement trusted run-time environment}
 
 %\marginpar{\scriptsize\sayan{[EuroSys'17] An Empirical Study on the Correctness of Formally Verified Distributed Systems.}}
-\begin{noinditem}
-
-\item  We built analysis tools on top of semantics to facilitate both inductive invariant checking and state space exploration with black-box dynamics. In this paper, we proved inductive invariants for the benchmarks using symbolic execution while identifying assumptions and proof obligations. While most formal analysis tools for distributed systems verify models of the protocols in form of automata, this framework actually verifies the program implementing the abstract model.
-\item An intended useful outcome of this methodology is a list of formal assumptions for the platform or implementation specific components such sensors, schedulers, data structures, etc. In the end-to-end safety assurance cases~\cite{} for complex cyber-physical systems, these assumptions can serve as contracts for sensing devices, drivers, hardware platforms, and operating system modules that are often outside the control of the application programmer.
-\item Our design of \lgname creates a separation of device-specific from device-independent concerns. In our implementation, we enforced simple interface for every device-specific sensor and actuator modules. These interfaces allow a user to deploy (and simulate) the same program on heterogenous devices using \emph{configurations} without any alteration to the \lgname program, or any additional compilation, thus shortening the test-debug-deployment cycle.
-\item We explored the trade-off between the level of abstraction of the minutiae of multi-robot systems and achieved a simple yet expressive language design enabling a versatile set of multi-robot applications. One of the design choices we made was to abstract away continuous time in language. This required a careful design of the memory model to provide consistency and sychrony guarantees. We achieved distributed shared memory through round-based synchronous message passing. Our compiler translates $\lgname$ programs to Python and a device-independent middle-ware implements the memory model and module interfaces.
-\item We created a simulation environment in Gazebo for testing $\lgname$ applications and validating assumptions, specifically on robot-environment behavior. The simulation environment only differs from a hardware deployment environment in the dynamics models of the physical platforms, but all software components are identical.
+%\begin{noinditem}
+%\item We explored the trade-off between the level of abstraction of the minutiae of multi-robot systems and achieved a simple yet expressive language design enabling a versatile set of multi-robot applications. One of the design choices we made was to abstract away continuous time in language. This required a careful design of the memory model to provide consistency and sychrony guarantees. We achieved distributed shared memory through round-based synchronous message passing. Our compiler translates $\lgname$ programs to Python and a device-independent middle-ware implements the memory model and module interfaces.
+%\item We created a simulation environment in Gazebo for testing $\lgname$ applications and validating assumptions, specifically on robot-environment behavior. The simulation environment only differs from a hardware deployment environment in the dynamics models of the physical platforms, but all software components are identical.
 
 %\item Convert pub-sub based message passing to black-box module interface
 %\item Wrap around black-box modules (ROS packages) to satisfy assumptions identified in formal analysis : Most technically challenging but difficult to sell
 %\item Finally, \sayan{experimental evaluation. What did we learn that can generalize beyond this specific application? How did we extend CyPhyHouse capabilities generally?}
-
-\end{noinditem}
+%\end{noinditem}
 %\makeatletter
 %\let\origsection\section
 %\renewcommand\section{\@ifstar{\starsection}{\nostarsection}}
