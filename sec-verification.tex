@@ -54,15 +54,30 @@ we define the following functions using the semantic rules of \refsect{semantics
 In the above, a sequence $\pvec=(\pinit, \pvec')$, is written  as a concatenation of the first element $\pinit$ and the suffix $\pvec'$.
 Also, $\mathit{perms}(\UINS)$ refers to the set of permutations of $\UINS$.
 
-%$\Final(\gset)$ returns the set of system configurations after a program transition.
-\sayan{Next, we define the configurations that are reached during and after an environment transition. Recall, environment transitions capture the evolution of the actuator ports  over a time interval $[0,\delta]$---all other parts of the configuration remain unchanged. Our $\lgname$ semantics defines the environment transitions with a {\em parameter\/} which is a (possibly black-box) function that captures the dynamics of individual robots\footnote{For different platforms, this function could be defined in closed form, as solutions of differential equations, or in terms of a numerical simulator.}.}
+Next, we define the configurations that are reached during and after an environment transition.
+Recall that environment transitions capture the evolution of the actuator ports over a time interval $[0,\delta]$---all other parts of the configuration remain unchanged.
+Our \lgname semantics defines the environment transitions with a \emph{parameter} which is a (possibly black-box) function that captures the dynamics of individual robots.%
+\footnote{For different platforms, this function could be defined in closed form, as solutions of differential equations, or in terms of a numerical simulator.}
 % 
 Given such a function $f_i$ for each robot $i$, we  define the function $\traj: \pwg \times \left[0,\delta\right] \mapsto \pwg$ to represent the  evolution of the system over a  $[0,\delta]$ time interval.
 $\traj$ is constructed by simply update all controller ports $\cp$ of all robots with their $f_i$.
-In short,
+That is,
+\begin{small}
 \[
-\traj(\gconfig, t) := \gconfig \ \mathit{with} \  \gconfig.\lconfig{i}.cp = f_i(\gconfig.\lconfig{i}.cp, t), \forall i\in \UINS.
+\gconfig' = \traj(\gconfig, t) \Leftrightarrow
+\left(
+\begin{array}{l}
+    \forall i \in \UINS, \gconfig'.\lconfig{i}.\cp = f_i(\gconfig.\lconfig{i}.\cp, t) \\
+    \land\ \gconfig'.\lconfig{i}.M = \gconfig.\lconfig{i}.M \\
+    \land\ \gconfig'.\lconfig{i}.\turn = \gconfig.\lconfig{i}.\turn\\
+    \land\ \gconfig'.S = \gconfig.S \land \gconfig'.\tau = \gconfig.\tau \\
+    \land\ \gconfig'.\turn = \gconfig.\turn \\
+\end{array}
+\right)
 \]
+\end{small}%
+Notice those additional constraints making sure all other fields of $\gconfig$ and $\gconfig'$ stay the same.
+We will use $\land \dots$ to skip these kind of constraints in the later sections for simplicity.
 The set of system configurations $\pt{t_1}{t_2}(\gset)$ reached in an interval $[t_1,t_2]$:
 \[
 \pt{t_1}{t_2}(\gset) := \left\{\gconfig' \mid \exists \gconfig\in \gset, t_1 \leq t\leq t_2 , \gconfig' = \traj(\gconfig,t)\right\}.
@@ -141,8 +156,9 @@ A predicate $\mathit{inv}$ is an \emph{inductive invariant} of a system if given
 &\forall \gconfig \in \pwg, \eec{\Inv}{\gconfig} \Rightarrow \forall \gconfig' \in \Reach(\left\{\gconfig\right\},1), \eec{\Inv}{\gconfig'} \label{po:ind-hyp-orig}
 \end{align}
 \end{definition}
-That is, $\Inv$ is satisfied by the initial configuration(s)~(\PO{po:base}),
-\sayan{and $\Inv$ is preserved by both platform-independent discrete program transitions and the platform-dependent environment transitions~(\PO{po:ind-hyp-orig})}.
+\noindent
+That is, $\Inv$ holds in the initial configuration(s)~(\PO{po:base}),
+and $\Inv$ is preserved by both platform-independent discrete program transitions and the platform-dependent environment transitions~(\PO{po:ind-hyp-orig}).
 It is straightforward to prove that an inductive invariant is  an invariant.
 
 Our  verification strategy for user-specified  (inductive) invariants is to dischare the proof obligations.
@@ -163,7 +179,6 @@ for any configuration $c$ satisfying $\varphi$, the following always holds
     \Rightarrow \forall \gconfig' \in \Post(\incurly{\gconfig}), \eec{\varphi}{\gconfig'}
 \]
 \end{small}
-
 \end{lemma}
 The proof follows from expanding the definition of $\Post$ and inducting on each event sequence. 
 As $\varphi$ is preserved before and after every event transition $\Post_\Ev$ of every robot,
@@ -175,7 +190,8 @@ With \lem{lem:noninter}, we strengthen and rewrite \PO{po:ind-hyp-prog} as $\for
     \Rightarrow \eec{\Inv}{\gconfig'}\label{po:ind-hyp-event}
 \end{equation}
 \end{small}%
-which no longer requires enumeration of all permutations. \sayan{This is the main reason why  the synchronous model of execution makes verification scalable.}  
+which no longer requires enumeration of all permutations.
+This is the main reason how our synchronous model of execution help verification scale.
 
 We now discuss our approach to discharge \PO{po:ind-hyp-env}.
 To further decouple program and environment transitions,
