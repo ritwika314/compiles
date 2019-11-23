@@ -30,17 +30,27 @@ we define the following functions using the semantic rules of \refsect{semantics
     \item $\Final(\gset)$ is the set of configurations reached from $\gset$ \emph{after} a program transition.
 \end{inparaenum}
 
+\newcommand{\Skip}{\mathit{Skip}\xspace}
 \begin{mdframed}[
     skipabove=5pt, skipbelow=5pt,
     innertopmargin=0pt,
     innerleftmargin=0pt, innerrightmargin=0pt
 ]
 \footnotesize
-\newcommand{\Skip}{\mathit{Skip}\xspace}
 \begin{align*}
     \Post_\Ev(\gconfig,i) &:= \{ \gconfig' \mid \eec{\EvCond}{\gconfig.S, \gconfig.\lconfig{i}} \\
       & \ \ \ \ \ \ \land \left\langle \gconfig.S, \gconfig.\lconfig{i}, \EvBody \right\rangle \stmtrule \left\langle \gconfig'.S, \gconfig'.\lconfig{i}, \EndEvent \right\rangle\}, \\
-    \Skip(\gconfig,i) &:= \{ \gconfig' \mid \left\langle \gconfig.S, \gconfig.\lconfig{i}, \EndEvent \right\rangle \stmtrule \left\langle \gconfig'.S, \gconfig'.\lconfig{i}, \EndEvent \right\rangle \} \\
+    \Skip(\gconfig,i) &:= \{ \gconfig' \mid \left\langle \gconfig.S, \gconfig.\lconfig{i}, \EndEvent \right\rangle \stmtrule \left\langle \gconfig'.S, \gconfig'.\lconfig{i}, \EndEvent \right\rangle \}
+\end{align*}
+\end{mdframed}
+
+\begin{mdframed}[
+    skipabove=5pt, skipbelow=5pt,
+    innertopmargin=0pt,
+    innerleftmargin=0pt, innerrightmargin=0pt
+]
+\footnotesize
+\begin{align*}
     \Post(\gset,i) &:=  \bigcup_{\gconfig\in\gset} \left(\Skip(\gconfig, i) \cup \bigcup_{\Ev \in \Event} \Post_\Ev(\gconfig, i) \right),\\
     \Post(\gset,\pvec) &:= 
         \begin{cases}
