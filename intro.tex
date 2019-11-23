@@ -15,8 +15,7 @@ is complexified by cyber-physical interactions.
 Correctness under concurrency and asynchrony are prominent research problems in distributed computing. Correctness under noise, disturbances, and imprecise platform (plant) models is studied intensively by roboticists and control theorists. 
 %These areas involve related but entirely different hardware level concepts of control and sensing, and software level concepts of distributed protocols and program interactions. 
 The analysis techniques from these communities are based on very different formal models and mathematics, and both would be necessary  to provide satisfactory safety guarantees for  distributed robotic applications.
-\sayan{Our view is {\em not\/} to combine all of the above in an {\em all encompassing formalism\/},
-but to create a language that separates  the concerns to divide and conquer using existing analyses from both communities.}
+Our vision is {\em not\/} to combine all of the above in an {\em all encompassing formalism\/}, but to create a language that separates  the concerns to divide and conquer using existing analyses from both communities.
 
 Our goal is to design abstractions and language constructs that separate the \emph{platform-independent} decision and coordination from \emph{platform-dependent} actions.
 For example, in an application for distributed package delivery with mobile robots,
@@ -36,8 +35,7 @@ In this paper, we present \lgname: a language and supporting verification and te
 \item \emph{For the V\&V engineer}, the \K-based formal executable semantics we have developed for \lgname and our Z3-based prover,
       can help discharge key invariants of the \lgname applications.
       This verification process also helps identify the \emph{platform-dependent} proof obligations that have to be discharged or validated through simulation and testing.
-\item \emph{For the platform engineers} deploying the robot applications, our abstraction makes the \lgname programs portable across platforms.
-      \rg{Moreover, our high-fidelity \lgname simulator can be used in conjunction with other reachability analysis tools to verify the exact same code without hardware deployment.}
+\item \emph{For the platform engineers} deploying the robot applications, our abstraction makes the \lgname programs portable across platforms. Our high-fidelity \lgname simulator can be used in conjunction with other reachability analysis tools to test and validate the platform-dependent proof obligations.
 \end{noinditem}
 
 \begin{figure}[h!]
