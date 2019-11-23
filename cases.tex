@@ -45,7 +45,7 @@ Consequently, \PO{po:port-asm} becomes
 (\forall t \in [0,\delta], \Mposi'' = f(\Mposi', \Mtgti', t)) \Rightarrow A
 \]
 \end{proofob}
-\chiao{Add table showing how often \PO{po:port-asm} is violated.}
+%\chiao{Add table showing how often \PO{po:port-asm} is violated.}
 
 The invariant for the current configuration~($\eec{\Inv}{\gconfig}$) is
 \begin{small}
@@ -69,6 +69,7 @@ Because there is only one event, \PO{po:ind} for \LineForm then becomes
 Table \ref{tab:lineform} summarizes the verification of these constraints on systems with different $\NMAX$.
 
 \begin{table}
+    \captionsetup{font=scriptsize}
     \scriptsize
         \begin{minipage}{.49\linewidth}
    \begin{tabular}{ |l|c @{\hspace{0.5mm}} c  c  c|  }
@@ -96,8 +97,8 @@ Table \ref{tab:lineform} summarizes the verification of these constraints on sys
            \hline
 \end{tabular}
 \end{minipage}
-
-    \caption{ \small Summary of semantics based verification for \LineForm. $N$ is $\NMAX$,  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for construction of constraints and verification in Z3. Robots moving along a line are represented by \tb{dim} = 1, along a plane by \tb{dim} = 2, and in a 3D space by \tb{dim} = 3.}
+\captionsetup{font=scriptsize}
+    \caption{Summary of semantics based verification for \LineForm. $N$ is $\NMAX$,  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for construction of constraints and verification in Z3. Robots moving along a line are represented by \tb{dim} = 1, along a plane by \tb{dim} = 2, and in a 3D space by \tb{dim} = 3.}
             \label{tab:lineform}
 \end{table}
 
@@ -109,9 +110,11 @@ Table~\ref{tab:lineform1} shows the results we obtained without the proof obliga
 and this weaker invariant on a system of robots moving in 2D. The verification procedure only tells us that the invariant is not inductive, it doesn't tell us whether the invariant doesn't hold, which is why we don't know whether the system is safe w.r.t the proposed invariant.
 
 \begin{table}[!tbp]
+            \captionsetup{font=scriptsize}
     \scriptsize
  \centering
    \begin{tabular}{ |l|   c c c c|  }
+
  \hline
        \NMAX &\tb{constraint} & $T_K$ (s) & $T_V$ (s)   & \qquad\tb{Safe\ \ \ \ } \\ \hline
    15   & $ E\wedge I \Rightarrow I'$ & 13.06 & 23.03 & \emph{Unknown}  \\
@@ -119,7 +122,7 @@ and this weaker invariant on a system of robots moving in 2D. The verification p
  15    & $E \wedge A \wedge \mathit{WI}\Rightarrow \mathit{WI}'$ & 11.24 &  32.64 & \emph{Unknown}   \\
        \hline
 \end{tabular}
-    \caption{ \small Verification summary for weaker invariants on \LineForm. The \tb{constraint} column displays the induction hypothesis used in the verification.  }
+    \caption{ Verification summary for weaker invariants on \LineForm. The \tb{constraint} column displays the induction hypothesis used in the verification.  }
             \label{tab:lineform1}
 \end{table}
 
@@ -141,6 +144,7 @@ there are following two requirements:
 In this case study, we only prove requirement~(b) for \Task.
 
 \begin{figure}[t]
+        \captionsetup{font=scriptsize}
 
     \begin{mdframed}{%\centering
     \two{0.38}{0.6}
@@ -279,6 +283,7 @@ The induction hypothesis for event \emph{Complete} is generated similarly (omitt
 and the overall proof obligation is a conjunction of the two.
 Table \ref{tab:task} summarizes the verification of these constraints with different number of robots.
 \begin{table}
+            \captionsetup{font=scriptsize}
     \scriptsize
  \centering
    \begin{tabular}{ |l|  c c c c|  }
@@ -290,7 +295,7 @@ Table \ref{tab:task} summarizes the verification of these constraints with diffe
 Task        & 10     &12.92   &18.34   & \Checkmark  \\
        \hline
 \end{tabular}
-    \caption{ \small Summary of semantics based verification for \Task.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for generation of constraints and verification in Z3 and $\NMAX$ is the number of robots in the system.}
+    \caption{  Summary of semantics based verification for \Task.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for generation of constraints and verification in Z3 and $\NMAX$ is the number of robots in the system.}
     \label{tab:task}
 \end{table}
 
@@ -310,6 +315,7 @@ Further, the only sensors available for sensing obstacles are LIDAR based,
 and the robots are constrained to move in a 2D space.
 
 \begin{figure}[!h]
+            \captionsetup{font=scriptsize}
     \includegraphics[width=0.27\linewidth]{figs/exp-gazebo.jpg}
     \includegraphics[width=0.21\linewidth]{figs/exp-progress-1.png}
     \includegraphics[width=0.21\linewidth]{figs/exp-progress-2.png}
@@ -320,6 +326,7 @@ and the robots are constrained to move in a 2D space.
 
 
 \begin{figure}[t]
+            \captionsetup{font=scriptsize}
     \begin{mdframed}
     \two{0.38}{0.6}
     {
@@ -439,7 +446,7 @@ The overall induction proof obligation is a conjunction of the three.
 
 Table~\ref{tab:map} summarizes the verification of these constraints on systems of different $\NMAX$ .
 \begin{table}
-
+        \captionsetup{font=scriptsize}
     \scriptsize
  \centering
    \begin{tabular}{ |l|  c c c c|  }
@@ -451,6 +458,6 @@ Table~\ref{tab:map} summarizes the verification of these constraints on systems 
 \dmap        & 10     &  9.31& 59.81  & \Checkmark  \\
        \hline
 \end{tabular}
-    \caption{ \small Summary of semantics based verification for \dmap.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for generation of constraints and verification in Z3 and \emph{robots}(N) is the number of robots in the system.}\label{tab:map}
+    \caption{  Summary of semantics based verification for \dmap.  $T_K$ is the symbolic post computation time in \K, $T_V$ is the time taken for generation of constraints and verification in Z3 and \emph{robots}(N) is the number of robots in the system.}\label{tab:map}
 \end{table}
 

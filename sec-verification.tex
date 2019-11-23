@@ -238,6 +238,7 @@ Notice that \PO{po:ind} allows us to reason in per event fashion as well as per 
  
  DryVR uses numerical simulations to learn the sensitivity of the trajectories of the vehicle to changes in initial conditions, with a certain confidence level. Then it uses this sensitivity and additional simulations to either prove the given invariant (in our case the port assumption) or find a counter-example. Under certain robustness assumptions, this process is also guaranteed to terminate. We used $\lgname$ simulator to generate traces of a vehicle (and quadcopter) moving from a set of initial conditions to a target waypoint. From these traces, DryVR computes the reachable states (see~\reffig{fig:dryVR}). Notice that for the same relative distance between the initial position and the target, the quadcopter has a larger reachset than the vehicle because the former overshoots. 
 \begin{figure}[!h]
+            \captionsetup{font=scriptsize}
     \includegraphics[width=0.4\linewidth]{figs/car_trajs.png}
     \includegraphics[width=0.4\linewidth]{figs/drone_trajs.png}
     \caption{\emph{Left}: Reachsets  for car. \emph{Right}: Reachtube for drone}

@@ -56,7 +56,7 @@ and {\it NT\textsuperscript{+}} refers to one or more occurrences.
 The expression $(E1\mid E2)$ denotes that one can use either $E1$ or $E2$.
 
 \begin{figure}
-
+        \captionsetup{font=scriptsize}
 \newcommand{\zeroone}{\textsuperscript{?}\ }
 \newcommand{\zeromore}{*\ }
 \newcommand{\onemore}{\textsuperscript{+}\ }
@@ -133,16 +133,17 @@ $\Val$ be the set of values that an expression in \lgname can evaluate to,
 $\Cfield$ be the set of sensor and actuator ports of the controller being used,
 and $\Event$ the set of events in $P$.
 A robot configuration is a tuple $\agnt = ({M},\cp,\turn)$, where
-
+\vspace{-1mm}
 \begin{enumerate}[(i)]
 \item ${M} : \Var \mapsto \Val$ is its \emph{local context} mapping both local and shared variables to values.
       Note that this implies $M$ includes a copy of shared variable values.
 \item $\cp : \Cfield \mapsto \Val$ is the mapping of sensor and actuator ports to values.
 \item $\turn \in \{\prog,\env\}$ is a bookkeeping variable indicating whether this robot should be executing a program or environment transition.
 \end{enumerate}
+\vspace{-2mm}
 For readability, we use the dot (``$.$'') notation to access components of a robot configuration $\agnt$.
 For example, $\agnt.M$ means accessing the local context $M$ in the tuple $\agnt$.
-
+\vspace{-2mm}
 \paragraph{Black-box functions for environment transitions}
 To define the  executable \K semantics of  \lgname applications, we have to provide executable descriptions for the environment transitions. The type of this executable object ($f$) is defined by $\Cfield$, namely,
 $f: [\Cfield \mapsto \Val] \times \nnreals \mapsto [\Cfield \mapsto \Val]$.
@@ -179,6 +180,7 @@ the executable semantics will enable different types of analysis as we shall see
 \newcommand{\lsetp}{\{\lconfig{i}^\prime\}}
 \newcommand{\lsetpp}{\{\lconfig{i}^{\prime\prime}\}}
 \begin{figure}
+            \captionsetup{font=scriptsize}
 \scriptsize
 \begin{mathpar}
     \mprset{flushleft}
@@ -211,6 +213,8 @@ More details on statement and expression level semantics will be available in a 
 \paragraph{Per robot semantics.}
 
 \begin{figure}
+            \captionsetup{font=scriptsize}
+
 \scriptsize
 \begin{mathpar}
     \mprset{flushleft}
@@ -305,6 +309,7 @@ After all robots enter the $\env$ turn, rule~\EndProgTransRule sets the global $
 indicating the end of program transition, and an environment transition will occur afterwards.
 
 \begin{figure}
+            \captionsetup{font=scriptsize}
 \scriptsize
 \begin{mathpar}
     \mprset{flushleft}
