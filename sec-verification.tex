@@ -188,18 +188,17 @@ we expand $\pt{0}{\delta}$  and rewrite \PO{po:ind-hyp-env} as $\forall \gconfig
 \end{array}
 \end{equation}
 \end{small}%
-\PO{po:ind-hyp-traj} requires reasoning about the dynamic behavior $\traj$ during environment transitions,
-and it is a challenging research problem by itself.
-As mentioned in \refsect{overview},
-we introduce assumptions to abstract away the continuous dynamic behavior.
+\PO{po:ind-hyp-traj} requires reasoning about the dynamic behavior of $\traj$ during environment transitions, and it is a challenging research problem by itself. We introduce {\em port assumptions\/} to abstract away the continuous dynamic behavior.
+%
+%
+%
 \begin{definition}
-A \emph{\portasum} $A(\gconfig', \gconfig'')$ for $\traj$ is a predicate that
-we can prove the following proof obligation that $\forall \gconfig', \gconfig'' \in \pwg,$
+Given a configuration $\gconfig'$ and $\traj$, a \emph{\portasum} $A(\cdot, \cdot)$ is a predicate on $\pwg\times \pwg$ if  $\forall \gconfig', \gconfig'' \in \pwg,$
 \begin{equation}\label{po:port-asm}\tag{\textit{PAsm}}
-(\forall t \in [0,\delta], \gconfig'' = \traj(\gconfig', t)) \Rightarrow A(\gconfig', \gconfig'')
+(\forall t \in [0,\delta], \gconfig'' = \traj(\gconfig', t)) \Rightarrow A(\gconfig', \gconfig'').
 \end{equation}
 \end{definition}
-The definition allows users to provide a relation that over-approximates $\traj$ regardless of the time $t$.
+Port assumptions allow users to over-approximate $\traj$ and prove the invariant at hand.
 \PO{po:port-asm} can be validated with the \toolname simulator or verified separately by other tools specialized for continuous dynamics.
 Further, we know by definition $\Final(\incurly{\gconfig}) \subseteq \Post(\incurly{\gconfig})$,
 we can apply \lem{lem:noninter} in a similar way.
@@ -217,8 +216,3 @@ where we can use our \K symbolic execution semantics to construct the symbolic p
 to represent $\gconfig' \in \Post_\Ev(\gconfig, i)$ for each event.
 Notice that \PO{po:ind} allows us to reason in per event fashion as well as per robot fashion.
 
-In the remainder of this section,
-we demonstrate the verification of proposed invariants on three case studies.
-In each case study, we describe the two proof obligations \PO{po:ind} and \PO{po:port-asm}
-as well as the \portasum{}s in use.
-For each case, we also show experiment results for proving/disproving the POs.
